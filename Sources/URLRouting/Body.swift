@@ -37,7 +37,7 @@ public struct Body<Bytes: Parser>: Parser where Bytes.Input == Data {
   }
 
   @inlinable
-  public func parse(_ input: inout URLRequestData) throws -> Bytes.Output {
+  public func parse(_ input: inout URIRequestData) throws -> Bytes.Output {
     guard var body = input.body
     else { throw RoutingError() }
 
@@ -50,11 +50,11 @@ public struct Body<Bytes: Parser>: Parser where Bytes.Input == Data {
 
 extension Body: ParserPrinter where Bytes: ParserPrinter {
   @inlinable
-  public func print(_ output: Bytes.Output, into input: inout URLRequestData) rethrows {
+  public func print(_ output: Bytes.Output, into input: inout URIRequestData) rethrows {
     input.body = try self.bytesParser.print(output)
   }
 }
 
-extension Parser where Input == URLRequestData {
+extension Parser where Input == URIRequestData {
   public typealias Body = URLRouting.Body
 }

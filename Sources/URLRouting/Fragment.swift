@@ -37,7 +37,7 @@ public struct Fragment<ValueParser: Parser>: Parser where ValueParser.Input == S
   }
 
   @inlinable
-  public func parse(_ input: inout URLRequestData) throws -> ValueParser.Output {
+  public func parse(_ input: inout URIRequestData) throws -> ValueParser.Output {
     guard var fragment = input.fragment?[...] else { throw RoutingError() }
     let output = try self.valueParser.parse(&fragment)
     input.fragment = String(fragment)
@@ -47,7 +47,7 @@ public struct Fragment<ValueParser: Parser>: Parser where ValueParser.Input == S
 
 extension Fragment: ParserPrinter where ValueParser: ParserPrinter {
   @inlinable
-  public func print(_ output: ValueParser.Output, into input: inout URLRequestData) rethrows {
+  public func print(_ output: ValueParser.Output, into input: inout URIRequestData) rethrows {
     input.fragment = String(try self.valueParser.print(output))
   }
 }

@@ -3,12 +3,12 @@ import OrderedCollections
 
 /// Parser form-encoded data using field parsers.
 public struct FormData<FieldParsers: Parser>: Parser
-where FieldParsers.Input == URLRequestData.Fields {
+where FieldParsers.Input == URIRequestData.Fields {
   @usableFromInline
   let fieldParsers: FieldParsers
 
   @inlinable
-  public init(@ParserBuilder<URLRequestData.Fields> build: () -> FieldParsers) {
+  public init(@ParserBuilder<URIRequestData.Fields> build: () -> FieldParsers) {
     self.fieldParsers = build()
   }
 
@@ -16,7 +16,7 @@ where FieldParsers.Input == URLRequestData.Fields {
   public func parse(_ input: inout Data) rethrows -> FieldParsers.Output {
     var fields: FieldParsers.Input = String(decoding: input, as: UTF8.self)
       .split(separator: "&")
-      .reduce(into: .init([:], isNameCaseSensitive: true)) { fields, field in
+      .reduce(into: .init([:], isCaseSensitive: true)) { fields, field in
         let pair =
           field
           .split(separator: "=", maxSplits: 1, omittingEmptySubsequences: false)
@@ -36,7 +36,7 @@ where FieldParsers.Input == URLRequestData.Fields {
 extension FormData: ParserPrinter where FieldParsers: ParserPrinter {
   @inlinable
   public func print(_ output: FieldParsers.Output, into input: inout Data) rethrows {
-    var fields = URLRequestData.Fields()
+    var fields = URIRequestData.Fields()
     try self.fieldParsers.print(output, into: &fields)
     input = .init(encoding: fields)
   }
@@ -44,7 +44,7 @@ extension FormData: ParserPrinter where FieldParsers: ParserPrinter {
 
 extension Data {
   @usableFromInline
-  init(encoding fields: URLRequestData.Fields) {
+  init(encoding fields: URIRequestData.Fields) {
     self.init(
       fields
         .flatMap { pair -> [String] in

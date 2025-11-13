@@ -9,7 +9,7 @@
 ///   ...
 /// }
 /// ```
-public struct URIScheme: ParserPrinter {
+public struct URIScheme: ParserPrinter, Sendable {
   @usableFromInline
   let name: String
 

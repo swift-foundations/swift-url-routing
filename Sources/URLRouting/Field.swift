@@ -82,7 +82,7 @@ public struct Field<Value: Parser>: Parser where Value.Input == Substring {
   }
 
   @inlinable
-  public func parse(_ input: inout URLRequestData.Fields) throws -> Value.Output {
+  public func parse(_ input: inout URIRequestData.Fields) throws -> Value.Output {
     guard
       let wrapped = input[self.name]?.first,
       var value = wrapped
@@ -103,10 +103,10 @@ public struct Field<Value: Parser>: Parser where Value.Input == Substring {
 
 extension Field: ParserPrinter where Value: ParserPrinter {
   @inlinable
-  public func print(_ output: Value.Output, into input: inout URLRequestData.Fields) rethrows {
+  public func print(_ output: Value.Output, into input: inout URIRequestData.Fields) rethrows {
     if let defaultValue = self.defaultValue, isEqual(output, defaultValue) { return }
     try input.fields.updateValue(
-      forKey: input.isNameCaseSensitive ? self.name : self.name.lowercased(),
+      forKey: input.isCaseSensitive ? self.name : self.name.lowercased(),
       insertingDefault: [],
       at: 0,
       with: { $0.prepend(try self.valueParser.print(output)) }

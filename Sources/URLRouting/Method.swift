@@ -8,7 +8,7 @@
 ///   ...
 /// }
 /// ```
-public struct Method: ParserPrinter {
+public struct Method: ParserPrinter, Sendable {
   @usableFromInline
   let name: String
 
@@ -18,7 +18,7 @@ public struct Method: ParserPrinter {
   ///
   /// > Note: If you are using a ``Route`` parser you do not need to specify `Method.get` (it is the
   /// > default).
-  public static let get = OneOf {
+  nonisolated(unsafe) public static let get = OneOf {
     Self("HEAD")
     Self("GET")  // NB: Prefer printing "GET"
   }
@@ -44,14 +44,14 @@ public struct Method: ParserPrinter {
   }
 
   @inlinable
-  public func parse(_ input: inout URLRequestData) throws {
+  public func parse(_ input: inout URIRequestData) throws {
     guard let method = input.method else { throw RoutingError() }
     try self.name.parse(method)
     input.method = nil
   }
 
   @inlinable
-  public func print(_ output: (), into input: inout URLRequestData) {
+  public func print(_ output: (), into input: inout URIRequestData) {
     input.method = self.name
   }
 }

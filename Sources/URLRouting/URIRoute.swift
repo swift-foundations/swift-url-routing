@@ -104,5 +104,9 @@ extension URIPathEnd {
   @usableFromInline typealias Input = URIRequestData
 }
 
-// Convenience type alias
+// Type aliases for convenience
 public typealias Route = URIRoute
+public typealias Path = URIPath
+public typealias Query = URIQuery
+public typealias Scheme = URIScheme
+public typealias Host = URIHost

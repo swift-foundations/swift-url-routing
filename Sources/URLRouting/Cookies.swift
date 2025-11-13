@@ -2,22 +2,22 @@ import Foundation
 import OrderedCollections
 
 /// Parses a request's cookies using field parsers.
-public struct Cookies<Parsers: Parser>: Parser where Parsers.Input == URLRequestData.Fields {
+public struct Cookies<Parsers: Parser>: Parser where Parsers.Input == URIRequestData.Fields {
   @usableFromInline
   let cookieParsers: Parsers
 
   @inlinable
-  public init(@ParserBuilder<URLRequestData.Fields> build: () -> Parsers) {
+  public init(@ParserBuilder<URIRequestData.Fields> build: () -> Parsers) {
     self.cookieParsers = build()
   }
 
   @inlinable
-  public func parse(_ input: inout URLRequestData) throws -> Parsers.Output {
+  public func parse(_ input: inout URIRequestData) throws -> Parsers.Output {
     guard let cookie = input.headers["cookie"]
     else { throw RoutingError() }
 
     var fields: Parsers.Input = cookie.reduce(
-      into: .init([:], isNameCaseSensitive: true)
+      into: .init([:], isCaseSensitive: true)
     ) { fields, field in
       guard let cookies = field?.components(separatedBy: "; ")
       else { return }
@@ -35,8 +35,8 @@ public struct Cookies<Parsers: Parser>: Parser where Parsers.Input == URLRequest
 
 extension Cookies: ParserPrinter where Parsers: ParserPrinter {
   @inlinable
-  public func print(_ output: Parsers.Output, into input: inout URLRequestData) rethrows {
-    var cookies = URLRequestData.Fields()
+  public func print(_ output: Parsers.Output, into input: inout URIRequestData) rethrows {
+    var cookies = URIRequestData.Fields()
     try self.cookieParsers.print(output, into: &cookies)
 
     input.headers["cookie", default: []].prepend(

@@ -13,7 +13,7 @@ extension PathBuilder {
       self.p1 = p1
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output
     ) {
@@ -41,7 +41,7 @@ where
       P0.Output,
       P1.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p1.print(output.1))
     input.path.prepend(try p0.print(output.0))
@@ -70,7 +70,7 @@ extension PathBuilder {
       self.p1 = p1
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output
     ) {
       guard input.path.count >= 2 else { throw RoutingError() }
@@ -97,7 +97,7 @@ where
     _ output: (
       P0.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p1.print())
     input.path.prepend(try p0.print(output))
@@ -126,7 +126,7 @@ extension PathBuilder {
       self.p1 = p1
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output
     ) {
       guard input.path.count >= 2 else { throw RoutingError() }
@@ -153,7 +153,7 @@ where
     _ output: (
       P1.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p1.print(output))
     input.path.prepend(try p0.print())
@@ -183,7 +183,7 @@ extension PathBuilder {
       self.p1 = p1
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws {
+    @inlinable public func parse(_ input: inout URIRequestData) throws {
       guard input.path.count >= 2 else { throw RoutingError() }
       try Parse {
         p0
@@ -209,7 +209,7 @@ where
     _ output: (
 
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p1.print())
     input.path.prepend(try p0.print())
@@ -239,7 +239,7 @@ extension PathBuilder {
       self.p2 = p2
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output,
       P2.Output
@@ -274,7 +274,7 @@ where
       P1.Output,
       P2.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p2.print(output.2))
     input.path.prepend(try p1.print(output.1))
@@ -306,7 +306,7 @@ extension PathBuilder {
       self.p2 = p2
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output
     ) {
@@ -340,7 +340,7 @@ where
       P0.Output,
       P1.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p2.print())
     input.path.prepend(try p1.print(output.1))
@@ -372,7 +372,7 @@ extension PathBuilder {
       self.p2 = p2
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P2.Output
     ) {
@@ -406,7 +406,7 @@ where
       P0.Output,
       P2.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p2.print(output.1))
     input.path.prepend(try p1.print())
@@ -439,7 +439,7 @@ extension PathBuilder {
       self.p2 = p2
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output
     ) {
       guard input.path.count >= 3 else { throw RoutingError() }
@@ -472,7 +472,7 @@ where
     _ output: (
       P0.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p2.print())
     input.path.prepend(try p1.print())
@@ -504,7 +504,7 @@ extension PathBuilder {
       self.p2 = p2
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output,
       P2.Output
     ) {
@@ -538,7 +538,7 @@ where
       P1.Output,
       P2.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p2.print(output.1))
     input.path.prepend(try p1.print(output.0))
@@ -571,7 +571,7 @@ extension PathBuilder {
       self.p2 = p2
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output
     ) {
       guard input.path.count >= 3 else { throw RoutingError() }
@@ -604,7 +604,7 @@ where
     _ output: (
       P1.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p2.print())
     input.path.prepend(try p1.print(output))
@@ -637,7 +637,7 @@ extension PathBuilder {
       self.p2 = p2
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P2.Output
     ) {
       guard input.path.count >= 3 else { throw RoutingError() }
@@ -670,7 +670,7 @@ where
     _ output: (
       P2.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p2.print(output))
     input.path.prepend(try p1.print())
@@ -704,7 +704,7 @@ extension PathBuilder {
       self.p2 = p2
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws {
+    @inlinable public func parse(_ input: inout URIRequestData) throws {
       guard input.path.count >= 3 else { throw RoutingError() }
       try Parse {
         p0
@@ -736,7 +736,7 @@ where
     _ output: (
 
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p2.print())
     input.path.prepend(try p1.print())
@@ -769,7 +769,7 @@ extension PathBuilder {
       self.p3 = p3
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output,
       P2.Output,
@@ -811,7 +811,7 @@ where
       P2.Output,
       P3.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p3.print(output.3))
     input.path.prepend(try p2.print(output.2))
@@ -846,7 +846,7 @@ extension PathBuilder {
       self.p3 = p3
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output,
       P2.Output
@@ -887,7 +887,7 @@ where
       P1.Output,
       P2.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p3.print())
     input.path.prepend(try p2.print(output.2))
@@ -922,7 +922,7 @@ extension PathBuilder {
       self.p3 = p3
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output,
       P3.Output
@@ -963,7 +963,7 @@ where
       P1.Output,
       P3.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p3.print(output.2))
     input.path.prepend(try p2.print())
@@ -999,7 +999,7 @@ extension PathBuilder {
       self.p3 = p3
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output
     ) {
@@ -1039,7 +1039,7 @@ where
       P0.Output,
       P1.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p3.print())
     input.path.prepend(try p2.print())
@@ -1074,7 +1074,7 @@ extension PathBuilder {
       self.p3 = p3
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P2.Output,
       P3.Output
@@ -1115,7 +1115,7 @@ where
       P2.Output,
       P3.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p3.print(output.2))
     input.path.prepend(try p2.print(output.1))
@@ -1151,7 +1151,7 @@ extension PathBuilder {
       self.p3 = p3
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P2.Output
     ) {
@@ -1191,7 +1191,7 @@ where
       P0.Output,
       P2.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p3.print())
     input.path.prepend(try p2.print(output.1))
@@ -1227,7 +1227,7 @@ extension PathBuilder {
       self.p3 = p3
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P3.Output
     ) {
@@ -1267,7 +1267,7 @@ where
       P0.Output,
       P3.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p3.print(output.1))
     input.path.prepend(try p2.print())
@@ -1304,7 +1304,7 @@ extension PathBuilder {
       self.p3 = p3
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output
     ) {
       guard input.path.count >= 4 else { throw RoutingError() }
@@ -1343,7 +1343,7 @@ where
     _ output: (
       P0.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p3.print())
     input.path.prepend(try p2.print())
@@ -1378,7 +1378,7 @@ extension PathBuilder {
       self.p3 = p3
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output,
       P2.Output,
       P3.Output
@@ -1419,7 +1419,7 @@ where
       P2.Output,
       P3.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p3.print(output.2))
     input.path.prepend(try p2.print(output.1))
@@ -1455,7 +1455,7 @@ extension PathBuilder {
       self.p3 = p3
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output,
       P2.Output
     ) {
@@ -1495,7 +1495,7 @@ where
       P1.Output,
       P2.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p3.print())
     input.path.prepend(try p2.print(output.1))
@@ -1531,7 +1531,7 @@ extension PathBuilder {
       self.p3 = p3
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output,
       P3.Output
     ) {
@@ -1571,7 +1571,7 @@ where
       P1.Output,
       P3.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p3.print(output.1))
     input.path.prepend(try p2.print())
@@ -1608,7 +1608,7 @@ extension PathBuilder {
       self.p3 = p3
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output
     ) {
       guard input.path.count >= 4 else { throw RoutingError() }
@@ -1647,7 +1647,7 @@ where
     _ output: (
       P1.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p3.print())
     input.path.prepend(try p2.print())
@@ -1683,7 +1683,7 @@ extension PathBuilder {
       self.p3 = p3
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P2.Output,
       P3.Output
     ) {
@@ -1723,7 +1723,7 @@ where
       P2.Output,
       P3.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p3.print(output.1))
     input.path.prepend(try p2.print(output.0))
@@ -1760,7 +1760,7 @@ extension PathBuilder {
       self.p3 = p3
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P2.Output
     ) {
       guard input.path.count >= 4 else { throw RoutingError() }
@@ -1799,7 +1799,7 @@ where
     _ output: (
       P2.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p3.print())
     input.path.prepend(try p2.print(output))
@@ -1836,7 +1836,7 @@ extension PathBuilder {
       self.p3 = p3
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P3.Output
     ) {
       guard input.path.count >= 4 else { throw RoutingError() }
@@ -1875,7 +1875,7 @@ where
     _ output: (
       P3.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p3.print(output))
     input.path.prepend(try p2.print())
@@ -1913,7 +1913,7 @@ extension PathBuilder {
       self.p3 = p3
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws {
+    @inlinable public func parse(_ input: inout URIRequestData) throws {
       guard input.path.count >= 4 else { throw RoutingError() }
       try Parse {
         p0
@@ -1951,7 +1951,7 @@ where
     _ output: (
 
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p3.print())
     input.path.prepend(try p2.print())
@@ -1987,7 +1987,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output,
       P2.Output,
@@ -2036,7 +2036,7 @@ where
       P3.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print(output.4))
     input.path.prepend(try p3.print(output.3))
@@ -2074,7 +2074,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output,
       P2.Output,
@@ -2122,7 +2122,7 @@ where
       P2.Output,
       P3.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print())
     input.path.prepend(try p3.print(output.3))
@@ -2160,7 +2160,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output,
       P2.Output,
@@ -2208,7 +2208,7 @@ where
       P2.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print(output.3))
     input.path.prepend(try p3.print())
@@ -2247,7 +2247,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output,
       P2.Output
@@ -2294,7 +2294,7 @@ where
       P1.Output,
       P2.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print())
     input.path.prepend(try p3.print())
@@ -2332,7 +2332,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output,
       P3.Output,
@@ -2380,7 +2380,7 @@ where
       P3.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print(output.3))
     input.path.prepend(try p3.print(output.2))
@@ -2419,7 +2419,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output,
       P3.Output
@@ -2466,7 +2466,7 @@ where
       P1.Output,
       P3.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print())
     input.path.prepend(try p3.print(output.2))
@@ -2505,7 +2505,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output,
       P4.Output
@@ -2552,7 +2552,7 @@ where
       P1.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print(output.2))
     input.path.prepend(try p3.print())
@@ -2592,7 +2592,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output
     ) {
@@ -2638,7 +2638,7 @@ where
       P0.Output,
       P1.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print())
     input.path.prepend(try p3.print())
@@ -2676,7 +2676,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P2.Output,
       P3.Output,
@@ -2724,7 +2724,7 @@ where
       P3.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print(output.3))
     input.path.prepend(try p3.print(output.2))
@@ -2763,7 +2763,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P2.Output,
       P3.Output
@@ -2810,7 +2810,7 @@ where
       P2.Output,
       P3.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print())
     input.path.prepend(try p3.print(output.2))
@@ -2849,7 +2849,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P2.Output,
       P4.Output
@@ -2896,7 +2896,7 @@ where
       P2.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print(output.2))
     input.path.prepend(try p3.print())
@@ -2936,7 +2936,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P2.Output
     ) {
@@ -2982,7 +2982,7 @@ where
       P0.Output,
       P2.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print())
     input.path.prepend(try p3.print())
@@ -3021,7 +3021,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P3.Output,
       P4.Output
@@ -3068,7 +3068,7 @@ where
       P3.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print(output.2))
     input.path.prepend(try p3.print(output.1))
@@ -3108,7 +3108,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P3.Output
     ) {
@@ -3154,7 +3154,7 @@ where
       P0.Output,
       P3.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print())
     input.path.prepend(try p3.print(output.1))
@@ -3194,7 +3194,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P4.Output
     ) {
@@ -3240,7 +3240,7 @@ where
       P0.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print(output.1))
     input.path.prepend(try p3.print())
@@ -3281,7 +3281,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output
     ) {
       guard input.path.count >= 5 else { throw RoutingError() }
@@ -3326,7 +3326,7 @@ where
     _ output: (
       P0.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print())
     input.path.prepend(try p3.print())
@@ -3364,7 +3364,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output,
       P2.Output,
       P3.Output,
@@ -3412,7 +3412,7 @@ where
       P3.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print(output.3))
     input.path.prepend(try p3.print(output.2))
@@ -3451,7 +3451,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output,
       P2.Output,
       P3.Output
@@ -3498,7 +3498,7 @@ where
       P2.Output,
       P3.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print())
     input.path.prepend(try p3.print(output.2))
@@ -3537,7 +3537,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output,
       P2.Output,
       P4.Output
@@ -3584,7 +3584,7 @@ where
       P2.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print(output.2))
     input.path.prepend(try p3.print())
@@ -3624,7 +3624,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output,
       P2.Output
     ) {
@@ -3670,7 +3670,7 @@ where
       P1.Output,
       P2.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print())
     input.path.prepend(try p3.print())
@@ -3709,7 +3709,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output,
       P3.Output,
       P4.Output
@@ -3756,7 +3756,7 @@ where
       P3.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print(output.2))
     input.path.prepend(try p3.print(output.1))
@@ -3796,7 +3796,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output,
       P3.Output
     ) {
@@ -3842,7 +3842,7 @@ where
       P1.Output,
       P3.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print())
     input.path.prepend(try p3.print(output.1))
@@ -3882,7 +3882,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output,
       P4.Output
     ) {
@@ -3928,7 +3928,7 @@ where
       P1.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print(output.1))
     input.path.prepend(try p3.print())
@@ -3969,7 +3969,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output
     ) {
       guard input.path.count >= 5 else { throw RoutingError() }
@@ -4014,7 +4014,7 @@ where
     _ output: (
       P1.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print())
     input.path.prepend(try p3.print())
@@ -4053,7 +4053,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P2.Output,
       P3.Output,
       P4.Output
@@ -4100,7 +4100,7 @@ where
       P3.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print(output.2))
     input.path.prepend(try p3.print(output.1))
@@ -4140,7 +4140,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P2.Output,
       P3.Output
     ) {
@@ -4186,7 +4186,7 @@ where
       P2.Output,
       P3.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print())
     input.path.prepend(try p3.print(output.1))
@@ -4226,7 +4226,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P2.Output,
       P4.Output
     ) {
@@ -4272,7 +4272,7 @@ where
       P2.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print(output.1))
     input.path.prepend(try p3.print())
@@ -4313,7 +4313,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P2.Output
     ) {
       guard input.path.count >= 5 else { throw RoutingError() }
@@ -4358,7 +4358,7 @@ where
     _ output: (
       P2.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print())
     input.path.prepend(try p3.print())
@@ -4398,7 +4398,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P3.Output,
       P4.Output
     ) {
@@ -4444,7 +4444,7 @@ where
       P3.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print(output.1))
     input.path.prepend(try p3.print(output.0))
@@ -4485,7 +4485,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P3.Output
     ) {
       guard input.path.count >= 5 else { throw RoutingError() }
@@ -4530,7 +4530,7 @@ where
     _ output: (
       P3.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print())
     input.path.prepend(try p3.print(output))
@@ -4571,7 +4571,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P4.Output
     ) {
       guard input.path.count >= 5 else { throw RoutingError() }
@@ -4616,7 +4616,7 @@ where
     _ output: (
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print(output))
     input.path.prepend(try p3.print())
@@ -4658,7 +4658,7 @@ extension PathBuilder {
       self.p4 = p4
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws {
+    @inlinable public func parse(_ input: inout URIRequestData) throws {
       guard input.path.count >= 5 else { throw RoutingError() }
       try Parse {
         p0
@@ -4702,7 +4702,7 @@ where
     _ output: (
 
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p4.print())
     input.path.prepend(try p3.print())
@@ -4743,7 +4743,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output,
       P2.Output,
@@ -4799,7 +4799,7 @@ where
       P4.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.5))
     input.path.prepend(try p4.print(output.4))
@@ -4842,7 +4842,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output,
       P2.Output,
@@ -4897,7 +4897,7 @@ where
       P3.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print(output.4))
@@ -4940,7 +4940,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output,
       P2.Output,
@@ -4995,7 +4995,7 @@ where
       P3.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.4))
     input.path.prepend(try p4.print())
@@ -5039,7 +5039,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output,
       P2.Output,
@@ -5093,7 +5093,7 @@ where
       P2.Output,
       P3.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print())
@@ -5136,7 +5136,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output,
       P2.Output,
@@ -5191,7 +5191,7 @@ where
       P4.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.4))
     input.path.prepend(try p4.print(output.3))
@@ -5235,7 +5235,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output,
       P2.Output,
@@ -5289,7 +5289,7 @@ where
       P2.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print(output.3))
@@ -5333,7 +5333,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output,
       P2.Output,
@@ -5387,7 +5387,7 @@ where
       P2.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.3))
     input.path.prepend(try p4.print())
@@ -5432,7 +5432,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output,
       P2.Output
@@ -5485,7 +5485,7 @@ where
       P1.Output,
       P2.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print())
@@ -5528,7 +5528,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output,
       P3.Output,
@@ -5583,7 +5583,7 @@ where
       P4.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.4))
     input.path.prepend(try p4.print(output.3))
@@ -5627,7 +5627,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output,
       P3.Output,
@@ -5681,7 +5681,7 @@ where
       P3.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print(output.3))
@@ -5725,7 +5725,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output,
       P3.Output,
@@ -5779,7 +5779,7 @@ where
       P3.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.3))
     input.path.prepend(try p4.print())
@@ -5824,7 +5824,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output,
       P3.Output
@@ -5877,7 +5877,7 @@ where
       P1.Output,
       P3.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print())
@@ -5921,7 +5921,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output,
       P4.Output,
@@ -5975,7 +5975,7 @@ where
       P4.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.3))
     input.path.prepend(try p4.print(output.2))
@@ -6020,7 +6020,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output,
       P4.Output
@@ -6073,7 +6073,7 @@ where
       P1.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print(output.2))
@@ -6118,7 +6118,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output,
       P5.Output
@@ -6171,7 +6171,7 @@ where
       P1.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.2))
     input.path.prepend(try p4.print())
@@ -6217,7 +6217,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P1.Output
     ) {
@@ -6269,7 +6269,7 @@ where
       P0.Output,
       P1.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print())
@@ -6312,7 +6312,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P2.Output,
       P3.Output,
@@ -6367,7 +6367,7 @@ where
       P4.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.4))
     input.path.prepend(try p4.print(output.3))
@@ -6411,7 +6411,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P2.Output,
       P3.Output,
@@ -6465,7 +6465,7 @@ where
       P3.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print(output.3))
@@ -6509,7 +6509,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P2.Output,
       P3.Output,
@@ -6563,7 +6563,7 @@ where
       P3.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.3))
     input.path.prepend(try p4.print())
@@ -6608,7 +6608,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P2.Output,
       P3.Output
@@ -6661,7 +6661,7 @@ where
       P2.Output,
       P3.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print())
@@ -6705,7 +6705,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P2.Output,
       P4.Output,
@@ -6759,7 +6759,7 @@ where
       P4.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.3))
     input.path.prepend(try p4.print(output.2))
@@ -6804,7 +6804,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P2.Output,
       P4.Output
@@ -6857,7 +6857,7 @@ where
       P2.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print(output.2))
@@ -6902,7 +6902,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P2.Output,
       P5.Output
@@ -6955,7 +6955,7 @@ where
       P2.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.2))
     input.path.prepend(try p4.print())
@@ -7001,7 +7001,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P2.Output
     ) {
@@ -7053,7 +7053,7 @@ where
       P0.Output,
       P2.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print())
@@ -7097,7 +7097,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P3.Output,
       P4.Output,
@@ -7151,7 +7151,7 @@ where
       P4.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.3))
     input.path.prepend(try p4.print(output.2))
@@ -7196,7 +7196,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P3.Output,
       P4.Output
@@ -7249,7 +7249,7 @@ where
       P3.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print(output.2))
@@ -7294,7 +7294,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P3.Output,
       P5.Output
@@ -7347,7 +7347,7 @@ where
       P3.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.2))
     input.path.prepend(try p4.print())
@@ -7393,7 +7393,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P3.Output
     ) {
@@ -7445,7 +7445,7 @@ where
       P0.Output,
       P3.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print())
@@ -7490,7 +7490,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P4.Output,
       P5.Output
@@ -7543,7 +7543,7 @@ where
       P4.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.2))
     input.path.prepend(try p4.print(output.1))
@@ -7589,7 +7589,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P4.Output
     ) {
@@ -7641,7 +7641,7 @@ where
       P0.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print(output.1))
@@ -7687,7 +7687,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output,
       P5.Output
     ) {
@@ -7739,7 +7739,7 @@ where
       P0.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.1))
     input.path.prepend(try p4.print())
@@ -7786,7 +7786,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P0.Output
     ) {
       guard input.path.count >= 6 else { throw RoutingError() }
@@ -7837,7 +7837,7 @@ where
     _ output: (
       P0.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print())
@@ -7880,7 +7880,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output,
       P2.Output,
       P3.Output,
@@ -7935,7 +7935,7 @@ where
       P4.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.4))
     input.path.prepend(try p4.print(output.3))
@@ -7979,7 +7979,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output,
       P2.Output,
       P3.Output,
@@ -8033,7 +8033,7 @@ where
       P3.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print(output.3))
@@ -8077,7 +8077,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output,
       P2.Output,
       P3.Output,
@@ -8131,7 +8131,7 @@ where
       P3.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.3))
     input.path.prepend(try p4.print())
@@ -8176,7 +8176,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output,
       P2.Output,
       P3.Output
@@ -8229,7 +8229,7 @@ where
       P2.Output,
       P3.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print())
@@ -8273,7 +8273,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output,
       P2.Output,
       P4.Output,
@@ -8327,7 +8327,7 @@ where
       P4.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.3))
     input.path.prepend(try p4.print(output.2))
@@ -8372,7 +8372,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output,
       P2.Output,
       P4.Output
@@ -8425,7 +8425,7 @@ where
       P2.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print(output.2))
@@ -8470,7 +8470,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output,
       P2.Output,
       P5.Output
@@ -8523,7 +8523,7 @@ where
       P2.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.2))
     input.path.prepend(try p4.print())
@@ -8569,7 +8569,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output,
       P2.Output
     ) {
@@ -8621,7 +8621,7 @@ where
       P1.Output,
       P2.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print())
@@ -8665,7 +8665,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output,
       P3.Output,
       P4.Output,
@@ -8719,7 +8719,7 @@ where
       P4.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.3))
     input.path.prepend(try p4.print(output.2))
@@ -8764,7 +8764,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output,
       P3.Output,
       P4.Output
@@ -8817,7 +8817,7 @@ where
       P3.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print(output.2))
@@ -8862,7 +8862,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output,
       P3.Output,
       P5.Output
@@ -8915,7 +8915,7 @@ where
       P3.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.2))
     input.path.prepend(try p4.print())
@@ -8961,7 +8961,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output,
       P3.Output
     ) {
@@ -9013,7 +9013,7 @@ where
       P1.Output,
       P3.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print())
@@ -9058,7 +9058,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output,
       P4.Output,
       P5.Output
@@ -9111,7 +9111,7 @@ where
       P4.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.2))
     input.path.prepend(try p4.print(output.1))
@@ -9157,7 +9157,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output,
       P4.Output
     ) {
@@ -9209,7 +9209,7 @@ where
       P1.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print(output.1))
@@ -9255,7 +9255,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output,
       P5.Output
     ) {
@@ -9307,7 +9307,7 @@ where
       P1.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.1))
     input.path.prepend(try p4.print())
@@ -9354,7 +9354,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P1.Output
     ) {
       guard input.path.count >= 6 else { throw RoutingError() }
@@ -9405,7 +9405,7 @@ where
     _ output: (
       P1.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print())
@@ -9449,7 +9449,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P2.Output,
       P3.Output,
       P4.Output,
@@ -9503,7 +9503,7 @@ where
       P4.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.3))
     input.path.prepend(try p4.print(output.2))
@@ -9548,7 +9548,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P2.Output,
       P3.Output,
       P4.Output
@@ -9601,7 +9601,7 @@ where
       P3.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print(output.2))
@@ -9646,7 +9646,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P2.Output,
       P3.Output,
       P5.Output
@@ -9699,7 +9699,7 @@ where
       P3.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.2))
     input.path.prepend(try p4.print())
@@ -9745,7 +9745,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P2.Output,
       P3.Output
     ) {
@@ -9797,7 +9797,7 @@ where
       P2.Output,
       P3.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print())
@@ -9842,7 +9842,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P2.Output,
       P4.Output,
       P5.Output
@@ -9895,7 +9895,7 @@ where
       P4.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.2))
     input.path.prepend(try p4.print(output.1))
@@ -9941,7 +9941,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P2.Output,
       P4.Output
     ) {
@@ -9993,7 +9993,7 @@ where
       P2.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print(output.1))
@@ -10039,7 +10039,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P2.Output,
       P5.Output
     ) {
@@ -10091,7 +10091,7 @@ where
       P2.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.1))
     input.path.prepend(try p4.print())
@@ -10138,7 +10138,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P2.Output
     ) {
       guard input.path.count >= 6 else { throw RoutingError() }
@@ -10189,7 +10189,7 @@ where
     _ output: (
       P2.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print())
@@ -10234,7 +10234,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P3.Output,
       P4.Output,
       P5.Output
@@ -10287,7 +10287,7 @@ where
       P4.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.2))
     input.path.prepend(try p4.print(output.1))
@@ -10333,7 +10333,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P3.Output,
       P4.Output
     ) {
@@ -10385,7 +10385,7 @@ where
       P3.Output,
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print(output.1))
@@ -10431,7 +10431,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P3.Output,
       P5.Output
     ) {
@@ -10483,7 +10483,7 @@ where
       P3.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.1))
     input.path.prepend(try p4.print())
@@ -10530,7 +10530,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P3.Output
     ) {
       guard input.path.count >= 6 else { throw RoutingError() }
@@ -10581,7 +10581,7 @@ where
     _ output: (
       P3.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print())
@@ -10627,7 +10627,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P4.Output,
       P5.Output
     ) {
@@ -10679,7 +10679,7 @@ where
       P4.Output,
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output.1))
     input.path.prepend(try p4.print(output.0))
@@ -10726,7 +10726,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P4.Output
     ) {
       guard input.path.count >= 6 else { throw RoutingError() }
@@ -10777,7 +10777,7 @@ where
     _ output: (
       P4.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print(output))
@@ -10824,7 +10824,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws -> (
+    @inlinable public func parse(_ input: inout URIRequestData) throws -> (
       P5.Output
     ) {
       guard input.path.count >= 6 else { throw RoutingError() }
@@ -10875,7 +10875,7 @@ where
     _ output: (
       P5.Output
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print(output))
     input.path.prepend(try p4.print())
@@ -10923,7 +10923,7 @@ extension PathBuilder {
       self.p5 = p5
     }
 
-    @inlinable public func parse(_ input: inout URLRequestData) throws {
+    @inlinable public func parse(_ input: inout URIRequestData) throws {
       guard input.path.count >= 6 else { throw RoutingError() }
       try Parse {
         p0
@@ -10973,7 +10973,7 @@ where
     _ output: (
 
     ),
-    into input: inout URLRequestData
+    into input: inout URIRequestData
   ) rethrows {
     input.path.prepend(try p5.print())
     input.path.prepend(try p4.print())

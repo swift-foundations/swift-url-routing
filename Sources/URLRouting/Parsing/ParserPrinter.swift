@@ -1,44 +1,42 @@
 import Foundation
+import OrderedCollections
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking
 #endif
 
-extension Parser where Input == URLRequestData {
+extension Parser where Input == URIRequestData {
   @inlinable
   public func match(request: URLRequest) throws -> Output {
-    guard let data = URLRequestData(request: request)
-    else { throw RoutingError() }
-    return try self.parse(data)
+    // TODO: Add Foundation bridge URIRequestData(request:)
+    fatalError("Foundation bridge not yet implemented")
   }
 
   @inlinable
   public func match(url: URL) throws -> Output {
-    guard let data = URLRequestData(url: url)
-    else { throw RoutingError() }
-    return try self.parse(data)
+    // TODO: Add Foundation bridge URIRequestData(url:)
+    fatalError("Foundation bridge not yet implemented")
   }
 
   @inlinable
   public func match(path: String) throws -> Output {
-    guard let data = URLRequestData(string: path)
-    else { throw RoutingError() }
+    let data = try URIRequestData(uriString: path)
     return try self.parse(data)
   }
 }
 
-extension ParserPrinter where Input == URLRequestData {
+extension ParserPrinter where Input == URIRequestData {
   @inlinable
   public func request(for route: Output) throws -> URLRequest {
-    guard let request = try URLRequest(data: self.print(route))
-    else { throw RoutingError() }
-    return request
+    // TODO: Add Foundation bridge URLRequest(data:)
+    fatalError("Foundation bridge not yet implemented")
   }
 
   @inlinable
   public func url(for route: Output) -> URL {
     do {
-      return try URLComponents(data: self.print(route)).url ?? URL(string: "#route-not-found")!
+      // TODO: Add Foundation bridge URLComponents(data:)
+      fatalError("Foundation bridge not yet implemented")
     } catch {
       breakpoint(
         """
@@ -59,13 +57,14 @@ extension ParserPrinter where Input == URLRequestData {
   }
 
   @inlinable
-  public func path(for route: Output) -> String {
+  public func urlPath(for route: Output) -> String {
     do {
-      let data = try self.print(route)
+      var data = URIRequestData()
+      try self.print(route, into: &data)
       var components = URLComponents()
       components.path = "/\(data.path.joined(separator: "/"))"
       if !data.query.isEmpty {
-        components.queryItems = data.query
+        components.queryItems = data.query.fields
           .flatMap { name, values in
             values.map { URLQueryItem(name: name, value: $0.map(String.init)) }
           }

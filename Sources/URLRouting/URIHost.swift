@@ -9,7 +9,7 @@
 ///   ...
 /// }
 /// ```
-public struct URIHost: ParserPrinter {
+public struct URIHost: ParserPrinter, Sendable {
   @usableFromInline
   let name: String
 

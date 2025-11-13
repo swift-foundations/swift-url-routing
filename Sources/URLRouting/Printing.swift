@@ -2,7 +2,7 @@ import Foundation
 import OrderedCollections
 import Parsing
 
-extension ParserPrinter where Input == URLRequestData {
+extension ParserPrinter where Input == URIRequestData {
   /// Prepends a router with a base URL for the purpose of printing.
   ///
   /// Useful for printing absolute URLs to a specific scheme, domain, and path prefix.
@@ -18,7 +18,7 @@ extension ParserPrinter where Input == URLRequestData {
   /// - Returns: A parser-printer that prepends a base URL to whatever this parser-printer prints.
   @inlinable
   public func baseURL(_ urlString: String) -> BaseURLPrinter<Self> {
-    guard let defaultRequestData = URLRequestData(string: urlString)
+    guard let defaultRequestData = try? URIRequestData(uriString: urlString)
     else { fatalError("Invalid base URL: \(urlString.debugDescription)") }
     return BaseURLPrinter(defaultRequestData: defaultRequestData, upstream: self)
   }
@@ -33,7 +33,7 @@ extension ParserPrinter where Input == URLRequestData {
   /// - Parameter requestData: Default request data to print into.
   /// - Returns: A parser-printer that prints into some default request data.
   @inlinable
-  public func baseRequestData(_ requestData: URLRequestData) -> BaseURLPrinter<Self> {
+  public func baseRequestData(_ requestData: URIRequestData) -> BaseURLPrinter<Self> {
     BaseURLPrinter(defaultRequestData: requestData, upstream: self)
   }
 }
@@ -57,30 +57,29 @@ extension ParserPrinter where Input == URLRequestData {
 /// // "deadbeef"
 /// ```
 public struct BaseURLPrinter<Upstream: ParserPrinter>: ParserPrinter
-where Upstream.Input == URLRequestData {
+where Upstream.Input == URIRequestData {
   @usableFromInline
-  let defaultRequestData: URLRequestData
+  let defaultRequestData: URIRequestData
 
   @usableFromInline
   let upstream: Upstream
 
   @usableFromInline
-  init(defaultRequestData: URLRequestData, upstream: Upstream) {
+  init(defaultRequestData: URIRequestData, upstream: Upstream) {
     self.defaultRequestData = defaultRequestData
     self.upstream = upstream
   }
 
   @inlinable
-  public func parse(_ input: inout URLRequestData) rethrows -> Upstream.Output {
+  public func parse(_ input: inout URIRequestData) rethrows -> Upstream.Output {
     try self.upstream.parse(&input)
   }
 
   @inlinable
-  public func print(_ output: Upstream.Output, into input: inout URLRequestData) rethrows {
+  public func print(_ output: Upstream.Output, into input: inout URIRequestData) rethrows {
     try self.upstream.print(output, into: &input)
     if let scheme = self.defaultRequestData.scheme { input.scheme = scheme }
-    if let user = self.defaultRequestData.user { input.user = user }
-    if let password = self.defaultRequestData.password { input.password = password }
+    if let userinfo = self.defaultRequestData.userinfo { input.userinfo = userinfo }
     if let host = self.defaultRequestData.host { input.host = host }
     if let port = self.defaultRequestData.port { input.port = port }
     input.path.prepend(contentsOf: self.defaultRequestData.path)
