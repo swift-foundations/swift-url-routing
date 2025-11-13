@@ -90,7 +90,6 @@ extension URLRoutingClient {
           }
         #endif
         var dataTask: URLSessionDataTask?
-        let cancel: () -> Void = { dataTask?.cancel() }
 
         return try await withTaskCancellationHandler(
           operation: {
@@ -109,7 +108,7 @@ extension URLRoutingClient {
               dataTask?.resume()
             }
           },
-          onCancel: { cancel() }
+          onCancel: { dataTask?.cancel() }
         )
       },
       decoder: decoder
