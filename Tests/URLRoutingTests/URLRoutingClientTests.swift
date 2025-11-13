@@ -1,15 +1,18 @@
+import Foundation
 import Parsing
+import Testing
 import URLRouting
-import XCTest
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking
 #endif
 
-class URLRoutingClientTests: XCTestCase {
+@Suite("URL Routing Client")
+struct URLRoutingClientTests {
   #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+    @Test("JSON decoder without custom decoder")
     @available(iOS 13, macOS 10.15, tvOS 13, watchOS 6, *)
-    func testJSONDecoder_noDecoder() async throws {
+    func jsonDecoderNoDecoder() async throws {
       struct Response: Equatable, Decodable {
         let decodableValue: String
       }
@@ -20,10 +23,12 @@ class URLRoutingClientTests: XCTestCase {
         ("{\"decodableValue\":\"result\"}".data(using: .utf8)!, URLResponse())
       })
       let response = try await sut.decodedResponse(for: .test, as: Response.self)
-      XCTAssertEqual(response.value, .init(decodableValue: "result"))
+      #expect(response.value == Response(decodableValue: "result"))
     }
+
+    @Test("JSON decoder with custom decoder")
     @available(iOS 13, macOS 10.15, tvOS 13, watchOS 6, *)
-    func testJSONDecoder_customDecoder() async throws {
+    func jsonDecoderCustomDecoder() async throws {
       struct Response: Equatable, Decodable {
         let decodableValue: String
       }
@@ -37,10 +42,12 @@ class URLRoutingClientTests: XCTestCase {
           ("{\"decodable_value\":\"result\"}".data(using: .utf8)!, URLResponse())
         }, decoder: customDecoder)
       let response = try await sut.decodedResponse(for: .test, as: Response.self)
-      XCTAssertEqual(response.value, .init(decodableValue: "result"))
+      #expect(response.value == Response(decodableValue: "result"))
     }
+
+    @Test("JSON decoder with custom decoder for specific request")
     @available(iOS 13, macOS 10.15, tvOS 13, watchOS 6, *)
-    func testJSONDecoder_customDecoderForRequest() async throws {
+    func jsonDecoderCustomDecoderForRequest() async throws {
       struct Response: Equatable, Decodable {
         let decodableValue: String
       }
@@ -54,7 +61,7 @@ class URLRoutingClientTests: XCTestCase {
           ("{\"decodableValue\":\"result\"}".data(using: .utf8)!, URLResponse())
         }, decoder: customDecoder)
       let response = try await sut.decodedResponse(for: .test, as: Response.self, decoder: .init())
-      XCTAssertEqual(response.value, .init(decodableValue: "result"))
+      #expect(response.value == Response(decodableValue: "result"))
     }
   #endif
 }

@@ -1,39 +1,63 @@
 import Foundation
 import OrderedCollections
+import Parsing
 
-/// Parser form-encoded data using field parsers.
-public struct FormData<FieldParsers: Parser>: Parser
-where FieldParsers.Input == URIRequestData.Fields {
-  @usableFromInline
-  let fieldParsers: FieldParsers
+// MARK: - HTML FormData Extension
 
-  @inlinable
-  public init(@ParserBuilder<URIRequestData.Fields> build: () -> FieldParsers) {
-    self.fieldParsers = build()
-  }
+public enum HTML {
+  /// Form-encoded data (application/x-www-form-urlencoded)
+  public enum FormData {}
+}
 
-  @inlinable
-  public func parse(_ input: inout Data) rethrows -> FieldParsers.Output {
-    var fields: FieldParsers.Input = String(decoding: input, as: UTF8.self)
-      .split(separator: "&")
-      .reduce(into: .init([:], isCaseSensitive: true)) { fields, field in
-        let pair =
-          field
-          .split(separator: "=", maxSplits: 1, omittingEmptySubsequences: false)
-          .compactMap { $0.replacingOccurrences(of: "+", with: " ").removingPercentEncoding }
-        let name = pair[0]
-        let value = pair.count == 2 ? pair[1][...] : nil
-        fields[name, default: []].append(value)
-      }
 
-    let output = try self.fieldParsers.parse(&fields)
+extension HTML.FormData {
+  /// Parser for form-encoded data (application/x-www-form-urlencoded)
+  ///
+  /// Parses form-encoded data using field parsers.
+  ///
+  /// Note: While often associated with RFC 1867, the application/x-www-form-urlencoded
+  /// encoding is actually defined in the HTML Living Standard.
+  ///
+  /// Example:
+  /// ```swift
+  /// HTML.FormData.Parser {
+  ///   Field("username", .string)
+  ///   Field("age") { Int.parser() }
+  /// }
+  /// ```
+  public struct Parser<FieldParsers: Parsing.Parser>: Parsing.Parser
+  where FieldParsers.Input == URIRequestData.Fields {
+    @usableFromInline
+    let fieldParsers: FieldParsers
 
-    input = .init(encoding: fields)
-    return output
+    @inlinable
+    public init(@ParserBuilder<URIRequestData.Fields> build: () -> FieldParsers) {
+      self.fieldParsers = build()
+    }
+
+    @inlinable
+    public func parse(_ input: inout Data) rethrows -> FieldParsers.Output {
+      var fields: FieldParsers.Input = String(decoding: input, as: UTF8.self)
+        .split(separator: "&")
+        .reduce(into: .init([:], isCaseSensitive: true)) { fields, field in
+          let pair =
+            field
+            .split(separator: "=", maxSplits: 1, omittingEmptySubsequences: false)
+            .compactMap { $0.replacingOccurrences(of: "+", with: " ").removingPercentEncoding }
+          let name = pair[0]
+          let value = pair.count == 2 ? pair[1][...] : nil
+          fields[name, default: []].append(value)
+        }
+
+      let output = try self.fieldParsers.parse(&fields)
+
+      input = .init(encoding: fields)
+      return output
+    }
   }
 }
 
-extension FormData: ParserPrinter where FieldParsers: ParserPrinter {
+extension HTML.FormData.Parser: ParserPrinter where FieldParsers: ParserPrinter {
   @inlinable
   public func print(_ output: FieldParsers.Output, into input: inout Data) rethrows {
     var fields = URIRequestData.Fields()
@@ -41,6 +65,20 @@ extension FormData: ParserPrinter where FieldParsers: ParserPrinter {
     input = .init(encoding: fields)
   }
 }
+
+// MARK: - Convenience Type Alias
+
+/// Convenience type alias for `HTML.FormData.Parser`
+///
+/// For cleaner code, you can use `FormData` instead of the fully qualified name:
+/// ```swift
+/// FormData {
+///   Field("username", .string)
+/// }
+/// ```
+public typealias FormData = HTML.FormData.Parser
+
+// MARK: - Data Encoding Extension
 
 extension Data {
   @usableFromInline

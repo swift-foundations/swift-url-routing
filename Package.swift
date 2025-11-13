@@ -20,6 +20,9 @@ let package = Package(
     .package(url: "https://github.com/pointfreeco/xctest-dynamic-overlay", from: "1.4.0"),
     .package(url: "https://github.com/swift-standards/swift-rfc-3986.git", from: "0.1.3"),
     .package(url: "https://github.com/swift-standards/swift-rfc-6570.git", from: "0.1.0"),
+    .package(path: "../swift-standards/swift-rfc-6265"),
+    .package(path: "../swift-standards/swift-rfc-7230"),
+    .package(path: "../swift-standards/swift-rfc-7231"),
   ],
   targets: [
     .target(
@@ -30,6 +33,9 @@ let package = Package(
         .product(name: "Parsing", package: "swift-parsing"),
         .product(name: "RFC 3986", package: "swift-rfc-3986"),
         .product(name: "RFC_6570", package: "swift-rfc-6570"),
+        .product(name: "RFC 6265", package: "swift-rfc-6265"),
+        .product(name: "RFC 7230", package: "swift-rfc-7230"),
+        .product(name: "RFC 7231", package: "swift-rfc-7231"),
       ]
     ),
     .testTarget(
