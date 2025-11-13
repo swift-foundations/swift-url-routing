@@ -104,9 +104,26 @@ extension URIPathEnd {
   @usableFromInline typealias Input = URIRequestData
 }
 
-// Type aliases for convenience
+// MARK: - Convenience Type Aliases
+
+/// Convenience type alias for `URIRoute`
+///
+/// For cleaner code, you can use `Route` instead of `URIRoute`:
+/// ```swift
+/// Route(.case(AppRoute.home)) {
+///   Path { "home" }
+/// }
+/// ```
 public typealias Route = URIRoute
+
+/// Convenience type alias for `URIPath`
 public typealias Path = URIPath
+
+/// Convenience type alias for `URIQuery`
 public typealias Query = URIQuery
+
+/// Convenience type alias for `URIScheme`
 public typealias Scheme = URIScheme
+
+/// Convenience type alias for `URIHost`
 public typealias Host = URIHost
