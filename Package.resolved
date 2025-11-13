@@ -1,4 +1,5 @@
 {
+  "originHash" : "511b07d1ae583a94685b13e51758c0545b71aab539db5e120368a568a15f3eb4",
   "pins" : [
     {
       "identity" : "swift-argument-parser",
@@ -59,8 +60,26 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-parsing",
       "state" : {
-        "revision" : "a0e7d73f462c1c38c59dc40a3969ac40cea42950",
-        "version" : "0.13.0"
+        "revision" : "3432cb81164dd3d69a75d0d63205be5fbae2c34b",
+        "version" : "0.14.1"
+      }
+    },
+    {
+      "identity" : "swift-rfc-3986",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swift-standards/swift-rfc-3986.git",
+      "state" : {
+        "revision" : "dfaa7f5898bbe10e76053b0a9b529ab28ab46504",
+        "version" : "0.1.3"
+      }
+    },
+    {
+      "identity" : "swift-rfc-6570",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swift-standards/swift-rfc-6570.git",
+      "state" : {
+        "revision" : "1af24c9835c95525eed8a21efbd8d34f280a757f",
+        "version" : "0.1.0"
       }
     },
     {
@@ -77,10 +96,10 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/xctest-dynamic-overlay",
       "state" : {
-        "revision" : "357ca1e5dd31f613a1d43320870ebc219386a495",
-        "version" : "1.2.2"
+        "revision" : "4c27acf5394b645b70d8ba19dc249c0472d5f618",
+        "version" : "1.7.0"
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }

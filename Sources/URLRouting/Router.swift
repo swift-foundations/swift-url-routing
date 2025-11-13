@@ -1,1 +1,1 @@
-public typealias Router<Output> = ParserPrinter<URLRequestData, Output>
+public typealias Router<Output> = ParserPrinter<URIRequestData, Output>
