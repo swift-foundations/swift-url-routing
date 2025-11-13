@@ -117,7 +117,7 @@ class RoutingErrorTests: XCTestCase {
       }
     }
 
-    XCTAssertThrowsError(try SiteRouter().parse(URLRequestData(path: "/123"))) { error in
+    XCTAssertThrowsError(try SiteRouter().parse(URIRequestData(path: "/123"))) { error in
       XCTAssertEqual(
         """
         error: unexpected input

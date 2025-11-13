@@ -8,23 +8,23 @@ import XCTest
 
 class URLRoutingTests: XCTestCase {
   func testMethod() {
-    XCTAssertNoThrow(try Method.post.parse(URLRequestData(method: "POST")))
-    XCTAssertEqual(try Method.post.print(), URLRequestData(method: "POST"))
+    XCTAssertNoThrow(try Method.post.parse(URIRequestData(method: "POST")))
+    XCTAssertEqual(try Method.post.print(), URIRequestData(method: "POST"))
   }
 
   func testHost() {
-    XCTAssertNoThrow(try Host.custom("foo").parse(URLRequestData(host: "foo")))
-    XCTAssertEqual(try Host.custom("foo").print(), URLRequestData(host: "foo"))
+    XCTAssertNoThrow(try Host.custom("foo").parse(URIRequestData(host: "foo")))
+    XCTAssertEqual(try Host.custom("foo").print(), URIRequestData(host: "foo"))
   }
 
   func testScheme() {
-    XCTAssertNoThrow(try Scheme.http.parse(URLRequestData(scheme: "http")))
-    XCTAssertEqual(try Scheme.http.print(), URLRequestData(scheme: "http"))
+    XCTAssertNoThrow(try Scheme.http.parse(URIRequestData(scheme: "http")))
+    XCTAssertEqual(try Scheme.http.print(), URIRequestData(scheme: "http"))
   }
 
   func testPath() {
-    XCTAssertEqual(123, try Path { Int.parser() }.parse(URLRequestData(path: "/123")))
-    XCTAssertThrowsError(try Path { Int.parser() }.parse(URLRequestData(path: "/123-foo"))) {
+    XCTAssertEqual(123, try Path { Int.parser() }.parse(URIRequestData(path: "/123")))
+    XCTAssertThrowsError(try Path { Int.parser() }.parse(URIRequestData(path: "/123-foo"))) {
       error in
       XCTAssertEqual(
         """
@@ -46,7 +46,7 @@ class URLRoutingTests: XCTestCase {
       }
     }
 
-    var request = URLRequestData(body: .init("name=Blob&age=42&debug=1".utf8))
+    var request = URIRequestData(body: .init("name=Blob&age=42&debug=1".utf8))
     let (name, age) = try p.parse(&request)
     XCTAssertEqual("Blob", name)
     XCTAssertEqual(42, age)
@@ -61,7 +61,7 @@ class URLRoutingTests: XCTestCase {
     var req = URLRequest(url: URL(string: "/")!)
     req.addValue("Hello", forHTTPHeaderField: "X-Haha")
     req.addValue("Blob", forHTTPHeaderField: "X-Haha")
-    var request = URLRequestData(request: req)!
+    var request = URIRequestData(request: req)!
 
     let name = try p.parse(&request)
     XCTAssertEqual("Hello", name)
@@ -74,7 +74,7 @@ class URLRoutingTests: XCTestCase {
       Field("age") { Int.parser() }
     }
 
-    var request = URLRequestData(string: "/?name=Blob&age=42&debug=1")!
+    var request = URIRequestData(string: "/?name=Blob&age=42&debug=1")!
     let (name, age) = try p.parse(&request)
     XCTAssertEqual("Blob", name)
     XCTAssertEqual(42, age)
@@ -82,7 +82,7 @@ class URLRoutingTests: XCTestCase {
 
     XCTAssertEqual(
       try p.print(("Blob", 42)),
-      URLRequestData(query: ["name": ["Blob"], "age": ["42"]])
+      URIRequestData(query: ["name": ["Blob"], "age": ["42"]])
     )
   }
 
@@ -93,18 +93,18 @@ class URLRoutingTests: XCTestCase {
       }
     }
 
-    var request = URLRequestData(string: "/")!
+    var request = URIRequestData(string: "/")!
     let page = try p.parse(&request)
     XCTAssertEqual(1, page)
     XCTAssertEqual([:], request.query)
 
     XCTAssertEqual(
       try p.print(10),
-      URLRequestData(query: ["page": ["10"]])
+      URIRequestData(query: ["page": ["10"]])
     )
     XCTAssertEqual(
       try p.print(1),
-      URLRequestData(query: [:])
+      URIRequestData(query: [:])
     )
   }
 
@@ -112,13 +112,13 @@ class URLRoutingTests: XCTestCase {
     // test default initializer
     let q1 = Fragment()
 
-    var request = try XCTUnwrap(URLRequestData(string: "#fragment"))
+    var request = try XCTUnwrap(URIRequestData(string: "#fragment"))
     XCTAssertEqual(
       "fragment",
       try q1.parse(&request)
     )
     XCTAssertEqual(
-      URLRequestData(fragment: "fragment"),
+      URIRequestData(fragment: "fragment"),
       try q1.print("fragment")
     )
 
@@ -129,13 +129,13 @@ class URLRoutingTests: XCTestCase {
     // test conversion initializer
     let q2 = Fragment(.string.representing(Timestamp.self))
     request = try XCTUnwrap(
-      URLRequestData(string: "https://www.pointfree.co/episodes/ep182-invertible-parsing-map#t802"))
+      URIRequestData(string: "https://www.pointfree.co/episodes/ep182-invertible-parsing-map#t802"))
     XCTAssertEqual(
       Timestamp(rawValue: "t802"),
       try q2.parse(&request)
     )
     XCTAssertEqual(
-      URLRequestData(fragment: "t802"),
+      URIRequestData(fragment: "t802"),
       try q2.print(Timestamp(rawValue: "t802"))
     )
 
@@ -144,9 +144,9 @@ class URLRoutingTests: XCTestCase {
       "section1"
     }
 
-    request = try XCTUnwrap(URLRequestData(string: "#section1"))
+    request = try XCTUnwrap(URIRequestData(string: "#section1"))
     XCTAssertNoThrow(try p3.parse(&request))
-    request = try XCTUnwrap(URLRequestData(string: "#section2"))
+    request = try XCTUnwrap(URIRequestData(string: "#section2"))
     XCTAssertThrowsError(try p3.parse(&request))
     XCTAssertEqual(
       .init(fragment: "section1"),
@@ -166,7 +166,7 @@ class URLRoutingTests: XCTestCase {
       Fragment()
     }
 
-    request = try XCTUnwrap(URLRequestData(string: "/legal/privacy#faq"))
+    request = try XCTUnwrap(URIRequestData(string: "/legal/privacy#faq"))
     XCTAssertEqual(
       .privacyPolicy(section: "faq"),
       try r.parse(&request)
@@ -189,13 +189,13 @@ class URLRoutingTests: XCTestCase {
     }
     .map(.memberwise(Session.init(userId:isAdmin:)))
 
-    var request = URLRequestData(headers: ["cookie": ["userId=42; isAdmin=true"]])
+    var request = URIRequestData(headers: ["cookie": ["userId=42; isAdmin=true"]])
     XCTAssertEqual(
       Session(userId: 42, isAdmin: true),
       try p.parse(&request)
     )
     XCTAssertEqual(
-      URLRequestData(headers: ["cookie": ["userId=42; isAdmin=true"]]),
+      URIRequestData(headers: ["cookie": ["userId=42; isAdmin=true"]]),
       try p.print(Session(userId: 42, isAdmin: true))
     )
   }
@@ -209,13 +209,13 @@ class URLRoutingTests: XCTestCase {
       Field("pf_session", .utf8.data.json(Session.self))
     }
 
-    var request = URLRequestData(headers: ["cookie": [#"pf_session={"userId":42}; foo=bar"#]])
+    var request = URIRequestData(headers: ["cookie": [#"pf_session={"userId":42}; foo=bar"#]])
     XCTAssertEqual(
       Session(userId: 42),
       try p.parse(&request)
     )
     XCTAssertEqual(
-      URLRequestData(headers: ["cookie": [#"pf_session={"userId":42}"#]]),
+      URIRequestData(headers: ["cookie": [#"pf_session={"userId":42}"#]]),
       try p.print(Session(userId: 42))
     )
   }

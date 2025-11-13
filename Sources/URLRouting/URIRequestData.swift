@@ -1,5 +1,6 @@
 import Foundation
 import OrderedCollections
+import Parsing
 
 /// A parseable URI request optimized for incremental parsing.
 ///
@@ -261,11 +262,6 @@ extension URIRequestData.Fields: Hashable {
   }
 }
 
-// MARK: - Empty Initializable
-
-@usableFromInline
-protocol _EmptyInitializable {
-  init()
-}
+// MARK: - Parsing Protocol Conformance
 
 extension URIRequestData: _EmptyInitializable {}

@@ -6,18 +6,40 @@ import OrderedCollections
 #endif
 
 extension Parser where Input == URIRequestData {
+  /// Matches a Foundation URLRequest to a route.
+  ///
+  /// Example:
+  /// ```swift
+  /// let request = URLRequest(url: URL(string: "https://api.example.com/books/42")!)
+  /// let route = try router.match(request: request)
+  /// ```
   @inlinable
   public func match(request: URLRequest) throws -> Output {
-    // TODO: Add Foundation bridge URIRequestData(request:)
-    fatalError("Foundation bridge not yet implemented")
+    guard let data = URIRequestData(request: request)
+    else { throw RoutingError() }
+    return try self.parse(data)
   }
 
+  /// Matches a Foundation URL to a route.
+  ///
+  /// Example:
+  /// ```swift
+  /// let url = URL(string: "https://api.example.com/books/42")!
+  /// let route = try router.match(url: url)
+  /// ```
   @inlinable
   public func match(url: URL) throws -> Output {
-    // TODO: Add Foundation bridge URIRequestData(url:)
-    fatalError("Foundation bridge not yet implemented")
+    guard let data = URIRequestData(url: url)
+    else { throw RoutingError() }
+    return try self.parse(data)
   }
 
+  /// Matches a URI string to a route.
+  ///
+  /// Example:
+  /// ```swift
+  /// let route = try router.match(path: "/books/42")
+  /// ```
   @inlinable
   public func match(path: String) throws -> Output {
     let data = try URIRequestData(uriString: path)
@@ -26,17 +48,35 @@ extension Parser where Input == URIRequestData {
 }
 
 extension ParserPrinter where Input == URIRequestData {
+  /// Prints a route to a Foundation URLRequest.
+  ///
+  /// Example:
+  /// ```swift
+  /// let request = try router.request(for: .book(id: 42))
+  /// // URLRequest with URL: /books/42
+  /// ```
   @inlinable
   public func request(for route: Output) throws -> URLRequest {
-    // TODO: Add Foundation bridge URLRequest(data:)
-    fatalError("Foundation bridge not yet implemented")
+    var data = URIRequestData()
+    try self.print(route, into: &data)
+    guard let request = URLRequest(data: data)
+    else { throw RoutingError() }
+    return request
   }
 
+  /// Prints a route to a Foundation URL.
+  ///
+  /// Example:
+  /// ```swift
+  /// let url = router.url(for: .book(id: 42))
+  /// // URL: /books/42
+  /// ```
   @inlinable
   public func url(for route: Output) -> URL {
     do {
-      // TODO: Add Foundation bridge URLComponents(data:)
-      fatalError("Foundation bridge not yet implemented")
+      var data = URIRequestData()
+      try self.print(route, into: &data)
+      return URLComponents(data: data).url ?? URL(string: "#route-not-found")!
     } catch {
       breakpoint(
         """
