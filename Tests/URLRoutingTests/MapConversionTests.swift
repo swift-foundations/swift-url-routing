@@ -50,17 +50,17 @@ struct MapConversionTests {
         )
 
         // Test parsing with mapped router
-        let itemRequest = URIRequestData(method: "GET", path: "/42")
+        let itemRequest = RFC_3986.URI.Request.Data(method: .get, path: "/42")
         #expect(try mappedRouter.parse(itemRequest) == .inner(.item(42)))
 
-        let listRequest = URIRequestData(method: "GET", path: "/")
+        let listRequest = RFC_3986.URI.Request.Data(method: .get, path: "/")
         #expect(try mappedRouter.parse(listRequest) == .inner(.list))
 
         // Test printing with mapped router
         #expect(
-            try mappedRouter.print(.inner(.item(42))) == URIRequestData(method: "GET", path: "/42")
+            try mappedRouter.print(.inner(.item(42))) == RFC_3986.URI.Request.Data(method: .get, path: "/42")
         )
-        #expect(try mappedRouter.print(.inner(.list)) == URIRequestData(method: "GET", path: "/"))
+        #expect(try mappedRouter.print(.inner(.list)) == RFC_3986.URI.Request.Data(method: .get, path: "/"))
     }
 
     // Test function-based conversion matching production pattern
@@ -106,12 +106,12 @@ struct MapConversionTests {
         )
 
         // Test parsing
-        let getRequest = URIRequestData(method: "GET", path: "/42")
+        let getRequest = RFC_3986.URI.Request.Data(method: .get, path: "/42")
         let result = try appRouter.parse(getRequest)
         #expect(result == .items(.get(42)))
 
         // Test printing
-        #expect(try appRouter.print(.items(.get(42))) == URIRequestData(method: "GET", path: "/42"))
+        #expect(try appRouter.print(.items(.get(42))) == RFC_3986.URI.Request.Data(method: .get, path: "/42"))
     }
 
     // Test composition with .map() matching repotraffic pattern
@@ -158,17 +158,17 @@ struct MapConversionTests {
         )
 
         // Test that the mapped router works
-        let getRequest = URIRequestData(method: "GET", path: "/42")
+        let getRequest = RFC_3986.URI.Request.Data(method: .get, path: "/42")
         #expect(try mappedAPIRouter.parse(getRequest) == .api(.get(42)))
 
-        let listRequest = URIRequestData(method: "GET", path: "/")
+        let listRequest = RFC_3986.URI.Request.Data(method: .get, path: "/")
         #expect(try mappedAPIRouter.parse(listRequest) == .api(.list))
 
         // Test printing
         #expect(
-            try mappedAPIRouter.print(.api(.get(42))) == URIRequestData(method: "GET", path: "/42")
+            try mappedAPIRouter.print(.api(.get(42))) == RFC_3986.URI.Request.Data(method: .get, path: "/42")
         )
-        #expect(try mappedAPIRouter.print(.api(.list)) == URIRequestData(method: "GET", path: "/"))
+        #expect(try mappedAPIRouter.print(.api(.list)) == RFC_3986.URI.Request.Data(method: .get, path: "/"))
     }
 
     // Test chained .map() operations
@@ -216,13 +216,13 @@ struct MapConversionTests {
         )
 
         // Test parsing through all layers
-        let request = URIRequestData(method: "GET", path: "/42")
+        let request = RFC_3986.URI.Request.Data(method: .get, path: "/42")
         #expect(try router3.parse(request) == .level2(.level1(.value(42))))
 
         // Test printing through all layers
         #expect(
             try router3.print(.level2(.level1(.value(42))))
-                == URIRequestData(method: "GET", path: "/42")
+                == RFC_3986.URI.Request.Data(method: .get, path: "/42")
         )
     }
 }

@@ -1,5 +1,4 @@
 import Foundation
-import RFC_3986
 import Testing
 import URLRouting
 
@@ -10,7 +9,7 @@ import URLRouting
 @Suite("Foundation Bridge")
 struct FoundationBridgeTests {
 
-    // MARK: - URLRequest → URIRequestData
+    // MARK: - URLRequest → RFC_3986.URI.Request.Data
 
     @Test("Parse URLRequest with all components")
     func parseURLRequest() throws {
@@ -20,9 +19,9 @@ struct FoundationBridgeTests {
         request.addValue("Bearer token", forHTTPHeaderField: "Authorization")
         request.httpBody = Data("{\"name\":\"test\"}".utf8)
 
-        let requestData = URIRequestData(request: request)
+        let requestData = RFC_3986.URI.Request.Data(request: request)
         #expect(requestData != nil)
-        #expect(requestData?.method == "POST")
+        #expect(requestData?.method == .post)
         #expect(requestData?.scheme == "https")
         #expect(requestData?.host == "api.example.com")
         #expect(requestData?.path.joined(separator: "/") == "users/123")
@@ -33,7 +32,7 @@ struct FoundationBridgeTests {
     @Test("Parse URL with query parameters")
     func parseURL() throws {
         let url = URL(string: "https://api.example.com/search?q=swift&page=1&limit=20")!
-        let requestData = URIRequestData(url: url)
+        let requestData = RFC_3986.URI.Request.Data(url: url)
 
         #expect(requestData != nil)
         #expect(requestData?.scheme == "https")
@@ -46,7 +45,7 @@ struct FoundationBridgeTests {
 
     @Test("Parse URL string")
     func parseURLString() throws {
-        let requestData = URIRequestData(string: "https://api.example.com/users/123")
+        let requestData = RFC_3986.URI.Request.Data(string: "https://api.example.com/users/123")
 
         #expect(requestData != nil)
         #expect(requestData?.scheme == "https")
@@ -56,19 +55,19 @@ struct FoundationBridgeTests {
 
     @Test("Parse URL with fragment")
     func parseURLWithFragment() throws {
-        let requestData = URIRequestData(string: "https://example.com/docs#section-1")
+        let requestData = RFC_3986.URI.Request.Data(string: "https://example.com/docs#section-1")
 
         #expect(requestData != nil)
         #expect(requestData?.path.joined(separator: "/") == "docs")
         #expect(requestData?.fragment == "section-1")
     }
 
-    // MARK: - URIRequestData → URLRequest
+    // MARK: - RFC_3986.URI.Request.Data → URLRequest
 
     @Test("Print to URLRequest")
     func printToURLRequest() throws {
-        let requestData = URIRequestData(
-            method: "POST",
+        let requestData = RFC_3986.URI.Request.Data(
+            method: .post,
             scheme: "https",
             host: "api.example.com",
             path: "/users",
@@ -89,7 +88,7 @@ struct FoundationBridgeTests {
 
     @Test("Print to URLRequest with query parameters")
     func printToURLRequestWithQuery() throws {
-        let requestData = URIRequestData(
+        let requestData = RFC_3986.URI.Request.Data(
             scheme: "https",
             host: "api.example.com",
             path: "/search",
@@ -104,9 +103,9 @@ struct FoundationBridgeTests {
 
     // MARK: - URLComponents Bridge
 
-    @Test("URLComponents from URIRequestData")
+    @Test("URLComponents from RFC_3986.URI.Request.Data")
     func urlComponentsFromRequestData() throws {
-        let requestData = URIRequestData(
+        let requestData = RFC_3986.URI.Request.Data(
             scheme: "https",
             userinfo: "user:password",
             host: "example.com",
@@ -132,7 +131,7 @@ struct FoundationBridgeTests {
 
     @Test("URLComponents with userinfo (no password)")
     func urlComponentsUserinfoNoPassword() throws {
-        let requestData = URIRequestData(
+        let requestData = RFC_3986.URI.Request.Data(
             scheme: "https",
             userinfo: "user",
             host: "example.com",
@@ -159,13 +158,13 @@ struct FoundationBridgeTests {
 
     // MARK: - Round-trip Tests
 
-    @Test("Round-trip URLRequest → URIRequestData → URLRequest")
+    @Test("Round-trip URLRequest → RFC_3986.URI.Request.Data → URLRequest")
     func roundTripURLRequest() throws {
         var original = URLRequest(url: URL(string: "https://api.example.com/users/123?page=1")!)
         original.httpMethod = "GET"
         original.addValue("application/json", forHTTPHeaderField: "Accept")
 
-        let requestData = URIRequestData(request: original)
+        let requestData = RFC_3986.URI.Request.Data(request: original)
         #expect(requestData != nil)
 
         let reconstructed = URLRequest(data: requestData!)
@@ -175,10 +174,10 @@ struct FoundationBridgeTests {
         #expect(reconstructed?.value(forHTTPHeaderField: "Accept") == "application/json")
     }
 
-    @Test("Round-trip URL → URIRequestData → URL")
+    @Test("Round-trip URL → RFC_3986.URI.Request.Data → URL")
     func roundTripURL() throws {
         let original = URL(string: "https://api.example.com/users/123?page=1#section")!
-        let requestData = URIRequestData(url: original)
+        let requestData = RFC_3986.URI.Request.Data(url: original)
         #expect(requestData != nil)
 
         let components = URLComponents(data: requestData!)

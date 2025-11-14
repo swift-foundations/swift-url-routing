@@ -1,5 +1,6 @@
 import Foundation
 import RFC_3986
+import RFC_7231
 
 #if canImport(FoundationNetworking)
     import FoundationNetworking
@@ -7,15 +8,15 @@ import RFC_3986
 
 // MARK: - Foundation URL/URLRequest Bridge
 
-extension URIRequestData {
+extension RFC_3986.URI.Request.Data {
     /// Initializes parseable request data from a Foundation URLRequest.
     ///
-    /// Bridges Foundation URLRequest to RFC-compliant URIRequestData.
+    /// Bridges Foundation URLRequest to RFC-compliant RFC_3986.URI.Request.Data.
     ///
     /// Example:
     /// ```swift
     /// let request = URLRequest(url: URL(string: "https://api.example.com/users/123")!)
-    /// guard let requestData = URIRequestData(request: request) else { return }
+    /// guard let requestData = RFC_3986.URI.Request.Data(request: request) else { return }
     /// let route = try router.parse(requestData)
     /// ```
     ///
@@ -27,7 +28,7 @@ extension URIRequestData {
         else { return nil }
 
         self.init(
-            method: request.httpMethod,
+            method: request.httpMethod.map { RFC_7231.Method(rawValue: $0) },
             scheme: components.scheme,
             userinfo: {
                 // Reconstruct userinfo from user and password
@@ -66,7 +67,7 @@ extension URIRequestData {
     /// Example:
     /// ```swift
     /// let url = URL(string: "https://api.example.com/users/123")!
-    /// guard let requestData = URIRequestData(url: url) else { return }
+    /// guard let requestData = RFC_3986.URI.Request.Data(url: url) else { return }
     /// ```
     ///
     /// - Parameter url: A Foundation URL
@@ -78,7 +79,7 @@ extension URIRequestData {
     ///
     /// Example:
     /// ```swift
-    /// guard let requestData = URIRequestData(string: "https://api.example.com/users/123")
+    /// guard let requestData = RFC_3986.URI.Request.Data(string: "https://api.example.com/users/123")
     /// else { return }
     /// ```
     ///
@@ -93,13 +94,13 @@ extension URIRequestData {
 // MARK: - Foundation URLComponents Bridge
 
 extension URLComponents {
-    /// Initializes URLComponents from RFC-compliant URIRequestData.
+    /// Initializes URLComponents from RFC-compliant RFC_3986.URI.Request.Data.
     ///
-    /// Converts URIRequestData back to Foundation types for compatibility.
+    /// Converts RFC_3986.URI.Request.Data back to Foundation types for compatibility.
     ///
     /// Example:
     /// ```swift
-    /// let requestData = URIRequestData(
+    /// let requestData = RFC_3986.URI.Request.Data(
     ///   scheme: "https",
     ///   host: "api.example.com",
     ///   path: "/users/123"
@@ -109,7 +110,7 @@ extension URLComponents {
     /// ```
     ///
     /// - Parameter data: URI request data
-    public init(data: URIRequestData) {
+    public init(data: RFC_3986.URI.Request.Data) {
         self.init()
         self.scheme = data.scheme
 
@@ -148,14 +149,14 @@ extension URLComponents {
 // MARK: - Foundation URLRequest Bridge
 
 extension URLRequest {
-    /// Initializes a URLRequest from RFC-compliant URIRequestData.
+    /// Initializes a URLRequest from RFC-compliant RFC_3986.URI.Request.Data.
     ///
-    /// Converts URIRequestData back to Foundation URLRequest.
+    /// Converts RFC_3986.URI.Request.Data back to Foundation URLRequest.
     ///
     /// Example:
     /// ```swift
-    /// let requestData = URIRequestData(
-    ///   method: "POST",
+    /// let requestData = RFC_3986.URI.Request.Data(
+    ///   method: .post,
     ///   scheme: "https",
     ///   host: "api.example.com",
     ///   path: "/users",
@@ -165,10 +166,10 @@ extension URLRequest {
     /// ```
     ///
     /// - Parameter data: URI request data
-    public init?(data: URIRequestData) {
+    public init?(data: RFC_3986.URI.Request.Data) {
         guard let url = URLComponents(data: data).url else { return nil }
         self.init(url: url)
-        self.httpMethod = data.method
+        self.httpMethod = data.method?.rawValue
         for (name, values) in data.headers {
             for value in values {
                 if let value = value {

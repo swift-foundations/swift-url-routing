@@ -1,91 +1,108 @@
 import Foundation
 import OrderedCollections
 import Parsing
+import RFC_3986
+import RFC_7231
 
-/// A parseable URI request optimized for incremental parsing.
-///
-/// Models an HTTP request with URI components stored as subsequences for efficient parser
-/// consumption. Built on RFC 3986 principles with proper percent-encoding and validation.
-///
-/// Example:
-/// ```swift
-/// let data = URIRequestData(
-///   method: "GET",
-///   scheme: "https",
-///   host: "api.example.com",
-///   path: "/users/123",
-///   query: ["page": ["1"]]
-/// )
-/// ```
-public struct URIRequestData: Sendable, Equatable {
-    /// The HTTP method (e.g., "GET", "POST")
-    public var method: String?
+// MARK: - RFC 3986 URI Request Extension
 
-    /// The URI scheme (e.g., "https", "http")
-    public var scheme: String?
+extension RFC_3986.URI {
+    /// HTTP request namespace
+    public enum Request {}
+}
 
-    /// The userinfo component (e.g., "user:password")
-    public var userinfo: String?
+// MARK: - URI Request Data
 
-    /// The host component
-    public var host: String?
+extension RFC_3986.URI.Request {
+    /// A parseable URI request optimized for incremental parsing.
+    ///
+    /// Models an HTTP request with URI components stored as subsequences for efficient parser
+    /// consumption. Built on RFC 3986 principles with proper percent-encoding and validation.
+    ///
+    /// Example:
+    /// ```swift
+    /// let data = RFC_3986.URI.Request.Data(
+    ///   method: .GET,
+    ///   scheme: "https",
+    ///   host: "api.example.com",
+    ///   path: "/users/123",
+    ///   query: ["page": ["1"]]
+    /// )
+    /// ```
+    public struct Data: Sendable, Equatable {
+        /// The HTTP method (e.g., .GET, .POST)
+        public var method: RFC_7231.Method?
 
-    /// The port number
-    public var port: Int?
+        /// The URI scheme (e.g., "https", "http")
+        public var scheme: String?
 
-    /// The path segments for incremental parsing
-    public var path: ArraySlice<Substring>
+        /// The userinfo component (e.g., "user:password")
+        public var userinfo: String?
 
-    /// The query fields for incremental parsing
-    public var query: Fields
+        /// The host component
+        public var host: String?
 
-    /// The fragment component
-    public var fragment: String?
+        /// The port number
+        public var port: Int?
 
-    /// The request headers
-    public var headers: Fields
+        /// The path segments for incremental parsing
+        public var path: ArraySlice<Substring>
 
-    /// The request body
-    public var body: Data?
+        /// The query fields for incremental parsing
+        public var query: Fields
 
-    /// Creates an empty URI request
-    public init() {
-        self.path = []
-        self.query = Fields([:], isCaseSensitive: true)
-        self.headers = Fields([:], isCaseSensitive: false)
+        /// The fragment component
+        public var fragment: String?
+
+        /// The request headers
+        public var headers: Fields
+
+        /// The request body
+        public var body: Foundation.Data?
+
+        /// Creates an empty URI request
+        public init() {
+            self.path = []
+            self.query = Fields([:], isCaseSensitive: true)
+            self.headers = Fields([:], isCaseSensitive: false)
+        }
+
+        /// Creates a URI request with the specified components
+        public init(
+            method: RFC_7231.Method? = nil,
+            scheme: String? = nil,
+            userinfo: String? = nil,
+            host: String? = nil,
+            port: Int? = nil,
+            path: String = "",
+            query: OrderedDictionary<String, [String?]> = [:],
+            fragment: String? = nil,
+            headers: OrderedDictionary<String, [String?]> = [:],
+            body: Foundation.Data? = nil
+        ) {
+            self.method = method
+            self.scheme = scheme
+            self.userinfo = userinfo
+            self.host = host
+            self.port = port
+            self.path = path.split(separator: "/", omittingEmptySubsequences: true)[...]
+            self.query = Fields(
+                query.mapValues { $0.map { $0?[...] }[...] },
+                isCaseSensitive: true
+            )
+            self.fragment = fragment
+            self.headers = Fields(
+                headers.mapValues { $0.map { $0?[...] }[...] },
+                isCaseSensitive: false
+            )
+            self.body = body
+        }
     }
+}
 
-    /// Creates a URI request with the specified components
-    public init(
-        method: String? = nil,
-        scheme: String? = nil,
-        userinfo: String? = nil,
-        host: String? = nil,
-        port: Int? = nil,
-        path: String = "",
-        query: OrderedDictionary<String, [String?]> = [:],
-        fragment: String? = nil,
-        headers: OrderedDictionary<String, [String?]> = [:],
-        body: Data? = nil
-    ) {
-        self.method = method
-        self.scheme = scheme
-        self.userinfo = userinfo
-        self.host = host
-        self.port = port
-        self.path = path.split(separator: "/", omittingEmptySubsequences: true)[...]
-        self.query = Fields(
-            query.mapValues { $0.map { $0?[...] }[...] },
-            isCaseSensitive: true
-        )
-        self.fragment = fragment
-        self.headers = Fields(
-            headers.mapValues { $0.map { $0?[...] }[...] },
-            isCaseSensitive: false
-        )
-        self.body = body
-    }
+// MARK: - URI Request Fields
 
+extension RFC_3986.URI.Request {
     /// A collection of fields for efficient incremental parsing
     ///
     /// Used for query parameters (case-sensitive) and headers (case-insensitive).
@@ -141,12 +158,12 @@ public struct URIRequestData: Sendable, Equatable {
 
 // MARK: - Codable
 
-extension URIRequestData: Codable {
+extension RFC_3986.URI.Request.Data: Codable {
     @inlinable
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.init(
-            method: try container.decodeIfPresent(String.self, forKey: .method),
+            method: try container.decodeIfPresent(RFC_7231.Method.self, forKey: .method),
             scheme: try container.decodeIfPresent(String.self, forKey: .scheme),
             userinfo: try container.decodeIfPresent(String.self, forKey: .userinfo),
             host: try container.decodeIfPresent(String.self, forKey: .host),
@@ -161,7 +178,7 @@ extension URIRequestData: Codable {
                 OrderedDictionary<String, [String?]>.self,
                 forKey: .headers
             ) ?? [:],
-            body: try container.decodeIfPresent(Data.self, forKey: .body)
+            body: try container.decodeIfPresent(Foundation.Data.self, forKey: .body)
         )
     }
 
@@ -209,7 +226,7 @@ extension URIRequestData: Codable {
 
 // MARK: - Hashable
 
-extension URIRequestData: Hashable {
+extension RFC_3986.URI.Request.Data: Hashable {
     @inlinable
     public func hash(into hasher: inout Hasher) {
         hasher.combine(self.body)
@@ -227,7 +244,7 @@ extension URIRequestData: Hashable {
 
 // MARK: - Fields Collection Conformance
 
-extension URIRequestData.Fields: Collection {
+extension RFC_3986.URI.Request.Fields: Collection {
     public typealias Element = OrderedDictionary<String, ArraySlice<Substring?>>.Element
     public typealias Index = OrderedDictionary<String, ArraySlice<Substring?>>.Index
 
@@ -252,14 +269,14 @@ extension URIRequestData.Fields: Collection {
     }
 }
 
-extension URIRequestData.Fields: ExpressibleByDictionaryLiteral {
+extension RFC_3986.URI.Request.Fields: ExpressibleByDictionaryLiteral {
     @inlinable
     public init(dictionaryLiteral elements: (String, ArraySlice<Substring?>)...) {
         self.init(.init(elements) { $0 + $1 }, isCaseSensitive: true)
     }
 }
 
-extension URIRequestData.Fields: Hashable {
+extension RFC_3986.URI.Request.Fields: Hashable {
     @inlinable
     public func hash(into hasher: inout Hasher) {
         hasher.combine(self.fields)
@@ -268,4 +285,14 @@ extension URIRequestData.Fields: Hashable {
 
 // MARK: - Parsing Protocol Conformance
 
-extension URIRequestData: _EmptyInitializable {}
+extension RFC_3986.URI.Request.Data: _EmptyInitializable {}
+
+// MARK: - Convenience Type Alias
+
+/// Convenience type alias for `RFC_3986.URI.Request.Data`
+///
+/// For cleaner code, you can use `URIRequestData` instead of `RFC_3986.URI.Request.Data`:
+/// ```swift
+/// var data = URIRequestData(method: "GET", path: "/users")
+/// ```
+public typealias URIRequestData = RFC_3986.URI.Request.Data

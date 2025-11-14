@@ -18,13 +18,13 @@ struct OneOfTests {
             Method.post
         }
 
-        var getRequest = URIRequestData(method: "GET")
+        var getRequest = RFC_3986.URI.Request.Data(method: .get)
         #expect(throws: Never.self) { try parser.parse(&getRequest) }
 
-        var postRequest = URIRequestData(method: "POST")
+        var postRequest = RFC_3986.URI.Request.Data(method: .post)
         #expect(throws: Never.self) { try parser.parse(&postRequest) }
 
-        var putRequest = URIRequestData(method: "PUT")
+        var putRequest = RFC_3986.URI.Request.Data(method: .put)
         #expect(throws: (any Error).self) { try parser.parse(&putRequest) }
     }
 
@@ -52,15 +52,15 @@ struct OneOfTests {
         let router = TestRouter()
 
         // Test parsing
-        let apiRequest = URIRequestData(path: "/api")
+        let apiRequest = RFC_3986.URI.Request.Data(path: "/api")
         #expect(try router.parse(apiRequest) == .api)
 
-        let viewRequest = URIRequestData(path: "/view")
+        let viewRequest = RFC_3986.URI.Request.Data(path: "/view")
         #expect(try router.parse(viewRequest) == .view)
 
         // Test printing
-        #expect(try router.print(.api) == URIRequestData(path: "/api"))
-        #expect(try router.print(.view) == URIRequestData(path: "/view"))
+        #expect(try router.print(.api) == RFC_3986.URI.Request.Data(path: "/api"))
+        #expect(try router.print(.view) == RFC_3986.URI.Request.Data(path: "/view"))
     }
 
     // Test OneOf with nested routers matching production pattern
@@ -102,17 +102,17 @@ struct OneOfTests {
         let router = MainRouter()
 
         // Test nested API routes
-        let createRequest = URIRequestData(method: "POST", path: "/api/create")
+        let createRequest = RFC_3986.URI.Request.Data(method: .post, path: "/api/create")
         #expect(try router.parse(createRequest) == .api(.create))
 
-        let listRequest = URIRequestData(method: "GET", path: "/api/list")
+        let listRequest = RFC_3986.URI.Request.Data(method: .get, path: "/api/list")
         #expect(try router.parse(listRequest) == .api(.list))
 
         // Test printing
         #expect(
-            try router.print(.api(.create)) == URIRequestData(method: "POST", path: "/api/create")
+            try router.print(.api(.create)) == RFC_3986.URI.Request.Data(method: .post, path: "/api/create")
         )
-        #expect(try router.print(.api(.list)) == URIRequestData(method: "GET", path: "/api/list"))
+        #expect(try router.print(.api(.list)) == RFC_3986.URI.Request.Data(method: .get, path: "/api/list"))
     }
 
     // Test OneOf with complex route combinations
@@ -154,17 +154,17 @@ struct OneOfTests {
         let router = RESTRouter()
 
         // Test all CRUD operations
-        #expect(try router.parse(URIRequestData(method: "GET", path: "/")) == .list)
-        #expect(try router.parse(URIRequestData(method: "POST", path: "/")) == .create)
-        #expect(try router.parse(URIRequestData(method: "GET", path: "/42")) == .get(42))
-        #expect(try router.parse(URIRequestData(method: "PATCH", path: "/42")) == .update(42))
-        #expect(try router.parse(URIRequestData(method: "DELETE", path: "/42")) == .delete(42))
+        #expect(try router.parse(RFC_3986.URI.Request.Data(method: .get, path: "/")) == .list)
+        #expect(try router.parse(RFC_3986.URI.Request.Data(method: .post, path: "/")) == .create)
+        #expect(try router.parse(RFC_3986.URI.Request.Data(method: .get, path: "/42")) == .get(42))
+        #expect(try router.parse(RFC_3986.URI.Request.Data(method: .patch, path: "/42")) == .update(42))
+        #expect(try router.parse(RFC_3986.URI.Request.Data(method: .delete, path: "/42")) == .delete(42))
 
         // Test printing
-        #expect(try router.print(.list) == URIRequestData(method: "GET", path: "/"))
-        #expect(try router.print(.create) == URIRequestData(method: "POST", path: "/"))
-        #expect(try router.print(.get(42)) == URIRequestData(method: "GET", path: "/42"))
-        #expect(try router.print(.update(42)) == URIRequestData(method: "PATCH", path: "/42"))
-        #expect(try router.print(.delete(42)) == URIRequestData(method: "DELETE", path: "/42"))
+        #expect(try router.print(.list) == RFC_3986.URI.Request.Data(method: .get, path: "/"))
+        #expect(try router.print(.create) == RFC_3986.URI.Request.Data(method: .post, path: "/"))
+        #expect(try router.print(.get(42)) == RFC_3986.URI.Request.Data(method: .get, path: "/42"))
+        #expect(try router.print(.update(42)) == RFC_3986.URI.Request.Data(method: .patch, path: "/42"))
+        #expect(try router.print(.delete(42)) == RFC_3986.URI.Request.Data(method: .delete, path: "/42"))
     }
 }

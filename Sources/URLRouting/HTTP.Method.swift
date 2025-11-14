@@ -1,4 +1,5 @@
 import Parsing
+import RFC_3986
 import RFC_7231
 
 // MARK: - RFC 7231 Method Extension
@@ -17,7 +18,7 @@ extension RFC_7231.Method {
     /// ```
     public struct Parser: ParserPrinter, Sendable {
         @usableFromInline
-        let name: String
+        let method: RFC_7231.Method
 
         /// A parser of GET requests.
         ///
@@ -26,40 +27,40 @@ extension RFC_7231.Method {
         /// > Note: If you are using a ``Route`` parser you do not need to specify `Method.get` (it is the
         /// > default).
         nonisolated(unsafe) public static let get = OneOf {
-            Self("HEAD")
-            Self("GET")  // NB: Prefer printing "GET"
+            Self(.head)
+            Self(.get)  // NB: Prefer printing "GET"
         }
 
         /// A parser of POST requests.
-        public static let post = Self("POST")
+        public static let post = Self(.post)
 
         /// A parser of PUT requests.
-        public static let put = Self("PUT")
+        public static let put = Self(.put)
 
         /// A parser of PATCH requests.
-        public static let patch = Self("PATCH")
+        public static let patch = Self(.patch)
 
         /// A parser of DELETE requests.
-        public static let delete = Self("DELETE")
+        public static let delete = Self(.delete)
 
-        /// Initializes a request method parser with a method name.
+        /// Initializes a request method parser with a method.
         ///
-        /// - Parameter name: A method name (e.g., "GET", "POST", "PUT", "PATCH", "DELETE")
+        /// - Parameter method: An HTTP method (e.g., .get, .post, .put, .patch, .delete)
         @inlinable
-        public init(_ name: String) {
-            self.name = name.uppercased()
+        public init(_ method: RFC_7231.Method) {
+            self.method = method
         }
 
         @inlinable
-        public func parse(_ input: inout URIRequestData) throws {
-            guard let method = input.method else { throw RoutingError() }
-            try self.name.parse(method)
+        public func parse(_ input: inout RFC_3986.URI.Request.Data) throws {
+            guard let inputMethod = input.method else { throw RFC_3986.URI.Routing.Error() }
+            guard inputMethod == self.method else { throw RFC_3986.URI.Routing.Error() }
             input.method = nil
         }
 
         @inlinable
-        public func print(_ output: (), into input: inout URIRequestData) {
-            input.method = self.name
+        public func print(_ output: (), into input: inout RFC_3986.URI.Request.Data) {
+            input.method = self.method
         }
     }
 }

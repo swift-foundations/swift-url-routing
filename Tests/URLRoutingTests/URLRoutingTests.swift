@@ -12,34 +12,34 @@ struct URLRoutingTests {
 
     @Test("Method parser")
     func method() throws {
-        var request = URIRequestData(method: "POST")
+        var request = RFC_3986.URI.Request.Data(method: .post)
         #expect(throws: Never.self) { try Method.post.parse(&request) }
-        #expect(try Method.post.print() == URIRequestData(method: "POST"))
+        #expect(try Method.post.print() == RFC_3986.URI.Request.Data(method: .post))
     }
 
     @Test("Host parser")
     func host() throws {
-        var request = URIRequestData(host: "foo")
+        var request = RFC_3986.URI.Request.Data(host: "foo")
         #expect(throws: Never.self) { try Host.custom("foo").parse(&request) }
-        #expect(try Host.custom("foo").print() == URIRequestData(host: "foo"))
+        #expect(try Host.custom("foo").print() == RFC_3986.URI.Request.Data(host: "foo"))
     }
 
     @Test("Scheme parser")
     func scheme() throws {
-        var request = URIRequestData(scheme: "http")
+        var request = RFC_3986.URI.Request.Data(scheme: "http")
         #expect(throws: Never.self) { try Scheme.http.parse(&request) }
-        #expect(try Scheme.http.print() == URIRequestData(scheme: "http"))
+        #expect(try Scheme.http.print() == RFC_3986.URI.Request.Data(scheme: "http"))
     }
 
     @Test("Path parser with integer")
     func pathWithInt() throws {
-        #expect(try Path { Int.parser() }.parse(URIRequestData(path: "/123")) == 123)
+        #expect(try Path { Int.parser() }.parse(RFC_3986.URI.Request.Data(path: "/123")) == 123)
     }
 
     @Test("Path parser error formatting")
     func pathError() throws {
         do {
-            _ = try Path { Int.parser() }.parse(URIRequestData(path: "/123-foo"))
+            _ = try Path { Int.parser() }.parse(RFC_3986.URI.Request.Data(path: "/123-foo"))
             Issue.record("Expected error to be thrown")
         } catch {
             #expect(
@@ -57,12 +57,12 @@ struct URLRoutingTests {
     func formData() throws {
         let p = Body {
             FormData {
-                Field("name", .string)
-                Field("age") { Int.parser() }
+                WHATWG_HTML.FormData.Field("name", .string)
+                WHATWG_HTML.FormData.Field("age") { Int.parser() }
             }
         }
 
-        var request = URIRequestData(body: .init("name=Blob&age=42&debug=1".utf8))
+        var request = RFC_3986.URI.Request.Data(body: .init("name=Blob&age=42&debug=1".utf8))
         let (name, age) = try p.parse(&request)
         #expect(name == "Blob")
         #expect(age == 42)
@@ -72,13 +72,13 @@ struct URLRoutingTests {
     @Test("Headers parsing")
     func headers() throws {
         let p = Headers {
-            Field("X-Haha", .string)
+            RFC_7230.Header.Field("X-Haha", .string)
         }
 
         var req = URLRequest(url: URL(string: "/")!)
         req.addValue("Hello", forHTTPHeaderField: "X-Haha")
         req.addValue("Blob", forHTTPHeaderField: "X-Haha")
-        let requestData = try #require(URIRequestData(request: req))
+        let requestData = try #require(RFC_3986.URI.Request.Data(request: req))
         var request = requestData
 
         let name = try p.parse(&request)
@@ -92,11 +92,11 @@ struct URLRoutingTests {
     @Test("Query parsing")
     func query() throws {
         let p = Query {
-            Field("name")
-            Field("age") { Int.parser() }
+            RFC_3986.URI.Query.Field("name")
+            RFC_3986.URI.Query.Field("age") { Int.parser() }
         }
 
-        var request = try #require(URIRequestData(string: "/?name=Blob&age=42&debug=1"))
+        var request = try #require(RFC_3986.URI.Request.Data(string: "/?name=Blob&age=42&debug=1"))
         let (name, age) = try p.parse(&request)
         #expect(name == "Blob")
         #expect(age == 42)
@@ -105,28 +105,28 @@ struct URLRoutingTests {
         #expect(remaining["debug"]?.first??.description == "1")
 
         #expect(
-            try p.print(("Blob", 42)) == URIRequestData(query: ["name": ["Blob"], "age": ["42"]])
+            try p.print(("Blob", 42)) == RFC_3986.URI.Request.Data(query: ["name": ["Blob"], "age": ["42"]])
         )
     }
 
     @Test("Query with default value")
     func queryDefault() throws {
         let p = Query {
-            Field("page", default: 1) {
+            RFC_3986.URI.Query.Field("page", default: 1) {
                 Int.parser()
             }
         }
 
-        var request = try #require(URIRequestData(string: "/"))
+        var request = try #require(RFC_3986.URI.Request.Data(string: "/"))
         let page = try p.parse(&request)
         #expect(page == 1)
         #expect(request.query.isEmpty)
 
         #expect(
-            try p.print(10) == URIRequestData(query: ["page": ["10"]])
+            try p.print(10) == RFC_3986.URI.Request.Data(query: ["page": ["10"]])
         )
         #expect(
-            try p.print(1) == URIRequestData(query: [:])
+            try p.print(1) == RFC_3986.URI.Request.Data(query: [:])
         )
     }
 
@@ -135,9 +135,9 @@ struct URLRoutingTests {
         // test default initializer
         let q1 = URIFragment()
 
-        var request = try #require(URIRequestData(string: "#fragment"))
+        var request = try #require(RFC_3986.URI.Request.Data(string: "#fragment"))
         #expect(try q1.parse(&request) == "fragment")
-        #expect(try q1.print("fragment") == URIRequestData(fragment: "fragment"))
+        #expect(try q1.print("fragment") == RFC_3986.URI.Request.Data(fragment: "fragment"))
 
         struct Timestamp: Equatable, RawRepresentable {
             let rawValue: String
@@ -146,13 +146,13 @@ struct URLRoutingTests {
         // test conversion initializer
         let q2 = URIFragment(.string.representing(Timestamp.self))
         request = try #require(
-            URIRequestData(
+            RFC_3986.URI.Request.Data(
                 string: "https://www.pointfree.co/episodes/ep182-invertible-parsing-map#t802"
             )
         )
         #expect(try q2.parse(&request) == Timestamp(rawValue: "t802"))
         #expect(
-            try q2.print(Timestamp(rawValue: "t802")) == URIRequestData(fragment: "t802")
+            try q2.print(Timestamp(rawValue: "t802")) == RFC_3986.URI.Request.Data(fragment: "t802")
         )
 
         // test parser builder initializer
@@ -160,14 +160,14 @@ struct URLRoutingTests {
             "section1"
         }
 
-        request = try #require(URIRequestData(string: "#section1"))
+        request = try #require(RFC_3986.URI.Request.Data(string: "#section1"))
         #expect(throws: Never.self) { try p3.parse(&request) }
 
-        request = try #require(URIRequestData(string: "#section2"))
+        request = try #require(RFC_3986.URI.Request.Data(string: "#section2"))
         #expect(throws: (any Error).self) { try p3.parse(&request) }
 
         #expect(
-            try p3.print() == URIRequestData(fragment: "section1")
+            try p3.print() == RFC_3986.URI.Request.Data(fragment: "section1")
         )
 
         enum AppRoute: Equatable {
@@ -183,11 +183,11 @@ struct URLRoutingTests {
             URIFragment()
         }
 
-        request = try #require(URIRequestData(string: "/legal/privacy#faq"))
+        request = try #require(RFC_3986.URI.Request.Data(string: "/legal/privacy#faq"))
         #expect(try r.parse(&request) == .privacyPolicy(section: "faq"))
         #expect(
             try r.print(.privacyPolicy(section: "faq"))
-                == URIRequestData(path: "/legal/privacy", fragment: "faq")
+                == RFC_3986.URI.Request.Data(path: "/legal/privacy", fragment: "faq")
         )
     }
 
@@ -199,16 +199,16 @@ struct URLRoutingTests {
         }
 
         let p = Cookies {
-            Field("userId") { Int.parser() }
-            Field("isAdmin") { Bool.parser() }
+            RFC_6265.Cookie.Field("userId") { Int.parser() }
+            RFC_6265.Cookie.Field("isAdmin") { Bool.parser() }
         }
         .map(.memberwise(Session.init(userId:isAdmin:)))
 
-        var request = URIRequestData(headers: ["cookie": ["userId=42; isAdmin=true"]])
+        var request = RFC_3986.URI.Request.Data(headers: ["cookie": ["userId=42; isAdmin=true"]])
         #expect(try p.parse(&request) == Session(userId: 42, isAdmin: true))
         #expect(
             try p.print(Session(userId: 42, isAdmin: true))
-                == URIRequestData(headers: ["cookie": ["userId=42; isAdmin=true"]])
+                == RFC_3986.URI.Request.Data(headers: ["cookie": ["userId=42; isAdmin=true"]])
         )
     }
 
@@ -219,14 +219,14 @@ struct URLRoutingTests {
         }
 
         let p = Cookies {
-            Field("pf_session", .utf8.data.json(Session.self))
+            RFC_6265.Cookie.Field("pf_session", .utf8.data.json(Session.self))
         }
 
-        var request = URIRequestData(headers: ["cookie": [#"pf_session={"userId":42}; foo=bar"#]])
+        var request = RFC_3986.URI.Request.Data(headers: ["cookie": [#"pf_session={"userId":42}; foo=bar"#]])
         #expect(try p.parse(&request) == Session(userId: 42))
         #expect(
             try p.print(Session(userId: 42))
-                == URIRequestData(headers: ["cookie": [#"pf_session={"userId":42}"#]])
+                == RFC_3986.URI.Request.Data(headers: ["cookie": [#"pf_session={"userId":42}"#]])
         )
     }
 
