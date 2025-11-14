@@ -20,8 +20,8 @@ struct MultipartConversionIntegrationTests {
 
     @Test("Conversion.multipart() static method works")
     func testStaticMultipartMethod() throws {
-        // Use explicit type to call static method on concrete type
-        let conversion: Multipart.Conversion<TestRequest> = .multipart(TestRequest.self)
+        // Use explicit type to initialize conversion
+        let conversion = Multipart.Conversion(TestRequest.self)
         let request = TestRequest(name: "John", subscribed: true)
         let data = try conversion.unapply(request)
         #expect(!data.isEmpty)
@@ -95,13 +95,13 @@ struct MultipartConversionIntegrationTests {
 
         struct Router: ParserPrinter {
             var body: some URLRouting.Router<API> {
-                URLRouting.Route(.case(API.update)) {
+                RFC_3986.URI.Route(.case(API.update)) {
                     let multipartFormCoding = Multipart.Conversion(
                         UpdateRequest.self,
                         arrayEncodingStrategy: .accumulateValues
                     )
                     Headers {
-                        Field.contentType { multipartFormCoding.contentType }
+                        RFC_7230.Header.Field("content-type") { multipartFormCoding.contentType }
                     }
                     Method.put
                     Path { "v3" }
@@ -139,7 +139,7 @@ struct MultipartConversionIntegrationTests {
 
         struct Router: ParserPrinter {
             var body: some URLRouting.Router<API> {
-                URLRouting.Route(.case(API.update)) {
+                RFC_3986.URI.Route(.case(API.update)) {
                     Method.put
                     Path { "v3" }
                     Path { "routes" }

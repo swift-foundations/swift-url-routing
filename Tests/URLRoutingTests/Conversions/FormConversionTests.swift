@@ -22,8 +22,8 @@ struct FormConversionIntegrationTests {
 
     @Test("URLRouting.Conversion.form() static method works")
     func testStaticFormMethod() throws {
-        // Use explicit type to call static method on concrete type
-        let conversion: Form.Conversion<TestRequest> = .form(TestRequest.self)
+        // Use explicit type to initialize conversion
+        let conversion = Form.Conversion(TestRequest.self)
         let request = TestRequest(name: "John", age: 30)
         let data = try conversion.unapply(request)
         #expect(!data.isEmpty)
