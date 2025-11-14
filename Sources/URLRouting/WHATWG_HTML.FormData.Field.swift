@@ -57,6 +57,7 @@ extension WHATWG_HTML.FormData {
         ///   - defaultValue: A default value if the field is absent. Prefer specifying a default over
         ///     applying `Parser.replaceError(with:)` if parsing should fail for invalid values.
         ///   - value: A throwing closure that creates a parser for the field's substring value.
+        @_disfavoredOverload
         @inlinable
         public init(
             _ name: String,

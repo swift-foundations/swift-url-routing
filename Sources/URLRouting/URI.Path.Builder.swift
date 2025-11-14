@@ -173,3 +173,21 @@ extension RFC_3986.URI.Path.Builder.Take2: ParserPrinter where P0: ParserPrinter
         try self.p0.print(output.0, into: &input)
     }
 }
+
+// MARK: - Sendable Conformance
+
+/// Sendable conformance for Path.Builder.Component.
+///
+/// Path builder components are conceptually thread-safe as they are immutable value types
+/// with no shared mutable state. However, they are marked as @unchecked Sendable because
+/// the generic ComponentParser may contain closures that cannot be verified by the compiler.
+///
+/// This conformance is safe because:
+/// - Component is a struct with immutable fields
+/// - All parsing operations are stateless transformations
+/// - No shared mutable state exists
+/// - Components are building blocks used in path construction
+///
+/// - Note: Required for Swift 6 strict concurrency mode in server-side applications
+/// where routing types must cross actor boundaries.
+extension RFC_3986.URI.Path.Builder.Component: @unchecked Sendable where ComponentParser: Sendable {}

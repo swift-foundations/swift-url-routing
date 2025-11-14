@@ -53,6 +53,7 @@ extension RFC_7230.Header {
         ///   - defaultValue: A default value if the field is absent. Prefer specifying a default over
         ///     applying `Parser.replaceError(with:)` if parsing should fail for invalid values.
         ///   - value: A throwing closure that creates a parser for the field's substring value.
+        @_disfavoredOverload
         @inlinable
         public init(
             _ name: String,
@@ -130,3 +131,64 @@ extension RFC_7230.Header.Field: ParserPrinter where Value: ParserPrinter {
         )
     }
 }
+
+// MARK: - ContentType Convenience Parser
+
+extension RFC_7230.Header {
+    /// Convenience parser for Content-Type header field.
+    ///
+    /// Use this within a `Headers` block to parse the Content-Type header.
+    ///
+    /// ## Example
+    ///
+    /// ```swift
+    /// Headers {
+    ///     ContentType { "multipart/form-data" }
+    ///     ContentType { multipart.contentType.headerValue }
+    ///     ContentType { Prefix { $0 != ";" } }
+    /// }
+    /// ```
+    public struct ContentType<Value: Parsing.Parser>: Parsing.Parser where Value.Input == Substring {
+        @usableFromInline
+        let valueParser: RFC_7230.Header.Field<Value>
+
+        /// Initializes a Content-Type header parser.
+        ///
+        /// - Parameter value: A parser builder closure for the content type value
+        @inlinable
+        public init(@ParserBuilder<Substring> _ value: () -> Value) {
+            self.valueParser = RFC_7230.Header.Field("Content-Type", value)
+        }
+
+        /// Initializes a Content-Type header parser with a throwing closure.
+        ///
+        /// - Parameter value: A throwing parser builder closure for the content type value
+        @_disfavoredOverload
+        @inlinable
+        public init(@ParserBuilder<Substring> _ value: () throws -> Value) rethrows {
+            self.valueParser = try RFC_7230.Header.Field("Content-Type", value)
+        }
+
+        @inlinable
+        public func parse(_ input: inout RFC_3986.URI.Request.Fields) throws -> Value.Output {
+            try self.valueParser.parse(&input)
+        }
+    }
+}
+
+extension RFC_7230.Header.ContentType: ParserPrinter where Value: ParserPrinter {
+    @inlinable
+    public func print(_ output: Value.Output, into input: inout RFC_3986.URI.Request.Fields) rethrows {
+        try self.valueParser.print(output, into: &input)
+    }
+}
+
+/// Convenience typealias for `RFC_7230.Header.ContentType`
+///
+/// For cleaner code within Headers blocks:
+/// ```swift
+/// Headers {
+///     ContentType { "multipart/form-data" }
+/// }
+/// ```
+public typealias ContentType = RFC_7230.Header.ContentType

@@ -467,7 +467,7 @@ extension Multipart.FileUpload {
     public typealias Conversion = Multipart.FileUpload
 }
 
-extension Multipart.FileUpload.Conversion: Conversion {
+extension Multipart.FileUpload.Conversion: @retroactive Parsing.Conversion {
     /// Validates and returns the input file data.
     ///
     /// This method performs comprehensive validation on the uploaded file data:
@@ -543,5 +543,53 @@ extension Multipart.FileUpload.Conversion: Conversion {
         }
 
         return result
+    }
+}
+
+// MARK: - Conversion Convenience Methods
+
+extension URLRouting.Conversion {
+    /// Creates a multipart form data conversion for the specified Codable type.
+    ///
+    /// This static method provides a convenient way to create ``Multipart.Conversion``
+    /// instances for use in URLRouting route definitions.
+    ///
+    /// - Parameters:
+    ///   - type: The Codable type to convert to/from multipart form data
+    ///   - arrayEncodingStrategy: How to encode array fields (default: accumulate values)
+    /// - Returns: A ``Multipart.Conversion`` instance
+    ///
+    /// ## Example
+    ///
+    /// ```swift
+    /// struct UpdateRequest: Codable {
+    ///     let name: String
+    ///     let subscribed: Bool
+    /// }
+    ///
+    /// // Create conversion with default array strategy
+    /// let conversion = Conversion.multipart(UpdateRequest.self)
+    ///
+    /// // Or with custom array strategy
+    /// let conversion = Conversion.multipart(
+    ///     UpdateRequest.self,
+    ///     arrayEncodingStrategy: .brackets
+    /// )
+    /// ```
+    ///
+    /// ## Usage in Routes
+    ///
+    /// ```swift
+    /// Route {
+    ///     Method.put
+    ///     Path { "members" / \.id }
+    ///     Body(.multipart(UpdateRequest.self))
+    /// }
+    /// ```
+    public static func multipart<Value>(
+        _ type: Value.Type,
+        arrayEncodingStrategy: MultipartArrayEncodingStrategy = .accumulateValues
+    ) -> Self where Self == Multipart.Conversion<Value> {
+        .init(type, arrayEncodingStrategy: arrayEncodingStrategy)
     }
 }

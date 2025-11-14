@@ -28,6 +28,7 @@ extension RFC_7230.Body {
             self.bytesParser = bytesParser()
         }
 
+        @_disfavoredOverload
         @inlinable
         public init(@ParserBuilder<Data> _ bytesParser: () throws -> Bytes) rethrows {
             self.bytesParser = try bytesParser()

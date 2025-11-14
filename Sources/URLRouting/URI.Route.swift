@@ -80,6 +80,7 @@ extension RFC_3986.URI {
             self.parsers = parsers().map(conversion)
         }
 
+        @_disfavoredOverload
         @inlinable
         public init<C: Conversion, P: Parser>(
             _ conversion: C,
@@ -176,3 +177,21 @@ public typealias Scheme = URIScheme
 
 /// Convenience type alias for `URIHost`
 public typealias Host = URIHost
+
+// MARK: - Sendable Conformance
+
+/// Sendable conformance for URI.Route.
+///
+/// URI routes are conceptually thread-safe as they are immutable value types with no
+/// shared mutable state. However, they are marked as @unchecked Sendable because the
+/// generic Parsers may contain closures that cannot be verified by the compiler.
+///
+/// This conformance is safe because:
+/// - URI.Route is a struct with immutable fields
+/// - All parsing operations are stateless transformations
+/// - No shared mutable state exists
+/// - Routes are composed functionally without side effects
+///
+/// - Note: Required for Swift 6 strict concurrency mode in server-side applications
+/// where routing types must cross actor boundaries.
+extension RFC_3986.URI.Route: @unchecked Sendable where Parsers: Sendable {}

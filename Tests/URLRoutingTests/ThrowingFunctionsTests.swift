@@ -144,4 +144,90 @@ struct ThrowingFunctionsTests {
         #expect(email == "john@example.com")
         #expect(age == 30)
     }
+
+    // MARK: - Regression Tests for Ambiguous Init
+
+    @Test("Path with Rest().map() without explicit try should not be ambiguous")
+    func pathWithMapNoExplicitTry() throws {
+        // This reproduces the swift-mailgun-types pattern that caused ambiguous init errors
+        let parser = Path {
+            "api"
+            Rest().map(.string)  // No explicit try - should not be ambiguous
+        }
+
+        var request = RFC_3986.URI.Request.Data(path: "/api/value")
+        let result = try parser.parse(&request)
+        #expect(result == "value")
+    }
+
+    @Test("Query with Field without explicit try should not be ambiguous")
+    func queryWithFieldNoExplicitTry() throws {
+        // Another pattern that could cause ambiguity
+        let parser = Query {
+            RFC_3986.URI.Query.Field("name") { Rest().map(.string) }  // No explicit try
+        }
+
+        var request = try #require(RFC_3986.URI.Request.Data(string: "/?name=test"))
+        let result = try parser.parse(&request)
+        #expect(result == "test")
+    }
+
+    @Test("Headers with Field without explicit try should not be ambiguous")
+    func headersWithFieldNoExplicitTry() throws {
+        // Test the Headers parser ambiguity
+        let parser = Headers {
+            RFC_7230.Header.Field("X-Custom") { Rest().map(.string) }  // No explicit try
+        }
+
+        var request = RFC_3986.URI.Request.Data()
+        request.headers.fields["x-custom"] = ["value"]
+        let result = try parser.parse(&request)
+        #expect(result == "value")
+    }
+
+    @Test("Body with FormData Field without explicit try should not be ambiguous")
+    func bodyWithFormDataFieldNoExplicitTry() throws {
+        // Test Body parser ambiguity
+        let parser = Body {
+            FormData {
+                WHATWG_HTML.FormData.Field("email") { Rest().map(.string) }  // No explicit try
+            }
+        }
+
+        var request = RFC_3986.URI.Request.Data(body: .init("email=test@example.com".utf8))
+        let result = try parser.parse(&request)
+        #expect(result == "test@example.com")
+    }
+
+    // MARK: - ContentType Convenience Parser Tests
+
+    @Test("ContentType with String literal")
+    func contentTypeWithString() throws {
+        let parser = Headers {
+            ContentType { "multipart/form-data" }
+        }
+
+        var request = RFC_3986.URI.Request.Data()
+        request.headers.fields["content-type"] = ["multipart/form-data"]
+        let result = try parser.parse(&request)
+        #expect(result == ())
+    }
+
+    @Test("ContentType with RFC_2045.ContentType.headerValue")
+    func contentTypeWithRFC2045HeaderValue() throws {
+        let contentType = RFC_2045.ContentType(
+            type: "multipart",
+            subtype: "form-data",
+            parameters: ["boundary": "----boundary123"]
+        )
+
+        let parser = Headers {
+            ContentType { contentType.headerValue }
+        }
+
+        var request = RFC_3986.URI.Request.Data()
+        request.headers.fields["content-type"] = ["multipart/form-data; boundary=----boundary123"]
+        let result = try parser.parse(&request)
+        #expect(result == ())
+    }
 }

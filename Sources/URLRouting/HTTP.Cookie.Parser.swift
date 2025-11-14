@@ -28,6 +28,7 @@ extension RFC_6265.Cookie {
             self.cookieParsers = build()
         }
 
+        @_disfavoredOverload
         @inlinable
         public init(@ParserBuilder<RFC_3986.URI.Request.Fields> build: () throws -> FieldParsers) rethrows {
             self.cookieParsers = try build()

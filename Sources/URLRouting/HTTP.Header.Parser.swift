@@ -27,6 +27,7 @@ extension RFC_7230.Header {
             self.fieldParsers = build()
         }
 
+        @_disfavoredOverload
         @inlinable
         public init(@ParserBuilder<RFC_3986.URI.Request.Fields> build: () throws -> FieldParsers) rethrows {
             self.fieldParsers = try build()

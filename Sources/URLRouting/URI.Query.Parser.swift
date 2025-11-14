@@ -37,6 +37,7 @@ extension RFC_3986.URI.Query {
             self.fieldParsers = build()
         }
 
+        @_disfavoredOverload
         @inlinable
         public init(@ParserBuilder<RFC_3986.URI.Request.Fields> build: () throws -> FieldParsers) rethrows {
             self.fieldParsers = try build()
@@ -67,3 +68,21 @@ extension RFC_3986.URI.Query.Parser: ParserPrinter where FieldParsers: ParserPri
 /// }
 /// ```
 public typealias URIQuery = RFC_3986.URI.Query.Parser
+
+// MARK: - Sendable Conformance
+
+/// Sendable conformance for Query.Parser.
+///
+/// Query parsers are conceptually thread-safe as they are immutable value types with no
+/// shared mutable state. However, they are marked as @unchecked Sendable because the
+/// generic FieldParsers may contain closures that cannot be verified by the compiler.
+///
+/// This conformance is safe because:
+/// - Query.Parser is a struct with immutable fields
+/// - All parsing operations are stateless transformations
+/// - No shared mutable state exists
+/// - Parsers are composed functionally without side effects
+///
+/// - Note: Required for Swift 6 strict concurrency mode in server-side applications
+/// where routing types must cross actor boundaries.
+extension RFC_3986.URI.Query.Parser: @unchecked Sendable where FieldParsers: Sendable {}

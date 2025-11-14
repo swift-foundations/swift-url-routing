@@ -1,6 +1,7 @@
 import Parsing
 
 extension Parse {
+    @_disfavoredOverload
     @inlinable
     public init<Downstream>(
         _ conversion: Downstream

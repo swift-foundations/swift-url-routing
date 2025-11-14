@@ -35,6 +35,7 @@ extension RFC_3986.URI.Path {
             self.componentParsers = build()
         }
 
+        @_disfavoredOverload
         @inlinable
         public init(@RFC_3986.URI.Path.Builder build: () throws -> ComponentParsers) rethrows {
             self.componentParsers = try build()
@@ -66,3 +67,21 @@ extension RFC_3986.URI.Path.Parser: ParserPrinter where ComponentParsers: Parser
 /// }
 /// ```
 public typealias URIPath = RFC_3986.URI.Path.Parser
+
+// MARK: - Sendable Conformance
+
+/// Sendable conformance for Path.Parser.
+///
+/// Path parsers are conceptually thread-safe as they are immutable value types with no
+/// shared mutable state. However, they are marked as @unchecked Sendable because the
+/// generic ComponentParsers may contain closures that cannot be verified by the compiler.
+///
+/// This conformance is safe because:
+/// - Path.Parser is a struct with immutable fields
+/// - All parsing operations are stateless transformations
+/// - No shared mutable state exists
+/// - Parsers are composed functionally without side effects
+///
+/// - Note: Required for Swift 6 strict concurrency mode in server-side applications
+/// where routing types must cross actor boundaries.
+extension RFC_3986.URI.Path.Parser: @unchecked Sendable where ComponentParsers: Sendable {}

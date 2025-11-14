@@ -61,6 +61,7 @@ extension RFC_3986.URI.Query {
         ///   - defaultValue: A default value if the field is absent. Prefer specifying a default over
         ///     applying `Parser.replaceError(with:)` if parsing should fail for invalid values.
         ///   - value: A throwing closure that creates a parser for the field's substring value.
+        @_disfavoredOverload
         @inlinable
         public init(
             _ name: String,
@@ -138,3 +139,21 @@ extension RFC_3986.URI.Query.Field: ParserPrinter where Value: ParserPrinter {
         )
     }
 }
+
+// MARK: - Sendable Conformance
+
+/// Sendable conformance for Query.Field.
+///
+/// Query fields are conceptually thread-safe as they are immutable value types with no
+/// shared mutable state. However, they are marked as @unchecked Sendable because the
+/// generic Value parser may contain closures that cannot be verified by the compiler.
+///
+/// This conformance is safe because:
+/// - Query.Field is a struct with immutable fields
+/// - All parsing operations are stateless transformations
+/// - No shared mutable state exists
+/// - Fields are used as building blocks in query parsers
+///
+/// - Note: Required for Swift 6 strict concurrency mode in server-side applications
+/// where routing types must cross actor boundaries.
+extension RFC_3986.URI.Query.Field: @unchecked Sendable where Value: Sendable {}
