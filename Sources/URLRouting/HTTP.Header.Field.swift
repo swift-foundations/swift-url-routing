@@ -98,6 +98,27 @@ extension RFC_7230.Header {
             self.valueParser = Rest().replaceError(with: "").map(.string)
         }
 
+        /// Initializes a named field parser with an RFC_2045.ContentType value.
+        ///
+        /// - Parameters:
+        ///   - name: The name of the field
+        ///   - contentType: The ContentType value to match/print
+        ///   - defaultValue: A default value if the field is absent
+        @inlinable
+        public init(
+            _ name: String,
+            _ contentType: RFC_2045.ContentType,
+            default defaultValue: Value.Output? = nil
+        )
+        where
+            Value == Parsers.MapConversion<
+                Parsers.ReplaceError<Rest<Substring>>, Conversions.SubstringToString
+            > {
+            self.defaultValue = defaultValue
+            self.name = name
+            self.valueParser = Rest().replaceError(with: "").map(.string)
+        }
+
         @inlinable
         public func parse(_ input: inout RFC_3986.URI.Request.Fields) throws -> Value.Output {
             guard

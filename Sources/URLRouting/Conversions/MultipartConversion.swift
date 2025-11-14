@@ -597,3 +597,42 @@ extension URLRouting.Conversion {
         .init(type, arrayEncodingStrategy: arrayEncodingStrategy)
     }
 }
+
+// MARK: - Multipart Body Parser Convenience
+
+/// Creates a parser that handles both Content-Type header and multipart body conversion.
+///
+/// This convenience function eliminates the need to manually set up Headers and Body separately.
+///
+/// ## Example
+///
+/// **Before (verbose):**
+/// ```swift
+/// let conversion = Multipart.Conversion(UpdateRequest.self)
+/// Headers {
+///     Field("Content-Type") { conversion.contentType.headerValue }
+/// }
+/// Body(conversion)
+/// ```
+///
+/// **After (concise):**
+/// ```swift
+/// Multipart(UpdateRequest.self, arrayEncodingStrategy: .brackets)
+/// ```
+///
+/// - Parameters:
+///   - type: The Codable type to convert to/from multipart form data
+///   - arrayEncodingStrategy: How to encode array fields (default: accumulate values)
+/// - Returns: A parser that handles Content-Type header and body conversion
+public func Multipart<Value>(
+    _ type: Value.Type,
+    arrayEncodingStrategy: MultipartArrayEncodingStrategy = .accumulateValues
+) -> some ParserPrinter<RFC_3986.URI.Request.Data, Value> where Value: Codable {
+    let conversion = Multipart.Conversion(type, arrayEncodingStrategy: arrayEncodingStrategy)
+    return Parse {
+        Headers {
+            RFC_7230.Header.Field("Content-Type") { conversion.contentType.headerValue }
+        }
+        Body(conversion)
+    }
+}

@@ -78,9 +78,9 @@ struct MultipartConversionIntegrationTests {
         #expect(string.contains("name=\"tags[]\""))
     }
 
-    @Test("URL generation with Multipart.Conversion and Headers block")
-    func testURLGenerationWithHeaders() throws {
-        // Minimal reproduction of Routes.API.update bug
+    @Test("URL generation with Multipart convenience function")
+    func testURLGenerationWithMultipart() throws {
+        // Test the new clean Multipart() syntax
         struct UpdateRequest: Codable, Equatable {
             let description: String?
 
@@ -96,18 +96,11 @@ struct MultipartConversionIntegrationTests {
         struct Router: ParserPrinter {
             var body: some URLRouting.Router<API> {
                 RFC_3986.URI.Route(.case(API.update)) {
-                    let multipartFormCoding = Multipart.Conversion(
-                        UpdateRequest.self,
-                        arrayEncodingStrategy: .accumulateValues
-                    )
-                    Headers {
-                        RFC_7230.Header.Field("content-type") { multipartFormCoding.contentType.headerValue }
-                    }
                     Method.put
                     Path { "v3" }
                     Path { "routes" }
                     Path { Parse(.string) }
-                    Body(multipartFormCoding)
+                    Multipart(UpdateRequest.self, arrayEncodingStrategy: .accumulateValues)
                 }
             }
         }
