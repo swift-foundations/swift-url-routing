@@ -4,54 +4,54 @@ import RFC_3986
 // MARK: - RFC 3986 URI Host Extension
 
 extension RFC_3986.URI {
-  /// Host component of a URI (RFC 3986 section 3.2.2)
-  ///
-  /// The host identifies the server or resource location.
-  public enum Host {}
+    /// Host component of a URI (RFC 3986 section 3.2.2)
+    ///
+    /// The host identifies the server or resource location.
+    public enum Host {}
 }
 
 extension RFC_3986.URI.Host {
-  /// Parser for URI host components
-  ///
-  /// Parses the host component per RFC 3986 section 3.2.2.
-  /// Used to require a particular host at a particular endpoint.
-  ///
-  /// Example:
-  /// ```swift
-  /// Route(.case(SiteRoute.api)) {
-  ///   RFC_3986.URI.Host.Parser("api.example.com")
-  ///   ...
-  /// }
-  /// ```
-  public struct Parser: ParserPrinter, Sendable {
-    @usableFromInline
-    let name: String
-
-    /// A parser of custom hosts.
-    public static func custom(_ host: String) -> Self {
-      Self(host)
-    }
-
-    /// Initializes a host parser with a host name.
+    /// Parser for URI host components
     ///
-    /// - Parameter name: A host name (DNS name, IPv4, or IPv6)
-    @inlinable
-    public init(_ name: String) {
-      self.name = name
-    }
+    /// Parses the host component per RFC 3986 section 3.2.2.
+    /// Used to require a particular host at a particular endpoint.
+    ///
+    /// Example:
+    /// ```swift
+    /// Route(.case(SiteRoute.api)) {
+    ///   RFC_3986.URI.Host.Parser("api.example.com")
+    ///   ...
+    /// }
+    /// ```
+    public struct Parser: ParserPrinter, Sendable {
+        @usableFromInline
+        let name: String
 
-    @inlinable
-    public func parse(_ input: inout URIRequestData) throws {
-      guard let host = input.host else { throw RoutingError() }
-      try self.name.parse(host)
-      input.host = nil
-    }
+        /// A parser of custom hosts.
+        public static func custom(_ host: String) -> Self {
+            Self(host)
+        }
 
-    @inlinable
-    public func print(_ output: (), into input: inout URIRequestData) {
-      input.host = self.name
+        /// Initializes a host parser with a host name.
+        ///
+        /// - Parameter name: A host name (DNS name, IPv4, or IPv6)
+        @inlinable
+        public init(_ name: String) {
+            self.name = name
+        }
+
+        @inlinable
+        public func parse(_ input: inout URIRequestData) throws {
+            guard let host = input.host else { throw RoutingError() }
+            try self.name.parse(host)
+            input.host = nil
+        }
+
+        @inlinable
+        public func print(_ output: (), into input: inout URIRequestData) {
+            input.host = self.name
+        }
     }
-  }
 }
 
 // MARK: - Convenience Type Alias

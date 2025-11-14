@@ -4,64 +4,72 @@ import Testing
 import URLRouting
 
 #if canImport(FoundationNetworking)
-  import FoundationNetworking
+    import FoundationNetworking
 #endif
 
 @Suite("URL Routing Client")
 struct URLRoutingClientTests {
-  #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
-    @Test("JSON decoder without custom decoder")
-    @available(iOS 13, macOS 10.15, tvOS 13, watchOS 6, *)
-    func jsonDecoderNoDecoder() async throws {
-      struct Response: Equatable, Decodable {
-        let decodableValue: String
-      }
-      enum AppRoute {
-        case test
-      }
-      let sut = URLRoutingClient<AppRoute>(request: { _ in
-        ("{\"decodableValue\":\"result\"}".data(using: .utf8)!, URLResponse())
-      })
-      let response = try await sut.decodedResponse(for: .test, as: Response.self)
-      #expect(response.value == Response(decodableValue: "result"))
-    }
+    #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+        @Test("JSON decoder without custom decoder")
+        @available(iOS 13, macOS 10.15, tvOS 13, watchOS 6, *)
+        func jsonDecoderNoDecoder() async throws {
+            struct Response: Equatable, Decodable {
+                let decodableValue: String
+            }
+            enum AppRoute {
+                case test
+            }
+            let sut = URLRoutingClient<AppRoute>(request: { _ in
+                ("{\"decodableValue\":\"result\"}".data(using: .utf8)!, URLResponse())
+            })
+            let response = try await sut.decodedResponse(for: .test, as: Response.self)
+            #expect(response.value == Response(decodableValue: "result"))
+        }
 
-    @Test("JSON decoder with custom decoder")
-    @available(iOS 13, macOS 10.15, tvOS 13, watchOS 6, *)
-    func jsonDecoderCustomDecoder() async throws {
-      struct Response: Equatable, Decodable {
-        let decodableValue: String
-      }
-      enum AppRoute {
-        case test
-      }
-      let customDecoder = JSONDecoder()
-      customDecoder.keyDecodingStrategy = .convertFromSnakeCase
-      let sut = URLRoutingClient<AppRoute>(
-        request: { _ in
-          ("{\"decodable_value\":\"result\"}".data(using: .utf8)!, URLResponse())
-        }, decoder: customDecoder)
-      let response = try await sut.decodedResponse(for: .test, as: Response.self)
-      #expect(response.value == Response(decodableValue: "result"))
-    }
+        @Test("JSON decoder with custom decoder")
+        @available(iOS 13, macOS 10.15, tvOS 13, watchOS 6, *)
+        func jsonDecoderCustomDecoder() async throws {
+            struct Response: Equatable, Decodable {
+                let decodableValue: String
+            }
+            enum AppRoute {
+                case test
+            }
+            let customDecoder = JSONDecoder()
+            customDecoder.keyDecodingStrategy = .convertFromSnakeCase
+            let sut = URLRoutingClient<AppRoute>(
+                request: { _ in
+                    ("{\"decodable_value\":\"result\"}".data(using: .utf8)!, URLResponse())
+                },
+                decoder: customDecoder
+            )
+            let response = try await sut.decodedResponse(for: .test, as: Response.self)
+            #expect(response.value == Response(decodableValue: "result"))
+        }
 
-    @Test("JSON decoder with custom decoder for specific request")
-    @available(iOS 13, macOS 10.15, tvOS 13, watchOS 6, *)
-    func jsonDecoderCustomDecoderForRequest() async throws {
-      struct Response: Equatable, Decodable {
-        let decodableValue: String
-      }
-      enum AppRoute {
-        case test
-      }
-      let customDecoder = JSONDecoder()
-      customDecoder.keyDecodingStrategy = .convertFromSnakeCase
-      let sut = URLRoutingClient<AppRoute>(
-        request: { _ in
-          ("{\"decodableValue\":\"result\"}".data(using: .utf8)!, URLResponse())
-        }, decoder: customDecoder)
-      let response = try await sut.decodedResponse(for: .test, as: Response.self, decoder: .init())
-      #expect(response.value == Response(decodableValue: "result"))
-    }
-  #endif
+        @Test("JSON decoder with custom decoder for specific request")
+        @available(iOS 13, macOS 10.15, tvOS 13, watchOS 6, *)
+        func jsonDecoderCustomDecoderForRequest() async throws {
+            struct Response: Equatable, Decodable {
+                let decodableValue: String
+            }
+            enum AppRoute {
+                case test
+            }
+            let customDecoder = JSONDecoder()
+            customDecoder.keyDecodingStrategy = .convertFromSnakeCase
+            let sut = URLRoutingClient<AppRoute>(
+                request: { _ in
+                    ("{\"decodableValue\":\"result\"}".data(using: .utf8)!, URLResponse())
+                },
+                decoder: customDecoder
+            )
+            let response = try await sut.decodedResponse(
+                for: .test,
+                as: Response.self,
+                decoder: .init()
+            )
+            #expect(response.value == Response(decodableValue: "result"))
+        }
+    #endif
 }

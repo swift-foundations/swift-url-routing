@@ -5,10 +5,10 @@ import PackageDescription
 let package = Package(
   name: "swift-url-routing",
   platforms: [
-    .iOS(.v17),
-    .macOS(.v14),
-    .tvOS(.v17),
-    .watchOS(.v10),
+    .iOS(.v18),
+    .macOS(.v15),
+    .tvOS(.v18),
+    .watchOS(.v11),
   ],
   products: [
     .library(name: "URLRouting", targets: ["URLRouting"])
@@ -16,13 +16,15 @@ let package = Package(
   dependencies: [
     .package(url: "https://github.com/apple/swift-collections", from: "1.0.3"),
     .package(url: "https://github.com/pointfreeco/swift-case-paths", from: "1.7.2"),
-    .package(url: "https://github.com/pointfreeco/swift-parsing", from: "0.14.0"),
+    .package(path: "../swift-parsing"),
     .package(url: "https://github.com/pointfreeco/xctest-dynamic-overlay", from: "1.4.0"),
     .package(url: "https://github.com/swift-standards/swift-rfc-3986.git", from: "0.1.3"),
     .package(url: "https://github.com/swift-standards/swift-rfc-6570.git", from: "0.1.0"),
-    .package(path: "../swift-standards/swift-rfc-6265"),
-    .package(path: "../swift-standards/swift-rfc-7230"),
-    .package(path: "../swift-standards/swift-rfc-7231"),
+    .package(path: "../../swift-standards/swift-rfc-6265"),
+    .package(path: "../../swift-standards/swift-rfc-7230"),
+    .package(path: "../../swift-standards/swift-rfc-7231"),
+    .package(path: "../../swift-standards/swift-whatwg-html"),
+    .package(path: "../../swift-standards/swift-whatwg-url-encoding"),
   ],
   targets: [
     .target(
@@ -36,6 +38,8 @@ let package = Package(
         .product(name: "RFC 6265", package: "swift-rfc-6265"),
         .product(name: "RFC 7230", package: "swift-rfc-7230"),
         .product(name: "RFC 7231", package: "swift-rfc-7231"),
+        .product(name: "WHATWG HTML Shared", package: "swift-whatwg-html"),
+        .product(name: "WHATWG URL Encoding", package: "swift-whatwg-url-encoding"),
       ]
     ),
     .testTarget(
