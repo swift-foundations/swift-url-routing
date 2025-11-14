@@ -15,7 +15,7 @@ struct MultipartConversionIntegrationTests {
     func testConversionExists() {
         let conversion = Multipart.Conversion(TestRequest.self)
         #expect(!conversion.boundary.isEmpty)
-        #expect(conversion.contentType.headerValue.contains("multipart/form-data"))
+        #expect(conversion.contentType.contains("multipart/form-data"))
     }
 
     @Test("Conversion.multipart() static method works")
