@@ -28,22 +28,22 @@ extension RFC_3986.URI.Query {
     /// }
     /// ```
     public struct Parser<FieldParsers: Parsing.Parser>: Parsing.Parser
-    where FieldParsers.Input == URIRequestData.Fields {
+    where FieldParsers.Input == RFC_3986.URI.Request.Fields {
         @usableFromInline
         let fieldParsers: FieldParsers
 
         @inlinable
-        public init(@ParserBuilder<URIRequestData.Fields> build: () -> FieldParsers) {
+        public init(@ParserBuilder<RFC_3986.URI.Request.Fields> build: () -> FieldParsers) {
             self.fieldParsers = build()
         }
 
         @inlinable
-        public init(@ParserBuilder<URIRequestData.Fields> build: () throws -> FieldParsers) rethrows {
+        public init(@ParserBuilder<RFC_3986.URI.Request.Fields> build: () throws -> FieldParsers) rethrows {
             self.fieldParsers = try build()
         }
 
         @inlinable
-        public func parse(_ input: inout URIRequestData) rethrows -> FieldParsers.Output {
+        public func parse(_ input: inout RFC_3986.URI.Request.Data) rethrows -> FieldParsers.Output {
             try self.fieldParsers.parse(&input.query)
         }
     }
@@ -51,7 +51,7 @@ extension RFC_3986.URI.Query {
 
 extension RFC_3986.URI.Query.Parser: ParserPrinter where FieldParsers: ParserPrinter {
     @inlinable
-    public func print(_ output: FieldParsers.Output, into input: inout URIRequestData) rethrows {
+    public func print(_ output: FieldParsers.Output, into input: inout RFC_3986.URI.Request.Data) rethrows {
         try self.fieldParsers.print(output, into: &input.query)
     }
 }

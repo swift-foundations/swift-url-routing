@@ -1,11 +1,13 @@
 import Foundation
+import IssueReporting
 import OrderedCollections
+import RFC_3986
 
 #if canImport(FoundationNetworking)
     import FoundationNetworking
 #endif
 
-extension Parser where Input == URIRequestData {
+extension Parser where Input == RFC_3986.URI.Request.Data {
     /// Matches a Foundation URLRequest to a route.
     ///
     /// Example:
@@ -15,8 +17,8 @@ extension Parser where Input == URIRequestData {
     /// ```
     @inlinable
     public func match(request: URLRequest) throws -> Output {
-        guard let data = URIRequestData(request: request)
-        else { throw RoutingError() }
+        guard let data = RFC_3986.URI.Request.Data(request: request)
+        else { throw RFC_3986.URI.Routing.Error() }
         return try self.parse(data)
     }
 
@@ -29,8 +31,8 @@ extension Parser where Input == URIRequestData {
     /// ```
     @inlinable
     public func match(url: URL) throws -> Output {
-        guard let data = URIRequestData(url: url)
-        else { throw RoutingError() }
+        guard let data = RFC_3986.URI.Request.Data(url: url)
+        else { throw RFC_3986.URI.Routing.Error() }
         return try self.parse(data)
     }
 
@@ -42,12 +44,12 @@ extension Parser where Input == URIRequestData {
     /// ```
     @inlinable
     public func match(path: String) throws -> Output {
-        let data = try URIRequestData(uriString: path)
+        let data = try RFC_3986.URI.Request.Data(uriString: path)
         return try self.parse(data)
     }
 }
 
-extension ParserPrinter where Input == URIRequestData {
+extension ParserPrinter where Input == RFC_3986.URI.Request.Data {
     /// Prints a route to a Foundation URLRequest.
     ///
     /// Example:
@@ -57,10 +59,10 @@ extension ParserPrinter where Input == URIRequestData {
     /// ```
     @inlinable
     public func request(for route: Output) throws -> URLRequest {
-        var data = URIRequestData()
+        var data = RFC_3986.URI.Request.Data()
         try self.print(route, into: &data)
         guard let request = URLRequest(data: data)
-        else { throw RoutingError() }
+        else { throw RFC_3986.URI.Routing.Error() }
         return request
     }
 
@@ -74,11 +76,11 @@ extension ParserPrinter where Input == URIRequestData {
     @inlinable
     public func url(for route: Output) -> URL {
         do {
-            var data = URIRequestData()
+            var data = RFC_3986.URI.Request.Data()
             try self.print(route, into: &data)
             return URLComponents(data: data).url ?? URL(string: "#route-not-found")!
         } catch {
-            breakpoint(
+            reportIssue(
                 """
                 ---
                 Could not generate a URL for route:
@@ -99,7 +101,7 @@ extension ParserPrinter where Input == URIRequestData {
     @inlinable
     public func urlPath(for route: Output) -> String {
         do {
-            var data = URIRequestData()
+            var data = RFC_3986.URI.Request.Data()
             try self.print(route, into: &data)
             var components = URLComponents()
             components.path = "/\(data.path.joined(separator: "/"))"
@@ -111,7 +113,7 @@ extension ParserPrinter where Input == URIRequestData {
             }
             return components.string ?? "#route-not-found"
         } catch {
-            breakpoint(
+            reportIssue(
                 """
                 ---
                 Could not generate a URL for route:

@@ -42,14 +42,14 @@ extension RFC_3986.URI.Scheme {
         }
 
         @inlinable
-        public func parse(_ input: inout URIRequestData) throws {
-            guard let scheme = input.scheme else { throw RoutingError() }
+        public func parse(_ input: inout RFC_3986.URI.Request.Data) throws {
+            guard let scheme = input.scheme else { throw RFC_3986.URI.Routing.Error() }
             try self.name.parse(scheme)
             input.scheme = nil
         }
 
         @inlinable
-        public func print(_ output: (), into input: inout URIRequestData) {
+        public func print(_ output: (), into input: inout RFC_3986.URI.Request.Data) {
             input.scheme = self.name
         }
     }

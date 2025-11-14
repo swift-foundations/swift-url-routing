@@ -1,5 +1,6 @@
 import Foundation
 import Parsing
+import RFC_3986
 import RFC_7230
 
 // MARK: - RFC 7230 Body Extension
@@ -50,9 +51,9 @@ extension RFC_7230.Body {
         }
 
         @inlinable
-        public func parse(_ input: inout URIRequestData) throws -> Bytes.Output {
+        public func parse(_ input: inout RFC_3986.URI.Request.Data) throws -> Bytes.Output {
             guard var body = input.body
-            else { throw RoutingError() }
+            else { throw RFC_3986.URI.Routing.Error() }
 
             let output = try self.bytesParser.parse(&body)
             input.body = body
@@ -64,7 +65,7 @@ extension RFC_7230.Body {
 
 extension RFC_7230.Body.Parser: ParserPrinter where Bytes: ParserPrinter {
     @inlinable
-    public func print(_ output: Bytes.Output, into input: inout URIRequestData) rethrows {
+    public func print(_ output: Bytes.Output, into input: inout RFC_3986.URI.Request.Data) rethrows {
         input.body = try self.bytesParser.print(output)
     }
 }
@@ -81,6 +82,6 @@ public typealias Body = RFC_7230.Body.Parser
 
 // MARK: - Parser Extension Compatibility
 
-extension Parser where Input == URIRequestData {
+extension Parser where Input == RFC_3986.URI.Request.Data {
     public typealias Body = RFC_7230.Body.Parser
 }

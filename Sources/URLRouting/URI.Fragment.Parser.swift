@@ -68,8 +68,8 @@ extension RFC_3986.URI.Fragment {
         }
 
         @inlinable
-        public func parse(_ input: inout URIRequestData) throws -> ValueParser.Output {
-            guard var fragment = input.fragment?[...] else { throw RoutingError() }
+        public func parse(_ input: inout RFC_3986.URI.Request.Data) throws -> ValueParser.Output {
+            guard var fragment = input.fragment?[...] else { throw RFC_3986.URI.Routing.Error() }
             let output = try self.valueParser.parse(&fragment)
             input.fragment = String(fragment)
             return output
@@ -79,7 +79,7 @@ extension RFC_3986.URI.Fragment {
 
 extension RFC_3986.URI.Fragment.Parser: ParserPrinter where ValueParser: ParserPrinter {
     @inlinable
-    public func print(_ output: ValueParser.Output, into input: inout URIRequestData) rethrows {
+    public func print(_ output: ValueParser.Output, into input: inout RFC_3986.URI.Request.Data) rethrows {
         input.fragment = String(try self.valueParser.print(output))
     }
 }

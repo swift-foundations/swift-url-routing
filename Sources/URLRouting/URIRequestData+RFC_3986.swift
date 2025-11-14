@@ -5,7 +5,7 @@ import RFC_3986
     import FoundationNetworking
 #endif
 
-extension URIRequestData {
+extension RFC_3986.URI.Request.Data {
     /// Initializes parseable request data from an RFC 3986 URI.
     ///
     /// Parses the URI using RFC 3986 compliant rules, properly handling:
@@ -16,7 +16,7 @@ extension URIRequestData {
     /// Example:
     /// ```swift
     /// let uri = try RFC_3986.URI("/users/123?page=1#section")
-    /// let requestData = try URIRequestData(uri: uri)
+    /// let requestData = try RFC_3986.URI.Request.Data(uri: uri)
     /// ```
     ///
     /// - Parameter uri: An RFC 3986 URI reference
@@ -58,7 +58,7 @@ extension URIRequestData {
     ///
     /// Example:
     /// ```swift
-    /// let requestData = try URIRequestData(uriString: "/api/users/123")
+    /// let requestData = try RFC_3986.URI.Request.Data(uriString: "/api/users/123")
     /// ```
     ///
     /// - Parameter uriString: A URI string
@@ -75,7 +75,7 @@ extension URIRequestData {
     ///
     /// Example:
     /// ```swift
-    /// let requestData = URIRequestData(
+    /// let requestData = RFC_3986.URI.Request.Data(
     ///   scheme: "https",
     ///   host: "api.example.com",
     ///   path: "/users/123",
@@ -135,7 +135,7 @@ extension URIRequestData {
     ///
     /// Example:
     /// ```swift
-    /// let requestData = URIRequestData(path: "/users/123")
+    /// let requestData = RFC_3986.URI.Request.Data(path: "/users/123")
     /// let uriString = try requestData.uriString
     /// // Result: "/users/123"
     /// ```

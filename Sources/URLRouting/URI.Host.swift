@@ -41,14 +41,14 @@ extension RFC_3986.URI.Host {
         }
 
         @inlinable
-        public func parse(_ input: inout URIRequestData) throws {
-            guard let host = input.host else { throw RoutingError() }
+        public func parse(_ input: inout RFC_3986.URI.Request.Data) throws {
+            guard let host = input.host else { throw RFC_3986.URI.Routing.Error() }
             try self.name.parse(host)
             input.host = nil
         }
 
         @inlinable
-        public func print(_ output: (), into input: inout URIRequestData) {
+        public func print(_ output: (), into input: inout RFC_3986.URI.Request.Data) {
             input.host = self.name
         }
     }

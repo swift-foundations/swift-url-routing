@@ -5,4 +5,6 @@
 //  Created by Coen ten Thije Boonkkamp on 14/11/2025.
 //
 
-import Foundation
+// MARK: - URLRouting Namespace
+
+public enum URLRouting {}

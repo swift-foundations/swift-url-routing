@@ -143,7 +143,7 @@ public struct Path<ComponentParsers: Parser>: Parser
 where ComponentParsers.Input == URIRequestData {
   let componentParsers: ComponentParsers
 
-  public init(@PathBuilder build: () -> ComponentParsers) {
+  public init(@RFC_3986.URI.Path.Builder build: () -> ComponentParsers) {
     self.componentParsers = build()
   }
 

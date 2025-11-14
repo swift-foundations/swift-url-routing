@@ -1,5 +1,4 @@
 import RFC_3986
-//import RFC_6570
 
 extension URLRouting.Router where Input == RFC_3986.URI.Request.Data {
     /// Matches an RFC 3986 URI to a route.

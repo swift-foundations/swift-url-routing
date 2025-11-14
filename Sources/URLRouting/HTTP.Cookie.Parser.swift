@@ -1,6 +1,7 @@
 import Foundation
 import OrderedCollections
 import Parsing
+import RFC_3986
 import RFC_6265
 
 // MARK: - RFC 6265 Cookie Extension
@@ -18,24 +19,24 @@ extension RFC_6265.Cookie {
     /// }
     /// ```
     public struct Parser<FieldParsers: Parsing.Parser>: Parsing.Parser
-    where FieldParsers.Input == URIRequestData.Fields {
+    where FieldParsers.Input == RFC_3986.URI.Request.Fields {
         @usableFromInline
         let cookieParsers: FieldParsers
 
         @inlinable
-        public init(@ParserBuilder<URIRequestData.Fields> build: () -> FieldParsers) {
+        public init(@ParserBuilder<RFC_3986.URI.Request.Fields> build: () -> FieldParsers) {
             self.cookieParsers = build()
         }
 
         @inlinable
-        public init(@ParserBuilder<URIRequestData.Fields> build: () throws -> FieldParsers) rethrows {
+        public init(@ParserBuilder<RFC_3986.URI.Request.Fields> build: () throws -> FieldParsers) rethrows {
             self.cookieParsers = try build()
         }
 
         @inlinable
-        public func parse(_ input: inout URIRequestData) throws -> FieldParsers.Output {
+        public func parse(_ input: inout RFC_3986.URI.Request.Data) throws -> FieldParsers.Output {
             guard let cookie = input.headers["cookie"]
-            else { throw RoutingError() }
+            else { throw RFC_3986.URI.Routing.Error() }
 
             var fields: FieldParsers.Input = cookie.reduce(
                 into: .init([:], isCaseSensitive: true)
@@ -61,8 +62,8 @@ extension RFC_6265.Cookie {
 
 extension RFC_6265.Cookie.Parser: ParserPrinter where FieldParsers: ParserPrinter {
     @inlinable
-    public func print(_ output: FieldParsers.Output, into input: inout URIRequestData) rethrows {
-        var cookies = URIRequestData.Fields()
+    public func print(_ output: FieldParsers.Output, into input: inout RFC_3986.URI.Request.Data) rethrows {
+        var cookies = RFC_3986.URI.Request.Fields()
         try self.cookieParsers.print(output, into: &cookies)
 
         input.headers["cookie", default: []].prepend(

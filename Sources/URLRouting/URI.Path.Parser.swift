@@ -26,22 +26,22 @@ extension RFC_3986.URI.Path {
     /// // 42
     /// ```
     public struct Parser<ComponentParsers: Parsing.Parser>: Parsing.Parser
-    where ComponentParsers.Input == URIRequestData {
+    where ComponentParsers.Input == RFC_3986.URI.Request.Data {
         @usableFromInline
         let componentParsers: ComponentParsers
 
         @inlinable
-        public init(@PathBuilder build: () -> ComponentParsers) {
+        public init(@RFC_3986.URI.Path.Builder build: () -> ComponentParsers) {
             self.componentParsers = build()
         }
 
         @inlinable
-        public init(@PathBuilder build: () throws -> ComponentParsers) rethrows {
+        public init(@RFC_3986.URI.Path.Builder build: () throws -> ComponentParsers) rethrows {
             self.componentParsers = try build()
         }
 
         @inlinable
-        public func parse(_ input: inout URIRequestData) rethrows -> ComponentParsers.Output {
+        public func parse(_ input: inout RFC_3986.URI.Request.Data) rethrows -> ComponentParsers.Output {
             try self.componentParsers.parse(&input)
         }
     }
@@ -49,7 +49,7 @@ extension RFC_3986.URI.Path {
 
 extension RFC_3986.URI.Path.Parser: ParserPrinter where ComponentParsers: ParserPrinter {
     @inlinable
-    public func print(_ output: ComponentParsers.Output, into input: inout URIRequestData) rethrows {
+    public func print(_ output: ComponentParsers.Output, into input: inout RFC_3986.URI.Request.Data) rethrows {
         try self.componentParsers.print(output, into: &input)
     }
 }

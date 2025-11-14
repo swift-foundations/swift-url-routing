@@ -16,9 +16,9 @@ struct TypeErasureTests {
         let concreteParser = Method.get
         let erased = AnyParserPrinter(concreteParser)
 
-        var request = URIRequestData(method: "GET")
+        var request = RFC_3986.URI.Request.Data(method: .get)
         #expect(throws: Never.self) { try erased.parse(&request) }
-        #expect(try erased.print() == URIRequestData(method: "GET"))
+        #expect(try erased.print() == RFC_3986.URI.Request.Data(method: .get))
     }
 
     // Test existential router type matching production pattern
@@ -44,15 +44,15 @@ struct TypeErasureTests {
         }
 
         // Store router as existential type
-        let router: any ParserPrinter<URIRequestData, MyRoute> = AnyParserPrinter(MyRouter())
+        let router: any ParserPrinter<RFC_3986.URI.Request.Data, MyRoute> = AnyParserPrinter(MyRouter())
 
-        let getRequest = URIRequestData(method: "GET", path: "/42")
+        let getRequest = RFC_3986.URI.Request.Data(method: .get, path: "/42")
         #expect(try router.parse(getRequest) == .get(42))
-        #expect(try router.print(.get(42)) == URIRequestData(method: "GET", path: "/42"))
+        #expect(try router.print(.get(42)) == RFC_3986.URI.Request.Data(method: .get, path: "/42"))
 
-        let listRequest = URIRequestData(method: "GET", path: "/")
+        let listRequest = RFC_3986.URI.Request.Data(method: .get, path: "/")
         #expect(try router.parse(listRequest) == .list)
-        #expect(try router.print(.list) == URIRequestData(method: "GET", path: "/"))
+        #expect(try router.print(.list) == RFC_3986.URI.Request.Data(method: .get, path: "/"))
     }
 
     // Test .eraseToAnyParserPrinter() convenience method
@@ -74,9 +74,9 @@ struct TypeErasureTests {
         let router = ItemRouter()
         let erased = router.eraseToAnyParserPrinter()
 
-        let request = URIRequestData(method: "GET", path: "/123")
+        let request = RFC_3986.URI.Request.Data(method: .get, path: "/123")
         #expect(try erased.parse(request) == .item(123))
-        #expect(try erased.print(.item(123)) == URIRequestData(method: "GET", path: "/123"))
+        #expect(try erased.print(.item(123)) == RFC_3986.URI.Request.Data(method: .get, path: "/123"))
     }
 
     // Test composition with erased routers matching production pattern
@@ -124,10 +124,10 @@ struct TypeErasureTests {
         let erased = mappedRouter.eraseToAnyParserPrinter()
 
         // Store as existential type
-        let router: any ParserPrinter<URIRequestData, AppRoute> = erased
+        let router: any ParserPrinter<RFC_3986.URI.Request.Data, AppRoute> = erased
 
-        let createRequest = URIRequestData(method: "POST", path: "/create")
+        let createRequest = RFC_3986.URI.Request.Data(method: .post, path: "/create")
         #expect(try router.parse(createRequest) == .api(.create))
-        #expect(try router.print(.api(.create)) == URIRequestData(method: "POST", path: "/create"))
+        #expect(try router.print(.api(.create)) == RFC_3986.URI.Request.Data(method: .post, path: "/create"))
     }
 }

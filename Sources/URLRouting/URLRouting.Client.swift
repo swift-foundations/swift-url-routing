@@ -1,20 +1,24 @@
 import Foundation
 import IssueReporting
 import Parsing
+import RFC_3986
 
 #if canImport(FoundationNetworking)
     import FoundationNetworking
 #endif
 
-/// A type that can make requests to a server, download the response, and decode the response into a
-/// model.
-///
-/// You do not typically construct this type directly from its initializer, and instead use the
-/// ``live(router:session:)`` static method for creating an API client from a parser-printer, or use
-/// the ``failing`` static variable for creating an API client that throws an error when a request
-/// is made and then use ``override(_:with:)-1ot4o`` to override certain routes with mocked
-/// responses.
-public struct URLRoutingClient<Route> {
+// MARK: - URLRouting Client
+
+extension URLRouting {
+    /// A type that can make requests to a server, download the response, and decode the response into a
+    /// model.
+    ///
+    /// You do not typically construct this type directly from its initializer, and instead use the
+    /// ``live(router:session:)`` static method for creating an API client from a parser-printer, or use
+    /// the ``failing`` static variable for creating an API client that throws an error when a request
+    /// is made and then use ``override(_:with:)-1ot4o`` to override certain routes with mocked
+    /// responses.
+    public struct Client<Route> {
     var request: (Route) async throws -> (Data, URLResponse)
     let decoder: JSONDecoder
 
@@ -52,18 +56,19 @@ public struct URLRoutingClient<Route> {
         do {
             return (try (decoder ?? self.decoder).decode(type, from: data), response)
         } catch {
-            throw URLRoutingDecodingError(bytes: data, response: response, underlyingError: error)
+            throw DecodingError(bytes: data, response: response, underlyingError: error)
         }
+    }
+
+    public struct DecodingError: Error {
+        public let bytes: Data
+        public let response: URLResponse
+        public let underlyingError: Error
+    }
     }
 }
 
-public struct URLRoutingDecodingError: Error {
-    public let bytes: Data
-    public let response: URLResponse
-    public let underlyingError: Error
-}
-
-extension URLRoutingClient {
+extension URLRouting.Client {
     /// Constructs a "live" API client that makes a request to a server using a `URLSession`.
     ///
     /// This client makes live requests by using the router to turn routes into URL requests,
@@ -79,7 +84,7 @@ extension URLRoutingClient {
         session: URLSession = .shared,
         decoder: JSONDecoder = .init()
     ) -> Self
-    where R.Input == URIRequestData, R.Output == Route {
+    where R.Input == RFC_3986.URI.Request.Data, R.Output == Route {
         Self(
             request: { route in
                 let request = try router.request(for: route)
@@ -109,7 +114,7 @@ extension URLRoutingClient {
     }
 }
 
-extension URLRoutingClient {
+extension URLRouting.Client {
     /// An ``APIClient`` that immediately throws an error when a request is made.
     ///
     /// This client is useful when testing a feature that uses only a small subset of the available

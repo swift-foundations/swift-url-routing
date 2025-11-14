@@ -19,7 +19,7 @@ struct URLRoutingClientTests {
             enum AppRoute {
                 case test
             }
-            let sut = URLRoutingClient<AppRoute>(request: { _ in
+            let sut = URLRouting.Client<AppRoute>(request: { _ in
                 ("{\"decodableValue\":\"result\"}".data(using: .utf8)!, URLResponse())
             })
             let response = try await sut.decodedResponse(for: .test, as: Response.self)
@@ -37,7 +37,7 @@ struct URLRoutingClientTests {
             }
             let customDecoder = JSONDecoder()
             customDecoder.keyDecodingStrategy = .convertFromSnakeCase
-            let sut = URLRoutingClient<AppRoute>(
+            let sut = URLRouting.Client<AppRoute>(
                 request: { _ in
                     ("{\"decodable_value\":\"result\"}".data(using: .utf8)!, URLResponse())
                 },
@@ -58,7 +58,7 @@ struct URLRoutingClientTests {
             }
             let customDecoder = JSONDecoder()
             customDecoder.keyDecodingStrategy = .convertFromSnakeCase
-            let sut = URLRoutingClient<AppRoute>(
+            let sut = URLRouting.Client<AppRoute>(
                 request: { _ in
                     ("{\"decodableValue\":\"result\"}".data(using: .utf8)!, URLResponse())
                 },

@@ -11,7 +11,7 @@ struct RoutingErrorTests {
             case fetch
         }
         struct BookRouter: ParserPrinter {
-            var body: some Router<BookRoute> {
+          var body: some URLRouting.Router<BookRoute> {
                 Route(.case(BookRoute.fetch))
             }
         }
@@ -34,7 +34,7 @@ struct RoutingErrorTests {
             case search(Options)
         }
         struct BooksRouter: ParserPrinter {
-            var body: some Router<BooksRoute> {
+          var body: some URLRouting.Router<BooksRoute> {
                 OneOf {
                     Route(.case(BooksRoute.book(id:route:))) {
                         Path { UUID.parser() }
@@ -44,9 +44,9 @@ struct RoutingErrorTests {
                         Path { "search" }
                         Parse(.memberwise(Options.init(sort:direction:count:))) {
                             Query {
-                                Field("sort", default: .name) { Options.Sort.parser() }
-                                Field("direction", default: .asc) { Options.Direction.parser() }
-                                Field("count", default: 10) { Int.parser() }
+                                RFC_3986.URI.Query.Field("sort", default: .name) { Options.Sort.parser() }
+                                RFC_3986.URI.Query.Field("direction", default: .asc) { Options.Direction.parser() }
+                                RFC_3986.URI.Query.Field("count", default: 10) { Int.parser() }
                             }
                         }
                     }
@@ -59,7 +59,7 @@ struct RoutingErrorTests {
             case fetch
         }
         struct UserRouter: ParserPrinter {
-            var body: some Router<UserRoute> {
+          var body: some URLRouting.Router<UserRoute> {
                 OneOf {
                     Route(.case(UserRoute.books)) {
                         Path { "books" }
@@ -80,7 +80,7 @@ struct RoutingErrorTests {
             case user(id: Int, route: UserRoute)
         }
         struct UsersRouter: ParserPrinter {
-            var body: some Router<UsersRoute> {
+          var body: some URLRouting.Router<UsersRoute> {
                 OneOf {
                     Route(.case(UsersRoute.create)) {
                         Method.post
@@ -102,7 +102,7 @@ struct RoutingErrorTests {
             case users(UsersRoute)
         }
         struct SiteRouter: ParserPrinter {
-            var body: some Router<SiteRoute> {
+          var body: some URLRouting.Router<SiteRoute> {
                 OneOf {
                     Route(.case(SiteRoute.aboutUs)) {
                         Path { "about-us" }
@@ -121,7 +121,7 @@ struct RoutingErrorTests {
         }
 
         do {
-            _ = try SiteRouter().parse(URIRequestData(path: "/123"))
+            _ = try SiteRouter().parse(RFC_3986.URI.Request.Data(path: "/123"))
             Issue.record("Expected error to be thrown")
         } catch {
             #expect(
