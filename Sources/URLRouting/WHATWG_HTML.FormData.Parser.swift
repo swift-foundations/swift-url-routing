@@ -1,6 +1,7 @@
 import Foundation
 import OrderedCollections
 import Parsing
+import RFC_3986
 import WHATWG_HTML_Shared
 import WHATWG_URL_Encoding
 
@@ -23,17 +24,17 @@ extension WHATWG_HTML.FormData {
     /// }
     /// ```
     public struct Parser<FieldParsers: Parsing.Parser>: Parsing.Parser
-    where FieldParsers.Input == URIRequestData.Fields {
+    where FieldParsers.Input == RFC_3986.URI.Request.Fields {
         @usableFromInline
         let fieldParsers: FieldParsers
 
         @inlinable
-        public init(@ParserBuilder<URIRequestData.Fields> build: () -> FieldParsers) {
+        public init(@ParserBuilder<RFC_3986.URI.Request.Fields> build: () -> FieldParsers) {
             self.fieldParsers = build()
         }
 
         @inlinable
-        public init(@ParserBuilder<URIRequestData.Fields> build: () throws -> FieldParsers) rethrows {
+        public init(@ParserBuilder<RFC_3986.URI.Request.Fields> build: () throws -> FieldParsers) rethrows {
             self.fieldParsers = try build()
         }
 
@@ -45,9 +46,7 @@ extension WHATWG_HTML.FormData {
                     let pair =
                         field
                         .split(separator: "=", maxSplits: 1, omittingEmptySubsequences: false)
-                        .compactMap {
-                            $0.replacingOccurrences(of: "+", with: " ").removingPercentEncoding
-                        }
+                        .compactMap { WHATWG_URL_Encoding.percentDecode(String($0), plusAsSpace: true) }
                     let name = pair[0]
                     let value = pair.count == 2 ? pair[1][...] : nil
                     fields[name, default: []].append(value)
@@ -64,7 +63,7 @@ extension WHATWG_HTML.FormData {
 extension WHATWG_HTML.FormData.Parser: ParserPrinter where FieldParsers: ParserPrinter {
     @inlinable
     public func print(_ output: FieldParsers.Output, into input: inout Foundation.Data) rethrows {
-        var fields = URIRequestData.Fields()
+        var fields = RFC_3986.URI.Request.Fields()
         try self.fieldParsers.print(output, into: &fields)
         input = .init(encoding: fields)
     }
@@ -86,39 +85,23 @@ public typealias FormData = WHATWG_HTML.FormData.Parser
 
 extension Foundation.Data {
     @usableFromInline
-    init(encoding fields: URIRequestData.Fields) {
+    init(encoding fields: RFC_3986.URI.Request.Fields) {
         self.init(
             fields
                 .flatMap { pair -> [String] in
                     let (name, values) = pair
-                    guard
-                        let name = name.addingPercentEncoding(
-                            withAllowedCharacters: .urlQueryParamAllowed
-                        )
-                    else { return [] }
+                    let encodedName = WHATWG_URL_Encoding.percentEncode(name, spaceAsPlus: true)
 
                     return values.compactMap { value in
                         guard let value = value
-                        else { return name }
+                        else { return encodedName }
 
-                        guard
-                            let value = value.addingPercentEncoding(
-                                withAllowedCharacters: .urlQueryParamAllowed
-                            )
-                        else { return nil }
-
-                        return "\(name)=\(value)"
+                        let encodedValue = WHATWG_URL_Encoding.percentEncode(String(value), spaceAsPlus: true)
+                        return "\(encodedName)=\(encodedValue)"
                     }
                 }
                 .joined(separator: "&")
                 .utf8
         )
     }
-}
-
-extension CharacterSet {
-    @usableFromInline
-    static let urlQueryParamAllowed = CharacterSet
-        .urlQueryAllowed
-        .subtracting(Self(charactersIn: ":#[]@!$&'()*+,;="))
 }

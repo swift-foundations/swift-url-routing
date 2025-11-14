@@ -1,7 +1,7 @@
 import RFC_3986
-import RFC_6570
+//import RFC_6570
 
-extension ParserPrinter where Input == URIRequestData {
+extension URLRouting.Router where Input == RFC_3986.URI.Request.Data {
     /// Matches an RFC 3986 URI to a route.
     ///
     /// Parses the URI into request data and runs the router's parser.
@@ -16,7 +16,7 @@ extension ParserPrinter where Input == URIRequestData {
     /// - Returns: The parsed route output
     /// - Throws: Parsing errors if the URI doesn't match any route
     public func match(uri: RFC_3986.URI) throws -> Output {
-        var data = try URIRequestData(uri: uri)
+        var data = try RFC_3986.URI.Request.Data(uri: uri)
         return try self.parse(&data)
     }
 
@@ -51,7 +51,7 @@ extension ParserPrinter where Input == URIRequestData {
     /// - Returns: An RFC 3986 URI reference
     /// - Throws: Printing errors or RFC_3986.Error if construction fails
     public func uri(for output: Output) throws -> RFC_3986.URI {
-        var data = URIRequestData()
+        var data = RFC_3986.URI.Request.Data()
         try self.print(output, into: &data)
         return try data.uri()
     }

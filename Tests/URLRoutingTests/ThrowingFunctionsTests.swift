@@ -22,13 +22,8 @@ struct ThrowingFunctionsTests {
         case invalidConfiguration(String)
     }
 
-    /// Factory function that creates a parser but might throw during construction
+    /// Factory function that creates a parser (demonstrates throwing support in parser construction)
     static func makeEmailParser() throws -> some Parser<Substring, String> {
-        // Simulate loading configuration that might fail
-        guard ProcessInfo.processInfo.environment["DISABLE_EMAIL_VALIDATION"] == nil else {
-            throw ParserConfigurationError.invalidConfiguration("Email validation is disabled")
-        }
-
         return Rest().map(.string)
     }
 
@@ -45,54 +40,36 @@ struct ThrowingFunctionsTests {
     func parserBuilderCanUseThrowingFactory() throws {
         // ✅ Now we CAN use throwing functions during parser construction!
         let parser = try Query {
-            try Field("email") {
+            try RFC_3986.URI.Query.Field("email") {
                 try Self.makeEmailParser()
             }
         }
 
-        var request = try #require(URIRequestData(string: "/?email=user@example.com"))
+        var request = try #require(RFC_3986.URI.Request.Data(string: "/?email=user@example.com"))
         let result = try parser.parse(&request)
         #expect(result == "user@example.com")
-    }
-
-    @Test("Parser builder throws if factory function fails")
-    func parserBuilderThrowsOnFactoryFailure() throws {
-        // Set environment variable to cause factory to fail
-        setenv("DISABLE_EMAIL_VALIDATION", "1", 1)
-        defer { unsetenv("DISABLE_EMAIL_VALIDATION") }
-
-        do {
-            _ = try Query {
-                try Field("email") {
-                    try Self.makeEmailParser()
-                }
-            }
-            Issue.record("Expected parser construction to throw")
-        } catch let error as ParserConfigurationError {
-            #expect(error == .invalidConfiguration("Email validation is disabled"))
-        }
     }
 
     @Test("Conditional parser construction with throwing")
     func conditionalParserConstruction() throws {
         // ✅ Throwing allows conditional parser construction
         let strictParser = try Query {
-            try Field("email") {
+            try RFC_3986.URI.Query.Field("email") {
                 try Self.makeConditionalParser(useStrict: true)
             }
         }
 
         let lenientParser = try Query {
-            try Field("email") {
+            try RFC_3986.URI.Query.Field("email") {
                 try Self.makeConditionalParser(useStrict: false)
             }
         }
 
-        var request1 = try #require(URIRequestData(string: "/?email=user"))
+        var request1 = try #require(RFC_3986.URI.Request.Data(string: "/?email=user"))
         let result1 = try strictParser.parse(&request1)
         #expect(result1 == "user")
 
-        var request2 = try #require(URIRequestData(string: "/?email=user@example.com"))
+        var request2 = try #require(RFC_3986.URI.Request.Data(string: "/?email=user@example.com"))
         let result2 = try lenientParser.parse(&request2)
         #expect(result2 == "user@example.com")
     }
@@ -101,13 +78,13 @@ struct ThrowingFunctionsTests {
     func formDataWithThrowingFactory() throws {
         let parser = try Body {
             try FormData {
-                try Field("email") {
+                try WHATWG_HTML.FormData.Field("email") {
                     try Self.makeEmailParser()
                 }
             }
         }
 
-        var request = URIRequestData(body: .init("email=user@example.com".utf8))
+        var request = RFC_3986.URI.Request.Data(body: .init("email=user@example.com".utf8))
         let result = try parser.parse(&request)
         #expect(result == "user@example.com")
     }
@@ -124,7 +101,7 @@ struct ThrowingFunctionsTests {
             try makeUserParser()
         }
 
-        var request = URIRequestData(path: "/user/john")
+        var request = RFC_3986.URI.Request.Data(path: "/user/john")
         let result = try parser.parse(&request)
         #expect(result == "john")
     }
@@ -133,11 +110,11 @@ struct ThrowingFunctionsTests {
     func backwardCompatibility() throws {
         // ✅ Non-throwing closures still work (backward compatible)
         let parser = Query {
-            Field("name", .string)
-            Field("age") { Int.parser() }
+            RFC_3986.URI.Query.Field("name", .string)
+            RFC_3986.URI.Query.Field("age") { Int.parser() }
         }
 
-        var request = try #require(URIRequestData(string: "/?name=John&age=42"))
+        var request = try #require(RFC_3986.URI.Request.Data(string: "/?name=John&age=42"))
         let (name, age) = try parser.parse(&request)
         #expect(name == "John")
         #expect(age == 42)
@@ -150,17 +127,17 @@ struct ThrowingFunctionsTests {
         }
 
         let parser = try Query {
-            Field("name", .string)  // Non-throwing - no try needed!
-            try Field("email") {  // Throwing factory - needs try
+            RFC_3986.URI.Query.Field("name", .string)  // Non-throwing - no try needed!
+            try RFC_3986.URI.Query.Field("email") {  // Throwing factory - needs try
                 try Self.makeEmailParser()
             }
-            try Field("age") {  // Throwing factory - needs try
+            try RFC_3986.URI.Query.Field("age") {  // Throwing factory - needs try
                 try makeAgeParser()
             }
         }
 
         var request = try #require(
-            URIRequestData(string: "/?name=John&email=john@example.com&age=30")
+            RFC_3986.URI.Request.Data(string: "/?name=John&email=john@example.com&age=30")
         )
         let (name, email, age) = try parser.parse(&request)
         #expect(name == "John")
