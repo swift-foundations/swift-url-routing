@@ -15,7 +15,7 @@ struct MultipartConversionIntegrationTests {
     func testConversionExists() {
         let conversion = Multipart.Conversion(TestRequest.self)
         #expect(!conversion.boundary.isEmpty)
-        #expect(conversion.contentType.contains("multipart/form-data"))
+        #expect(conversion.contentType.headerValue.contains("multipart/form-data"))
     }
 
     @Test("Conversion.multipart() static method works")
@@ -101,7 +101,7 @@ struct MultipartConversionIntegrationTests {
                         arrayEncodingStrategy: .accumulateValues
                     )
                     Headers {
-                        RFC_7230.Header.Field("content-type") { multipartFormCoding.contentType }
+                        RFC_7230.Header.Field("content-type") { multipartFormCoding.contentType.headerValue }
                     }
                     Method.put
                     Path { "v3" }

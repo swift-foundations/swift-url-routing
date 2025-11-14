@@ -97,9 +97,13 @@ extension Multipart {
 
         /// The Content-Type header value for multipart/form-data requests.
         ///
-        /// Returns a string in the format: `multipart/form-data; boundary=<unique-boundary>`
-        public var contentType: String {
-            "multipart/form-data; boundary=\(boundary)"
+        /// Returns an RFC 2045 ContentType with the format: `multipart/form-data; boundary=<unique-boundary>`
+        public var contentType: RFC_2045.ContentType {
+            RFC_2045.ContentType(
+                type: "multipart",
+                subtype: "form-data",
+                parameters: ["boundary": boundary]
+            )
         }
     }
 }
