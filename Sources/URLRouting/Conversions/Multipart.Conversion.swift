@@ -509,7 +509,7 @@ extension FileUpload {
     }
 }
 
-extension FileUpload: @retroactive ParserPrinter {
+extension FileUpload: ParserPrinter {
     public typealias Input = RFC_3986.URI.Request.Data
     public typealias Output = Foundation.Data
 
@@ -556,50 +556,6 @@ extension FileUpload: @retroactive ParserPrinter {
 
         // Print body
         try Body(BodyConversion(fileUpload: self)).print(output, into: &input)
-    }
-}
-
-// MARK: - FileUpload callAsFunction
-
-extension FileUpload {
-    /// Callable syntax for creating file upload parsers.
-    ///
-    /// This static method enables calling `FileUpload` as a function, providing clean syntax
-    /// for file upload routes.
-    ///
-    /// ## Example
-    ///
-    /// ```swift
-    /// Route(.case(API.uploadAvatar)) {
-    ///     Method.post
-    ///     Path { "upload" / "avatar" }
-    ///     FileUpload(
-    ///         fieldName: "avatar",
-    ///         filename: "profile.jpg",
-    ///         fileType: .image(.jpeg)
-    ///     )
-    /// }
-    /// ```
-    ///
-    /// - Parameters:
-    ///   - fieldName: The form field name for this file upload
-    ///   - filename: The filename to include in the multipart headers
-    ///   - fileType: The file type specification including validation rules
-    ///   - maxSize: Optional maximum file size (defaults to 10MB)
-    /// - Returns: A file upload parser that handles Content-Type header and body
-    /// - Throws: Validation errors if parameters are invalid
-    public static func callAsFunction(
-        fieldName: String,
-        filename: String,
-        fileType: FileType,
-        maxSize: Int = FileUpload.maxFileSize
-    ) throws -> FileUpload {
-        try FileUpload(
-            fieldName: fieldName,
-            filename: filename,
-            fileType: fileType,
-            maxSize: maxSize
-        )
     }
 }
 
@@ -706,7 +662,9 @@ public struct Multipart<Value: Codable>  {
         self.type = type
         self.arrayEncodingStrategy = arrayEncodingStrategy
     }
+}
 
+extension Multipart: ParserPrinter {
     public func parse(_ input: inout RFC_3986.URI.Request.Data) throws -> Value {
         let conversion = Multipart.Conversion(type, arrayEncodingStrategy: arrayEncodingStrategy)
 
@@ -734,8 +692,4 @@ public struct Multipart<Value: Codable>  {
         // Print body
         try Body(conversion).print(output, into: &input)
     }
-}
-
-extension Multipart: ParserPrinter {
-    
 }
