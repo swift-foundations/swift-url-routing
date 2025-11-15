@@ -74,7 +74,7 @@ extension FileUpload: ParserPrinter {
         // Parse Content-Type header
         try Parse {
             Headers {
-                RFC_7230.Header.Field("Content-Type") { self.contentType.headerValue }
+                RFC_7230.Header.Field.Parser("Content-Type") { self.contentType.headerValue }
             }
         }.parse(&input)
 
@@ -97,7 +97,7 @@ extension FileUpload: ParserPrinter {
         // Print Content-Type header
         try Parse {
             Headers {
-                RFC_7230.Header.Field("Content-Type") { self.contentType.headerValue }
+                RFC_7230.Header.Field.Parser("Content-Type") { self.contentType.headerValue }
             }
         }.print((), into: &input)
 

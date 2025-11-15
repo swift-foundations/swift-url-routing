@@ -73,7 +73,7 @@ struct URLRoutingTests {
     @Test("Headers parsing")
     func headers() throws {
         let p = Headers {
-            RFC_7230.Header.Field("X-Haha", .string)
+            RFC_7230.Header.Field.Parser("X-Haha", .string)
         }
 
         var req = URLRequest(url: URL(string: "/")!)

@@ -73,7 +73,7 @@ extension Multipart: ParserPrinter {
         // Parse Content-Type header
         try Parse {
             Headers {
-                RFC_7230.Header.Field("Content-Type") { conversion.contentType.headerValue }
+                RFC_7230.Header.Field.Parser("Content-Type") { conversion.contentType.headerValue }
             }
         }.parse(&input)
 
@@ -87,7 +87,7 @@ extension Multipart: ParserPrinter {
         // Print Content-Type header
         try Parse {
             Headers {
-                RFC_7230.Header.Field("Content-Type") { conversion.contentType.headerValue }
+                RFC_7230.Header.Field.Parser("Content-Type") { conversion.contentType.headerValue }
             }
         }.print((), into: &input)
 

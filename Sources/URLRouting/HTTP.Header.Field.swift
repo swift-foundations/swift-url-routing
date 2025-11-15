@@ -3,19 +3,19 @@ import Parsing
 import RFC_3986
 import RFC_7230
 
-// MARK: - RFC 7230 HTTP Header Field
+// MARK: - RFC 7230 HTTP Header Field Parser
 
-extension RFC_7230.Header {
+extension RFC_7230.Header.Field {
     /// Parses a named field's value for HTTP headers.
     ///
     /// Example:
     /// ```swift
     /// HTTP.Header.Parser {
-    ///   Field("Content-Type", .string)
-    ///   Field("Content-Length") { Int.parser() }
+    ///   Field.Parser("Content-Type", .string)
+    ///   Field.Parser("Content-Length") { Int.parser() }
     /// }
     /// ```
-    public struct Field<Value: Parsing.Parser>: Parsing.Parser where Value.Input == Substring {
+    public struct Parser<Value: Parsing.Parser>: Parsing.Parser where Value.Input == Substring {
         @usableFromInline
         let defaultValue: Value.Output?
 
@@ -124,15 +124,23 @@ extension RFC_7230.Header {
     }
 }
 
-extension RFC_7230.Header.Field: ParserPrinter where Value: ParserPrinter {
+extension RFC_7230.Header.Field.Parser: ParserPrinter where Value: ParserPrinter {
     @inlinable
-    public func print(_ output: Value.Output, into input: inout RFC_3986.URI.Request.Fields) rethrows {
+    public func print(_ output: Value.Output, into input: inout RFC_3986.URI.Request.Fields) throws {
         if let defaultValue = self.defaultValue, Internal.isEqual(output, defaultValue) { return }
+
+        // Print the value
+        let printedValue = try self.valueParser.print(output)
+
+        // Validate against CRLF injection per RFC 7230 §3.2
+        // This prevents header injection attacks
+        _ = try RFC_7230.Header.Field.Value(String(printedValue))
+
         try input.fields.updateValue(
             forKey: input.isCaseSensitive ? self.name : self.name.lowercased(),
             insertingDefault: [],
             at: 0,
-            with: { $0.prepend(try self.valueParser.print(output)) }
+            with: { $0.prepend(printedValue) }
         )
     }
 }
@@ -155,14 +163,14 @@ extension RFC_7230.Header {
     /// ```
     public struct ContentType<Value: Parsing.Parser>: Parsing.Parser where Value.Input == Substring {
         @usableFromInline
-        let valueParser: RFC_7230.Header.Field<Value>
+        let valueParser: RFC_7230.Header.Field.Parser<Value>
 
         /// Initializes a Content-Type header parser.
         ///
         /// - Parameter value: A parser builder closure for the content type value
         @inlinable
         public init(@ParserBuilder<Substring> _ value: () -> Value) {
-            self.valueParser = RFC_7230.Header.Field("Content-Type", value)
+            self.valueParser = RFC_7230.Header.Field.Parser("Content-Type", value)
         }
 
         /// Initializes a Content-Type header parser with a throwing closure.
@@ -171,7 +179,7 @@ extension RFC_7230.Header {
         @_disfavoredOverload
         @inlinable
         public init(@ParserBuilder<Substring> _ value: () throws -> Value) rethrows {
-            self.valueParser = try RFC_7230.Header.Field("Content-Type", value)
+            self.valueParser = try RFC_7230.Header.Field.Parser("Content-Type", value)
         }
 
         @inlinable
@@ -183,7 +191,7 @@ extension RFC_7230.Header {
 
 extension RFC_7230.Header.ContentType: ParserPrinter where Value: ParserPrinter {
     @inlinable
-    public func print(_ output: Value.Output, into input: inout RFC_3986.URI.Request.Fields) rethrows {
+    public func print(_ output: Value.Output, into input: inout RFC_3986.URI.Request.Fields) throws {
         try self.valueParser.print(output, into: &input)
     }
 }
