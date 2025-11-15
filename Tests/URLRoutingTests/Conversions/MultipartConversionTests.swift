@@ -2,8 +2,9 @@ import Testing
 import Foundation
 import URLRouting
 import MultipartFormCoding
+import RFC_2046
 
-@Suite("Multipart.Conversion Integration Tests")
+@Suite("RFC_2046.Multipart.Conversion Integration Tests")
 struct MultipartConversionIntegrationTests {
 
     struct TestRequest: Codable, Equatable {
@@ -11,9 +12,9 @@ struct MultipartConversionIntegrationTests {
         let subscribed: Bool
     }
 
-    @Test("Multipart.Conversion exists and is accessible")
+    @Test("RFC_2046.Multipart.Conversion exists and is accessible")
     func testConversionExists() {
-        let conversion = Multipart.Conversion(TestRequest.self)
+        let conversion = RFC_2046.Multipart.Conversion(TestRequest.self)
         #expect(!conversion.boundary.value.isEmpty)
         #expect(conversion.contentType.type == "multipart")
         #expect(conversion.contentType.subtype == "form-data")
@@ -22,7 +23,7 @@ struct MultipartConversionIntegrationTests {
     @Test("Conversion.multipart() static method works")
     func testStaticMultipartMethod() throws {
         // Use explicit type to initialize conversion
-        let conversion = Multipart.Conversion(TestRequest.self)
+        let conversion = RFC_2046.Multipart.Conversion(TestRequest.self)
         let request = TestRequest(name: "John", subscribed: true)
         let data = try conversion.unapply(request)
         #expect(!data.isEmpty)
@@ -30,7 +31,7 @@ struct MultipartConversionIntegrationTests {
 
     @Test("Generates valid multipart data")
     func testMultipartGeneration() throws {
-        let conversion = Multipart.Conversion(TestRequest.self)
+        let conversion = RFC_2046.Multipart.Conversion(TestRequest.self)
         let request = TestRequest(name: "Test User", subscribed: false)
 
         let data = try conversion.unapply(request)
@@ -48,7 +49,7 @@ struct MultipartConversionIntegrationTests {
             let tags: [String]
         }
 
-        let conversion = Multipart.Conversion(
+        let conversion = RFC_2046.Multipart.Conversion(
             RequestWithArray.self,
             arrayEncodingStrategy: .accumulateValues
         )
@@ -67,7 +68,7 @@ struct MultipartConversionIntegrationTests {
             let tags: [String]
         }
 
-        let conversion = Multipart.Conversion(
+        let conversion = RFC_2046.Multipart.Conversion(
             RequestWithArray.self,
             arrayEncodingStrategy: .brackets
         )
@@ -116,7 +117,7 @@ struct MultipartConversionIntegrationTests {
         #expect(url.path == "/v3/routes/test-id", "Expected '/v3/routes/test-id', got '\(url.path)'")
     }
 
-    @Test("URL generation with Multipart.Conversion WITHOUT Headers block")
+    @Test("URL generation with RFC_2046.Multipart.Conversion WITHOUT Headers block")
     func testURLGenerationWithoutHeaders() throws {
         // Test if removing Headers fixes URL generation
         struct UpdateRequest: Codable, Equatable {
@@ -138,7 +139,7 @@ struct MultipartConversionIntegrationTests {
                     Path { "v3" }
                     Path { "routes" }
                     Path { Parse(.string) }
-                    Body(Multipart.Conversion(
+                    Body(RFC_2046.Multipart.Conversion(
                         UpdateRequest.self,
                         arrayEncodingStrategy: .accumulateValues
                     ))
@@ -168,7 +169,7 @@ struct MultipartConversionIntegrationTests {
             }
         }
 
-        let conversion = Multipart.Conversion(EmptyableRequest.self)
+        let conversion = RFC_2046.Multipart.Conversion(EmptyableRequest.self)
         let emptyRequest = EmptyableRequest()
 
         // Attempt to encode the empty request should throw

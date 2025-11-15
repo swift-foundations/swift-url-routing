@@ -66,35 +66,69 @@ public enum MultipartArrayEncodingStrategy: Sendable {
     /// Repeats the field name for each array element.
     /// Example: `name="tags"\r\n\r\nswift\r\n...name="tags"\r\n\r\nios`
     case accumulateValues
-
+    
     /// Appends empty brackets to field name.
     /// Example: `name="tags[]"\r\n\r\nswift\r\n...name="tags[]"\r\n\r\nios`
     case brackets
 }
 
-extension Multipart {
-    public struct Conversion: @unchecked Sendable {
+extension RFC_2046.Multipart {
+    public struct Conversion<Value: Codable>: @unchecked Sendable {
         /// The validated boundary used to separate multipart fields.
         public let boundary: RFC_2046.Boundary
-
-        /// Strategy for encoding arrays in multipart fields.
-        public let arrayEncodingStrategy: MultipartArrayEncodingStrategy
-
+        
+        /// The encoder used for encoding values to multipart format
+        public let encoder: RFC_2046.Multipart.Encoder
+        
         /// Creates a new multipart form coding conversion.
         ///
         /// - Parameters:
         ///   - type: The Codable type to convert to/from
-        ///   - arrayEncodingStrategy: How to encode array fields (default: accumulate values)
+        ///   - encoder: Multipart encoder with encoding strategies (default: new encoder)
         ///   - boundary: Optional custom boundary string (generates one if not provided)
+        ///
+        /// ## Example
+        ///
+        /// ```swift
+        /// let encoder = Multipart.Encoder()
+        /// encoder.boolEncoder = .yesNo
+        /// encoder.fileExtractor = { value in
+        ///     if let attachment = value as? Attachment {
+        ///         return RFC_2046.Multipart.File(...)
+        ///     }
+        ///     return nil
+        /// }
+        ///
+        /// let conversion = Multipart.Conversion(Request.self, encoder: encoder)
+        /// ```
         public init(
             _ type: Value.Type,
-            arrayEncodingStrategy: MultipartArrayEncodingStrategy = .accumulateValues,
+            encoder: RFC_2046.Multipart.Encoder = RFC_2046.Multipart.Encoder(),
             boundary: RFC_2046.Boundary? = nil
         ) {
             self.boundary = boundary ?? RFC_2046.Boundary()
-            self.arrayEncodingStrategy = arrayEncodingStrategy
+            self.encoder = encoder
         }
-
+        
+        /// Creates a new multipart form coding conversion with array strategy.
+        ///
+        /// - Parameters:
+        ///   - type: The Codable type to convert to/from
+        ///   - arrayEncodingStrategy: How to encode array fields
+        ///   - boundary: Optional custom boundary string (generates one if not provided)
+        ///
+        /// - Note: This initializer is provided for backward compatibility.
+        ///   Prefer using the encoder-based initializer for more control.
+        public init(
+            _ type: Value.Type,
+            arrayEncodingStrategy: MultipartArrayEncodingStrategy,
+            boundary: RFC_2046.Boundary? = nil
+        ) {
+            let encoder = RFC_2046.Multipart.Encoder()
+            encoder.arrayEncodingStrategy = arrayEncodingStrategy
+            self.init(type, encoder: encoder, boundary: boundary)
+        }
+        
         /// The Content-Type header value for multipart/form-data requests.
         ///
         /// Returns an RFC 2045 ContentType with the format: `multipart/form-data; boundary=<unique-boundary>`
@@ -108,7 +142,7 @@ extension Multipart {
     }
 }
 
-extension Multipart.Conversion: Conversion {
+extension RFC_2046.Multipart.Conversion: Conversion {
     /// Converts multipart form data to a Swift value.
     ///
     /// - Parameter input: The form data to decode
@@ -118,7 +152,7 @@ extension Multipart.Conversion: Conversion {
     /// - Note: Parses multipart data using RFC 2046 parser and converts to Swift value via JSON.
     public func apply(_ input: Data) throws -> Value {
         print("DEBUG apply() called with \(input.count) bytes")
-
+        
         // Convert Data to String
         guard let string = String(data: input, encoding: .utf8) else {
             print("DEBUG: Invalid UTF-8")
@@ -126,23 +160,23 @@ extension Multipart.Conversion: Conversion {
                 reason: "Invalid UTF-8 in multipart data"
             )
         }
-
+        
         print("DEBUG: String length = \(string.count)")
-
+        
         // Parse multipart data using RFC 2046
         let multipart = try RFC_2046.Multipart.parse(
             string,
             boundary: boundary,
             subtype: RFC_2046.Multipart.Subtype.formData
         )
-
+        
         print("DEBUG: Parsed \(multipart.parts.count) parts")
-
+        
         // Extract form fields to dictionary
         let fields = multipart.extractFormFields()
-
+        
         print("DEBUG: Extracted \(fields.count) fields: \(fields)")
-
+        
         // Convert dictionary to JSON and then decode to Value type
         let jsonData = try JSONSerialization.data(withJSONObject: fields)
         let decoder = JSONDecoder()
@@ -150,7 +184,7 @@ extension Multipart.Conversion: Conversion {
         print("DEBUG: Decoded successfully")
         return result
     }
-
+    
     /// Converts a Swift value to multipart form data.
     ///
     /// This method encodes the Swift value to RFC 7578-compliant multipart/form-data
@@ -162,19 +196,19 @@ extension Multipart.Conversion: Conversion {
     public func unapply(_ output: Value) throws -> Foundation.Data {
         print("DEBUG unapply() called with output: \(output)")
         // Step 1: Extract field→value pairs using our custom encoder
-        let encoder = MultipartFieldEncoder(arrayStrategy: arrayEncodingStrategy)
-        try output.encode(to: encoder)
-        print("DEBUG encoder.fields count: \(encoder.fields.count)")
-
-        // Step 2: Validate we have at least one field
-        guard !encoder.fields.isEmpty else {
+        let fieldEncoder = RFC_2046.Multipart.FieldEncoder(multipartEncoder: encoder)
+        try output.encode(to: fieldEncoder)
+        print("DEBUG encoder.fields count: \(fieldEncoder.fields.count)")
+        
+        // Step 2: Validate we have at least one field or file
+        guard !fieldEncoder.fields.isEmpty || !fieldEncoder.files.isEmpty else {
             throw MultipartConversionError.emptyRequest(
                 reason: "Cannot encode \(Value.self) as multipart/form-data: all fields are nil or empty. At least one field must have a value."
             )
         }
-
-        // Step 3: Convert each field to an RFC_2046.BodyPart
-        let parts: [RFC_2046.BodyPart] = encoder.fields.map { field in
+        
+        // Step 3: Convert text fields to RFC_2046.BodyPart
+        let fieldParts: [RFC_2046.BodyPart] = fieldEncoder.fields.map { field in
             // Create BodyPart with typed Headers using RFC_2183 Content-Disposition
             // This handles escaping of special characters in field names per RFC 2183
             return RFC_2046.BodyPart(
@@ -182,22 +216,38 @@ extension Multipart.Conversion: Conversion {
                 text: field.value
             )
         }
-
-        // Step 4: Build RFC 2046-compliant multipart message
+        
+        // Step 4: Convert file fields to RFC_2046.BodyPart
+        let fileParts: [RFC_2046.BodyPart] = fieldEncoder.files.map { file in
+            let base64Content = file.content.base64EncodedString()
+            return RFC_2046.BodyPart(
+                headers: RFC_2046.BodyPart.Headers(
+                    contentDisposition: .formData(name: file.fieldName, filename: file.filename),
+                    contentType: file.contentType ?? .applicationOctetStream,
+                    contentTransferEncoding: .base64
+                ),
+                text: base64Content
+            )
+        }
+        
+        // Step 5: Combine all parts
+        let allParts = fieldParts + fileParts
+        
+        // Step 6: Build RFC 2046-compliant multipart message
         let multipart = try RFC_2046.Multipart(
             subtype: .formData,
-            parts: parts,
+            parts: allParts,
             boundary: boundary
         )
-
-        // Step 5: Render to RFC-compliant format with CRLF line endings
+        
+        // Step 7: Render to RFC-compliant format with CRLF line endings
         let rendered = multipart.render()
-
-        // Step 6: Convert to Data
+        
+        // Step 8: Convert to Data
         guard let data = rendered.data(using: .utf8) else {
             throw MultipartConversionError.encodingFailed
         }
-
+        
         return data
     }
 }
@@ -207,7 +257,7 @@ public enum MultipartConversionError: Error, LocalizedError {
     case encodingFailed
     case decodingFailed(reason: String)
     case emptyRequest(reason: String)
-
+    
     public var errorDescription: String? {
         switch self {
         case .encodingFailed:
@@ -222,260 +272,334 @@ public enum MultipartConversionError: Error, LocalizedError {
 
 // MARK: - Custom Encoder for Field Extraction
 
-/// Internal encoder that extracts field names and values from Codable types.
-private class MultipartFieldEncoder: Encoder {
-    var fields: [MultipartField] = []
-    let arrayStrategy: MultipartArrayEncodingStrategy
-    var codingPath: [CodingKey] = []
-    var userInfo: [CodingUserInfoKey: Any] = [:]
-
-    init(arrayStrategy: MultipartArrayEncodingStrategy) {
-        self.arrayStrategy = arrayStrategy
-    }
-
-    func container<Key>(keyedBy type: Key.Type) -> KeyedEncodingContainer<Key> where Key: CodingKey {
-        let container = MultipartKeyedEncodingContainer<Key>(
-            encoder: self,
-            codingPath: codingPath,
-            arrayStrategy: arrayStrategy
-        )
-        return KeyedEncodingContainer(container)
-    }
-
-    func unkeyedContainer() -> UnkeyedEncodingContainer {
-        fatalError("Unkeyed containers at root level not supported for multipart encoding")
-    }
-
-    func singleValueContainer() -> SingleValueEncodingContainer {
-        MultipartSingleValueEncodingContainer(encoder: self, codingPath: codingPath)
-    }
-}
-
-private struct MultipartField {
-    let name: String
-    let value: String
-}
-
-private struct MultipartKeyedEncodingContainer<Key: CodingKey>: KeyedEncodingContainerProtocol {
-    let encoder: MultipartFieldEncoder
-    var codingPath: [CodingKey]
-    let arrayStrategy: MultipartArrayEncodingStrategy
-
-    mutating func encodeNil(forKey key: Key) throws {
-        // Skip nil values
-    }
-
-    mutating func encode(_ value: Bool, forKey key: Key) throws {
-        let stringValue = value ? "true" : "false"
-        encoder.fields.append(MultipartField(name: key.stringValue, value: stringValue))
-    }
-
-    mutating func encode(_ value: String, forKey key: Key) throws {
-        encoder.fields.append(MultipartField(name: key.stringValue, value: value))
-    }
-
-    mutating func encode(_ value: Int, forKey key: Key) throws {
-        encoder.fields.append(MultipartField(name: key.stringValue, value: String(value)))
-    }
-
-    mutating func encode(_ value: Double, forKey key: Key) throws {
-        encoder.fields.append(MultipartField(name: key.stringValue, value: String(value)))
-    }
-
-    mutating func encode(_ value: Float, forKey key: Key) throws {
-        encoder.fields.append(MultipartField(name: key.stringValue, value: String(value)))
-    }
-
-    mutating func encode(_ value: Int8, forKey key: Key) throws {
-        encoder.fields.append(MultipartField(name: key.stringValue, value: String(value)))
-    }
-
-    mutating func encode(_ value: Int16, forKey key: Key) throws {
-        encoder.fields.append(MultipartField(name: key.stringValue, value: String(value)))
-    }
-
-    mutating func encode(_ value: Int32, forKey key: Key) throws {
-        encoder.fields.append(MultipartField(name: key.stringValue, value: String(value)))
-    }
-
-    mutating func encode(_ value: Int64, forKey key: Key) throws {
-        encoder.fields.append(MultipartField(name: key.stringValue, value: String(value)))
-    }
-
-    mutating func encode(_ value: UInt, forKey key: Key) throws {
-        encoder.fields.append(MultipartField(name: key.stringValue, value: String(value)))
-    }
-
-    mutating func encode(_ value: UInt8, forKey key: Key) throws {
-        encoder.fields.append(MultipartField(name: key.stringValue, value: String(value)))
-    }
-
-    mutating func encode(_ value: UInt16, forKey key: Key) throws {
-        encoder.fields.append(MultipartField(name: key.stringValue, value: String(value)))
-    }
-
-    mutating func encode(_ value: UInt32, forKey key: Key) throws {
-        encoder.fields.append(MultipartField(name: key.stringValue, value: String(value)))
-    }
-
-    mutating func encode(_ value: UInt64, forKey key: Key) throws {
-        encoder.fields.append(MultipartField(name: key.stringValue, value: String(value)))
-    }
-
-    mutating func encode<T>(_ value: T, forKey key: Key) throws where T: Encodable {
-        // Handle arrays
-        if let array = value as? [Any] {
-            try encodeArray(array, forKey: key)
-            return
+extension RFC_2046.Multipart {
+    /// Internal encoder that extracts field names and values from Codable types.
+    fileprivate class FieldEncoder: Swift.Encoder {
+        var fields: [Field] = []
+        var files: [RFC_7578.Form.Data.File] = []
+        let multipartEncoder: RFC_2046.Multipart.Encoder
+        var codingPath: [CodingKey] = []
+        var userInfo: [CodingUserInfoKey: Any] = [:]
+        
+        init(multipartEncoder: RFC_2046.Multipart.Encoder) {
+            self.multipartEncoder = multipartEncoder
         }
-
-        // For other complex types, encode them as nested JSON
-        // (This is a simplification - in practice you might want more sophisticated handling)
-        let jsonEncoder = JSONEncoder()
-        let jsonData = try jsonEncoder.encode(value)
-        if let jsonString = String(data: jsonData, encoding: .utf8) {
-            encoder.fields.append(MultipartField(name: key.stringValue, value: jsonString))
+        
+        func container<Key>(keyedBy type: Key.Type) -> KeyedEncodingContainer<Key> where Key: CodingKey {
+            let container = KeyedContainer<Key>(
+                encoder: self,
+                codingPath: codingPath
+            )
+            return KeyedEncodingContainer(container)
+        }
+        
+        func unkeyedContainer() -> UnkeyedEncodingContainer {
+            fatalError("Unkeyed containers at root level not supported for multipart encoding")
+        }
+        
+        func singleValueContainer() -> SingleValueEncodingContainer {
+            SingleValueContainer(encoder: self, codingPath: codingPath)
         }
     }
-
-    private mutating func encodeArray(_ array: [Any], forKey key: Key) throws {
-        let fieldName: String
-        switch arrayStrategy {
-        case .accumulateValues:
-            fieldName = key.stringValue
-        case .brackets:
-            fieldName = "\(key.stringValue)[]"
+    
+    fileprivate struct Field {
+        let name: String
+        let value: String
+    }
+    
+    fileprivate struct KeyedContainer<Key: CodingKey>: KeyedEncodingContainerProtocol {
+        let encoder: RFC_2046.Multipart.FieldEncoder
+        var codingPath: [CodingKey]
+        
+        mutating func encodeNil(forKey key: Key) throws {
+            // Skip nil values
         }
-
-        for element in array {
-            let stringValue: String
-            if let stringElement = element as? String {
-                stringValue = stringElement
-            } else if let intElement = element as? Int {
-                stringValue = String(intElement)
-            } else if let boolElement = element as? Bool {
-                stringValue = boolElement ? "true" : "false"
-            } else {
-                // For complex types, use JSON encoding
-                let jsonEncoder = JSONEncoder()
-                if let encodable = element as? Encodable,
-                   let jsonData = try? jsonEncoder.encode(encodable),
-                   let jsonString = String(data: jsonData, encoding: .utf8) {
-                    stringValue = jsonString
-                } else {
-                    stringValue = String(describing: element)
+        
+        mutating func encode(_ value: Bool, forKey key: Key) throws {
+            let stringValue = encoder.multipartEncoder.encodeBoolean(value)
+            encoder.fields.append(Field(name: key.stringValue, value: stringValue))
+        }
+        
+        mutating func encode(_ value: String, forKey key: Key) throws {
+            encoder.fields.append(Field(name: key.stringValue, value: value))
+        }
+        
+        mutating func encode(_ value: Int, forKey key: Key) throws {
+            encoder.fields.append(Field(name: key.stringValue, value: String(value)))
+        }
+        
+        mutating func encode(_ value: Double, forKey key: Key) throws {
+            encoder.fields.append(Field(name: key.stringValue, value: String(value)))
+        }
+        
+        mutating func encode(_ value: Float, forKey key: Key) throws {
+            encoder.fields.append(Field(name: key.stringValue, value: String(value)))
+        }
+        
+        mutating func encode(_ value: Int8, forKey key: Key) throws {
+            encoder.fields.append(Field(name: key.stringValue, value: String(value)))
+        }
+        
+        mutating func encode(_ value: Int16, forKey key: Key) throws {
+            encoder.fields.append(Field(name: key.stringValue, value: String(value)))
+        }
+        
+        mutating func encode(_ value: Int32, forKey key: Key) throws {
+            encoder.fields.append(Field(name: key.stringValue, value: String(value)))
+        }
+        
+        mutating func encode(_ value: Int64, forKey key: Key) throws {
+            encoder.fields.append(Field(name: key.stringValue, value: String(value)))
+        }
+        
+        mutating func encode(_ value: UInt, forKey key: Key) throws {
+            encoder.fields.append(Field(name: key.stringValue, value: String(value)))
+        }
+        
+        mutating func encode(_ value: UInt8, forKey key: Key) throws {
+            encoder.fields.append(Field(name: key.stringValue, value: String(value)))
+        }
+        
+        mutating func encode(_ value: UInt16, forKey key: Key) throws {
+            encoder.fields.append(Field(name: key.stringValue, value: String(value)))
+        }
+        
+        mutating func encode(_ value: UInt32, forKey key: Key) throws {
+            encoder.fields.append(Field(name: key.stringValue, value: String(value)))
+        }
+        
+        mutating func encode(_ value: UInt64, forKey key: Key) throws {
+            encoder.fields.append(Field(name: key.stringValue, value: String(value)))
+        }
+        
+        mutating func encode<T>(_ value: T, forKey key: Key) throws where T: Encodable {
+            // 1. Try file extraction first
+            if let fileExtractor = encoder.multipartEncoder.fileExtractor,
+               let file = fileExtractor(value) {
+                try encoder.files.append(RFC_7578.Form.Data.File(
+                    fieldName: key.stringValue,
+                    filename: file.filename,
+                    contentType: file.contentType,
+                    content: file.data
+                ))
+                return
+            }
+            
+            // 2. Handle Date
+            if let date = value as? Date {
+                let stringValue = encoder.multipartEncoder.encodeDate(date)
+                encoder.fields.append(Field(name: key.stringValue, value: stringValue))
+                return
+            }
+            
+            // 3. Handle arrays
+            if let array = value as? [Any] {
+                try encodeArray(array, forKey: key)
+                return
+            }
+            
+            // 4. Try custom value encoding
+            if let customEncoder = encoder.multipartEncoder.customValueEncoder,
+               let stringValue = customEncoder(value, key.stringValue) {
+                encoder.fields.append(Field(name: key.stringValue, value: stringValue))
+                return
+            }
+            
+            // 5. For other complex types, encode them as nested JSON
+            // (This is a simplification - in practice you might want more sophisticated handling)
+            let jsonEncoder = JSONEncoder()
+            let jsonData = try jsonEncoder.encode(value)
+            if let jsonString = String(data: jsonData, encoding: .utf8) {
+                encoder.fields.append(Field(name: key.stringValue, value: jsonString))
+            }
+        }
+        
+        private mutating func encodeArray(_ array: [Any], forKey key: Key) throws {
+            // Check if this is an array of files
+            if let fileExtractor = encoder.multipartEncoder.fileExtractor {
+                var allFiles = true
+                var files: [RFC_2046.Multipart.File] = []
+                
+                for element in array {
+                    if let file = fileExtractor(element) {
+                        files.append(file)
+                    } else {
+                        allFiles = false
+                        break
+                    }
+                }
+                
+                if allFiles && !files.isEmpty {
+                    for file in files {
+                        try encoder.files.append(RFC_7578.Form.Data.File(
+                            fieldName: key.stringValue,
+                            filename: file.filename,
+                            contentType: file.contentType,
+                            content: file.data
+                        ))
+                    }
+                    return
                 }
             }
-
-            encoder.fields.append(MultipartField(name: fieldName, value: stringValue))
+            
+            // Otherwise, encode as regular array
+            let fieldName: String
+            switch encoder.multipartEncoder.arrayEncodingStrategy {
+            case .accumulateValues:
+                fieldName = key.stringValue
+            case .brackets:
+                fieldName = "\(key.stringValue)[]"
+            }
+            
+            for element in array {
+                let stringValue: String
+                if let stringElement = element as? String {
+                    stringValue = stringElement
+                } else if let intElement = element as? Int {
+                    stringValue = String(intElement)
+                } else if let boolElement = element as? Bool {
+                    stringValue = encoder.multipartEncoder.encodeBoolean(boolElement)
+                } else if let dateElement = element as? Date {
+                    stringValue = encoder.multipartEncoder.encodeDate(dateElement)
+                } else {
+                    // For complex types, use JSON encoding
+                    let jsonEncoder = JSONEncoder()
+                    if let encodable = element as? Encodable,
+                       let jsonData = try? jsonEncoder.encode(encodable),
+                       let jsonString = String(data: jsonData, encoding: .utf8) {
+                        stringValue = jsonString
+                    } else {
+                        stringValue = String(describing: element)
+                    }
+                }
+                
+                encoder.fields.append(Field(name: fieldName, value: stringValue))
+            }
+        }
+        
+        mutating func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type, forKey key: Key) -> KeyedEncodingContainer<NestedKey> where NestedKey: CodingKey {
+            fatalError("Nested containers not yet implemented for multipart encoding")
+        }
+        
+        mutating func nestedUnkeyedContainer(forKey key: Key) -> UnkeyedEncodingContainer {
+            fatalError("Nested unkeyed containers not yet implemented for multipart encoding")
+        }
+        
+        mutating func superEncoder() -> Swift.Encoder {
+            encoder
+        }
+        
+        mutating func superEncoder(forKey key: Key) -> Swift.Encoder {
+            encoder
         }
     }
-
-    mutating func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type, forKey key: Key) -> KeyedEncodingContainer<NestedKey> where NestedKey: CodingKey {
-        fatalError("Nested containers not yet implemented for multipart encoding")
-    }
-
-    mutating func nestedUnkeyedContainer(forKey key: Key) -> UnkeyedEncodingContainer {
-        fatalError("Nested unkeyed containers not yet implemented for multipart encoding")
-    }
-
-    mutating func superEncoder() -> Encoder {
-        encoder
-    }
-
-    mutating func superEncoder(forKey key: Key) -> Encoder {
-        encoder
+    
+    fileprivate struct SingleValueContainer: SingleValueEncodingContainer {
+        let encoder: RFC_2046.Multipart.FieldEncoder
+        var codingPath: [CodingKey]
+        
+        mutating func encodeNil() throws {
+            // Skip
+        }
+        
+        mutating func encode(_ value: Bool) throws {
+            let stringValue = encoder.multipartEncoder.encodeBoolean(value)
+            encoder.fields.append(Field(name: "", value: stringValue))
+        }
+        
+        mutating func encode(_ value: String) throws {
+            encoder.fields.append(Field(name: "", value: value))
+        }
+        
+        mutating func encode(_ value: Double) throws {
+            encoder.fields.append(Field(name: "", value: String(value)))
+        }
+        
+        mutating func encode(_ value: Float) throws {
+            encoder.fields.append(Field(name: "", value: String(value)))
+        }
+        
+        mutating func encode(_ value: Int) throws {
+            encoder.fields.append(Field(name: "", value: String(value)))
+        }
+        
+        mutating func encode(_ value: Int8) throws {
+            encoder.fields.append(Field(name: "", value: String(value)))
+        }
+        
+        mutating func encode(_ value: Int16) throws {
+            encoder.fields.append(Field(name: "", value: String(value)))
+        }
+        
+        mutating func encode(_ value: Int32) throws {
+            encoder.fields.append(Field(name: "", value: String(value)))
+        }
+        
+        mutating func encode(_ value: Int64) throws {
+            encoder.fields.append(Field(name: "", value: String(value)))
+        }
+        
+        mutating func encode(_ value: UInt) throws {
+            encoder.fields.append(Field(name: "", value: String(value)))
+        }
+        
+        mutating func encode(_ value: UInt8) throws {
+            encoder.fields.append(Field(name: "", value: String(value)))
+        }
+        
+        mutating func encode(_ value: UInt16) throws {
+            encoder.fields.append(Field(name: "", value: String(value)))
+        }
+        
+        mutating func encode(_ value: UInt32) throws {
+            encoder.fields.append(Field(name: "", value: String(value)))
+        }
+        
+        mutating func encode(_ value: UInt64) throws {
+            encoder.fields.append(Field(name: "", value: String(value)))
+        }
+        
+        mutating func encode<T>(_ value: T) throws where T: Encodable {
+            // Handle Date
+            if let date = value as? Date {
+                let stringValue = encoder.multipartEncoder.encodeDate(date)
+                encoder.fields.append(Field(name: "", value: stringValue))
+                return
+            }
+            
+            // Try custom value encoding
+            if let customEncoder = encoder.multipartEncoder.customValueEncoder,
+               let stringValue = customEncoder(value, "") {
+                encoder.fields.append(Field(name: "", value: stringValue))
+                return
+            }
+            
+            // Fall back to JSON encoding
+            let jsonEncoder = JSONEncoder()
+            let jsonData = try jsonEncoder.encode(value)
+            if let jsonString = String(data: jsonData, encoding: .utf8) {
+                encoder.fields.append(Field(name: "", value: jsonString))
+            }
+        }
     }
 }
 
-private struct MultipartSingleValueEncodingContainer: SingleValueEncodingContainer {
-    let encoder: MultipartFieldEncoder
-    var codingPath: [CodingKey]
-
-    mutating func encodeNil() throws {
-        // Skip
-    }
-
-    mutating func encode(_ value: Bool) throws {
-        encoder.fields.append(MultipartField(name: "", value: value ? "true" : "false"))
-    }
-
-    mutating func encode(_ value: String) throws {
-        encoder.fields.append(MultipartField(name: "", value: value))
-    }
-
-    mutating func encode(_ value: Double) throws {
-        encoder.fields.append(MultipartField(name: "", value: String(value)))
-    }
-
-    mutating func encode(_ value: Float) throws {
-        encoder.fields.append(MultipartField(name: "", value: String(value)))
-    }
-
-    mutating func encode(_ value: Int) throws {
-        encoder.fields.append(MultipartField(name: "", value: String(value)))
-    }
-
-    mutating func encode(_ value: Int8) throws {
-        encoder.fields.append(MultipartField(name: "", value: String(value)))
-    }
-
-    mutating func encode(_ value: Int16) throws {
-        encoder.fields.append(MultipartField(name: "", value: String(value)))
-    }
-
-    mutating func encode(_ value: Int32) throws {
-        encoder.fields.append(MultipartField(name: "", value: String(value)))
-    }
-
-    mutating func encode(_ value: Int64) throws {
-        encoder.fields.append(MultipartField(name: "", value: String(value)))
-    }
-
-    mutating func encode(_ value: UInt) throws {
-        encoder.fields.append(MultipartField(name: "", value: String(value)))
-    }
-
-    mutating func encode(_ value: UInt8) throws {
-        encoder.fields.append(MultipartField(name: "", value: String(value)))
-    }
-
-    mutating func encode(_ value: UInt16) throws {
-        encoder.fields.append(MultipartField(name: "", value: String(value)))
-    }
-
-    mutating func encode(_ value: UInt32) throws {
-        encoder.fields.append(MultipartField(name: "", value: String(value)))
-    }
-
-    mutating func encode(_ value: UInt64) throws {
-        encoder.fields.append(MultipartField(name: "", value: String(value)))
-    }
-
-    mutating func encode<T>(_ value: T) throws where T: Encodable {
-        let jsonEncoder = JSONEncoder()
-        let jsonData = try jsonEncoder.encode(value)
-        if let jsonString = String(data: jsonData, encoding: .utf8) {
-            encoder.fields.append(MultipartField(name: "", value: jsonString))
-        }
-    }
-}
 // MARK: - FileUpload URLRouting Integration
 
 extension FileUpload {
     /// Internal conversion wrapper for Body() parser
     fileprivate struct BodyConversion: Parsing.Conversion {
         let fileUpload: FileUpload
-
+        
         func apply(_ input: Foundation.Data) throws -> Foundation.Data {
             try fileUpload.validate(input)
             return input
         }
-
+        
         func unapply(_ data: Foundation.Data) throws -> Foundation.Data {
             // Step 1: Validate the file data
             try fileUpload.validate(data)
-
+            
             // Step 2: Create RFC 7578 Form.Data.File
             let file = try RFC_7578.Form.Data.File(
                 fieldName: fileUpload.fieldName,
@@ -483,22 +607,22 @@ extension FileUpload {
                 contentType: fileUpload.fileType.contentType,
                 content: data
             )
-
+            
             // Step 3: Build RFC 2046 multipart message using RFC 7578 formData
             let multipart = try RFC_2046.Multipart.formData(
                 fields: [:],
                 files: [file],
                 boundary: fileUpload.boundary.value
             )
-
+            
             // Step 4: Render to RFC-compliant format with CRLF line endings
             let rendered = multipart.render()
-
+            
             // Step 5: Convert to Data
             guard let result = rendered.data(using: String.Encoding.utf8) else {
                 throw Error.encodingError
             }
-
+            
             return result
         }
     }
@@ -507,7 +631,7 @@ extension FileUpload {
 extension FileUpload: ParserPrinter {
     public typealias Input = RFC_3986.URI.Request.Data
     public typealias Output = Foundation.Data
-
+    
     /// Parses the request, extracting and validating file upload data.
     ///
     /// This method:
@@ -525,12 +649,12 @@ extension FileUpload: ParserPrinter {
                 RFC_7230.Header.Field("Content-Type") { self.contentType.headerValue }
             }
         }.parse(&input)
-
+        
         // Parse and validate body
         let data = try Body(BodyConversion(fileUpload: self)).parse(&input)
         return data
     }
-
+    
     /// Prints the file data back into request format.
     ///
     /// This method:
@@ -548,7 +672,7 @@ extension FileUpload: ParserPrinter {
                 RFC_7230.Header.Field("Content-Type") { self.contentType.headerValue }
             }
         }.print((), into: &input)
-
+        
         // Print body
         try Body(BodyConversion(fileUpload: self)).print(output, into: &input)
     }
@@ -597,7 +721,7 @@ extension URLRouting.Conversion {
     public static func multipart<Value>(
         _ type: Value.Type,
         arrayEncodingStrategy: MultipartArrayEncodingStrategy = .accumulateValues
-    ) -> Self where Self == Multipart<Value>.Conversion {
+    ) -> Self where Self == RFC_2046.Multipart.Conversion<Value> {
         .init(type, arrayEncodingStrategy: arrayEncodingStrategy)
     }
 }
@@ -641,10 +765,10 @@ extension URLRouting.Conversion {
 public struct Multipart<Value: Codable>  {
     public typealias Input = RFC_3986.URI.Request.Data
     public typealias Output = Value
-
+    
     let type: Value.Type
     let arrayEncodingStrategy: MultipartArrayEncodingStrategy
-
+    
     /// Creates a multipart parser for the specified Codable type.
     ///
     /// - Parameters:
@@ -661,29 +785,29 @@ public struct Multipart<Value: Codable>  {
 
 extension Multipart: ParserPrinter {
     public func parse(_ input: inout RFC_3986.URI.Request.Data) throws -> Value {
-        let conversion = Multipart.Conversion(type, arrayEncodingStrategy: arrayEncodingStrategy)
-
+        let conversion = RFC_2046.Multipart.Conversion(type, arrayEncodingStrategy: arrayEncodingStrategy)
+        
         // Parse Content-Type header
         try Parse {
             Headers {
                 RFC_7230.Header.Field("Content-Type") { conversion.contentType.headerValue }
             }
         }.parse(&input)
-
+        
         // Parse body
         return try Body(conversion).parse(&input)
     }
-
+    
     public func print(_ output: Value, into input: inout RFC_3986.URI.Request.Data) throws {
-        let conversion = Multipart.Conversion(type, arrayEncodingStrategy: arrayEncodingStrategy)
-
+        let conversion = RFC_2046.Multipart.Conversion(type, arrayEncodingStrategy: arrayEncodingStrategy)
+        
         // Print Content-Type header
         try Parse {
             Headers {
                 RFC_7230.Header.Field("Content-Type") { conversion.contentType.headerValue }
             }
         }.print((), into: &input)
-
+        
         // Print body
         try Body(conversion).print(output, into: &input)
     }
