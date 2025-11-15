@@ -13,19 +13,15 @@ extension RFC_3986.URI {
 
 extension RFC_3986.URI.Routing {
     /// Routing error with detailed context about what failed
-    @usableFromInline
-    struct Error: Swift.Error {
+    public struct Error: Swift.Error {
         /// The component that failed during routing
-        @usableFromInline
-        let component: Component
+        public let component: Component
 
         /// The type of failure that occurred
-        @usableFromInline
-        let failure: Failure
+        public let failure: Failure
 
         /// Additional context about the failure
-        @usableFromInline
-        let context: String?
+        public let context: String?
 
         @usableFromInline
         init(component: Component, failure: Failure, context: String? = nil) {
@@ -35,8 +31,7 @@ extension RFC_3986.URI.Routing {
         }
 
         /// Component type that failed
-        @usableFromInline
-        enum Component: Sendable {
+        public enum Component: Sendable {
             case method
             case scheme
             case host
@@ -52,8 +47,7 @@ extension RFC_3986.URI.Routing {
         }
 
         /// Type of failure
-        @usableFromInline
-        enum Failure: Sendable {
+        public enum Failure: Sendable {
             case missing
             case mismatch(expected: String, actual: String)
             case invalid(String)
@@ -71,8 +65,7 @@ typealias RoutingError = RFC_3986.URI.Routing.Error
 // MARK: - LocalizedError Conformance
 
 extension RFC_3986.URI.Routing.Error: LocalizedError {
-    @usableFromInline
-    var errorDescription: String? {
+    public var errorDescription: String? {
         var message = "Routing failed for \(componentDescription): \(failureDescription)"
         if let context = context {
             message += " - \(context)"
