@@ -142,19 +142,23 @@ public struct FileUpload: Sendable {
 extension FileUpload {
     /// The Content-Type header value for this multipart file upload.
     ///
-    /// Returns a properly formatted Content-Type header including the unique
+    /// Returns a properly typed RFC 2045 Content-Type including the unique
     /// boundary parameter required for multipart form data parsing.
     ///
-    /// - Returns: A string in the format `multipart/form-data; boundary=<unique-boundary>`
+    /// - Returns: RFC_2045.ContentType for `multipart/form-data` with boundary
     ///
     /// ## Usage
     ///
     /// ```swift
     /// let upload = FileUpload(/* ... */)
-    /// request.setValue(upload.contentType, forHTTPHeaderField: "Content-Type")
+    /// request.setValue(upload.contentType.headerValue, forHTTPHeaderField: "Content-Type")
     /// ```
-    public var contentType: String {
-        "multipart/form-data; boundary=\(boundary)"
+    public var contentType: RFC_2045.ContentType {
+        RFC_2045.ContentType(
+            type: "multipart",
+            subtype: "form-data",
+            parameters: ["boundary": boundary]
+        )
     }
 }
 
