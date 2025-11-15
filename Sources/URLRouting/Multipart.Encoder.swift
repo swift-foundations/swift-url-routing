@@ -112,7 +112,7 @@ extension RFC_2046.Multipart {
         public var dateEncoder: Date.Encoder = .iso8601
 
         /// Strategy for encoding arrays
-        public var arrayEncodingStrategy: MultipartArrayEncodingStrategy = .accumulateValues
+        public var arrayEncodingStrategy: RFC_2046.Multipart.Array.EncodingStrategy = .accumulateValues
 
         /// Closure to extract file data from values
         ///

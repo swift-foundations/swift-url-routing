@@ -173,7 +173,7 @@ struct MultipartConversionIntegrationTests {
         let emptyRequest = EmptyableRequest()
 
         // Attempt to encode the empty request should throw
-        #expect(throws: MultipartConversionError.self) {
+        #expect(throws: RFC_2046.Multipart.Conversion<EmptyableRequest>.Error.self) {
             try conversion.unapply(emptyRequest)
         }
 
