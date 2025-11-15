@@ -559,6 +559,50 @@ extension Multipart.FileUpload: @retroactive ParserPrinter {
     }
 }
 
+// MARK: - Multipart.FileUpload callAsFunction
+
+extension Multipart.FileUpload {
+    /// Callable syntax for creating file upload parsers.
+    ///
+    /// This static method enables calling `Multipart.FileUpload` as a function, providing clean syntax
+    /// for file upload routes.
+    ///
+    /// ## Example
+    ///
+    /// ```swift
+    /// Route(.case(API.uploadAvatar)) {
+    ///     Method.post
+    ///     Path { "upload" / "avatar" }
+    ///     Multipart.FileUpload(
+    ///         fieldName: "avatar",
+    ///         filename: "profile.jpg",
+    ///         fileType: .image(.jpeg)
+    ///     )
+    /// }
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - fieldName: The form field name for this file upload
+    ///   - filename: The filename to include in the multipart headers
+    ///   - fileType: The file type specification including validation rules
+    ///   - maxSize: Optional maximum file size (defaults to 10MB)
+    /// - Returns: A file upload parser that handles Content-Type header and body
+    /// - Throws: Validation errors if parameters are invalid
+    public static func callAsFunction(
+        fieldName: String,
+        filename: String,
+        fileType: FileType,
+        maxSize: Int = Multipart.FileUpload.maxFileSize
+    ) throws -> Multipart.FileUpload {
+        try Multipart.FileUpload(
+            fieldName: fieldName,
+            filename: filename,
+            fileType: fileType,
+            maxSize: maxSize
+        )
+    }
+}
+
 // MARK: - Conversion Convenience Methods
 
 extension URLRouting.Conversion {
@@ -607,41 +651,54 @@ extension URLRouting.Conversion {
     }
 }
 
-// MARK: - Multipart Body Parser Convenience
+// MARK: - Multipart callAsFunction
 
-/// Creates a parser that handles both Content-Type header and multipart body conversion.
-///
-/// This convenience function eliminates the need to manually set up Headers and Body separately.
-///
-/// ## Example
-///
-/// **Before (verbose):**
-/// ```swift
-/// let conversion = Multipart.Conversion(UpdateRequest.self)
-/// Headers {
-///     Field("Content-Type") { conversion.contentType.headerValue }
-/// }
-/// Body(conversion)
-/// ```
-///
-/// **After (concise):**
-/// ```swift
-/// Multipart(UpdateRequest.self, arrayEncodingStrategy: .brackets)
-/// ```
-///
-/// - Parameters:
-///   - type: The Codable type to convert to/from multipart form data
-///   - arrayEncodingStrategy: How to encode array fields (default: accumulate values)
-/// - Returns: A parser that handles Content-Type header and body conversion
-public func Multipart<Value>(
-    _ type: Value.Type,
-    arrayEncodingStrategy: MultipartArrayEncodingStrategy = .accumulateValues
-) -> some ParserPrinter<RFC_3986.URI.Request.Data, Value> where Value: Codable {
-    let conversion = Multipart.Conversion(type, arrayEncodingStrategy: arrayEncodingStrategy)
-    return Parse {
-        Headers {
-            RFC_7230.Header.Field("Content-Type") { conversion.contentType.headerValue }
+extension Multipart {
+    /// Callable syntax for creating multipart form data parsers.
+    ///
+    /// This static method enables calling `Multipart` as a function, providing clean syntax
+    /// for multipart form data routes.
+    ///
+    /// ## Example
+    ///
+    /// **Before (verbose):**
+    /// ```swift
+    /// let conversion = Multipart.Conversion(UpdateRequest.self)
+    /// Headers {
+    ///     Field("Content-Type") { conversion.contentType.headerValue }
+    /// }
+    /// Body(conversion)
+    /// ```
+    ///
+    /// **After (concise):**
+    /// ```swift
+    /// Multipart(UpdateRequest.self, arrayEncodingStrategy: .brackets)
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - type: The Codable type to convert to/from multipart form data
+    ///   - arrayEncodingStrategy: How to encode array fields (default: accumulate values)
+    /// - Returns: A parser that handles Content-Type header and body conversion
+    ///
+    /// ## Usage in Routes
+    ///
+    /// ```swift
+    /// Route(.case(API.update)) {
+    ///     Method.post
+    ///     Path { "v3" / "domain" / "members" }
+    ///     Multipart(UpdateRequest.self, arrayEncodingStrategy: .brackets)
+    /// }
+    /// ```
+    public static func callAsFunction<Value>(
+        _ type: Value.Type,
+        arrayEncodingStrategy: MultipartArrayEncodingStrategy = .accumulateValues
+    ) -> some ParserPrinter<RFC_3986.URI.Request.Data, Value> where Value: Codable {
+        let conversion = Multipart.Conversion(type, arrayEncodingStrategy: arrayEncodingStrategy)
+        return Parse {
+            Headers {
+                RFC_7230.Header.Field("Content-Type") { conversion.contentType.headerValue }
+            }
+            Body(conversion)
         }
-        Body(conversion)
     }
 }
