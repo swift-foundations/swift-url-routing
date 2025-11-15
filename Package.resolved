@@ -1,5 +1,5 @@
 {
-  "originHash" : "df7d86338eb07a0fb3f504d7d0c11d2a909cabab60d3369c8298ccb5cd366311",
+  "originHash" : "3d7a29516f7a2ebabde285f4d145a5f033d81daffcc6fb8f7647a946434451f4",
   "pins" : [
     {
       "identity" : "swift-case-paths",
@@ -26,15 +26,6 @@
       "state" : {
         "revision" : "4cfc040d3763a9b9c50b1a15765a78dc1107946f",
         "version" : "0.1.1"
-      }
-    },
-    {
-      "identity" : "swift-rfc-2046",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/swift-standards/swift-rfc-2046.git",
-      "state" : {
-        "revision" : "caa8b739467d34797bde0fd19073e63d7cba2dc9",
-        "version" : "0.2.0"
       }
     },
     {

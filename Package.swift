@@ -21,7 +21,7 @@ let package = Package(
     .package(url: "https://github.com/swift-standards/swift-rfc-3986.git", from: "0.1.3"),
     .package(url: "https://github.com/swift-standards/swift-rfc-6570.git", from: "0.1.0"),
     .package(url: "https://github.com/swift-standards/swift-rfc-2045.git", from: "0.1.0"),
-    .package(url: "https://github.com/swift-standards/swift-rfc-2046.git", from: "0.2.0"),
+    .package(path: "../../swift-standards/swift-rfc-2046"),
     .package(path: "../../swift-standards/swift-rfc-6265"),
     .package(path: "../../swift-standards/swift-rfc-7230"),
     .package(path: "../../swift-standards/swift-rfc-7231"),

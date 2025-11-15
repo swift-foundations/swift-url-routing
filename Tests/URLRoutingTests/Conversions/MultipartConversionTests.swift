@@ -14,8 +14,9 @@ struct MultipartConversionIntegrationTests {
     @Test("Multipart.Conversion exists and is accessible")
     func testConversionExists() {
         let conversion = Multipart.Conversion(TestRequest.self)
-        #expect(!conversion.boundary.isEmpty)
-        #expect(conversion.contentType.contains("multipart/form-data"))
+        #expect(!conversion.boundary.value.isEmpty)
+        #expect(conversion.contentType.type == "multipart")
+        #expect(conversion.contentType.subtype == "form-data")
     }
 
     @Test("Conversion.multipart() static method works")
@@ -35,7 +36,7 @@ struct MultipartConversionIntegrationTests {
         let data = try conversion.unapply(request)
         let string = String(data: data, encoding: .utf8)!
 
-        #expect(string.contains(conversion.boundary))
+        #expect(string.contains(conversion.boundary.value))
         #expect(string.contains("Content-Disposition"))
         #expect(string.contains("name"))
         #expect(string.contains("Test User"))

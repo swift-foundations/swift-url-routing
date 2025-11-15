@@ -56,8 +56,8 @@ import RFC_2046
 /// - Note: The conversion validates file content during both `apply` and `unapply` operations.
 public struct FileUpload: Sendable {
 
-        /// The unique boundary string used to separate multipart fields.
-        public let boundary: String
+        /// The validated boundary used to separate multipart fields.
+        public let boundary: RFC_2046.Boundary
 
         /// The name of the form field for this file upload.
         public let fieldName: String
@@ -123,7 +123,7 @@ public struct FileUpload: Sendable {
             self.fileType = fileType
             self.maxSize = maxSize
             // Use RFC 2046's boundary generation for RFC compliance
-            self.boundary = RFC_2046.Multipart.generateBoundary()
+            self.boundary = RFC_2046.Boundary()
         }
 
         public func validate(_ data: Foundation.Data) throws {
@@ -157,7 +157,7 @@ extension FileUpload {
         RFC_2045.ContentType(
             type: "multipart",
             subtype: "form-data",
-            parameters: ["boundary": boundary]
+            parameters: ["boundary": boundary.value]
         )
     }
 }

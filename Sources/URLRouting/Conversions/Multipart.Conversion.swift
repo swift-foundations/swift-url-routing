@@ -74,8 +74,8 @@ public enum MultipartArrayEncodingStrategy: Sendable {
 
 extension Multipart {
     public struct Conversion: @unchecked Sendable {
-        /// The unique boundary string used to separate multipart fields.
-        public let boundary: String
+        /// The validated boundary used to separate multipart fields.
+        public let boundary: RFC_2046.Boundary
 
         /// Strategy for encoding arrays in multipart fields.
         public let arrayEncodingStrategy: MultipartArrayEncodingStrategy
@@ -89,9 +89,9 @@ extension Multipart {
         public init(
             _ type: Value.Type,
             arrayEncodingStrategy: MultipartArrayEncodingStrategy = .accumulateValues,
-            boundary: String? = nil
+            boundary: RFC_2046.Boundary? = nil
         ) {
-            self.boundary = boundary ?? RFC_2046.Multipart.generateBoundary()
+            self.boundary = boundary ?? RFC_2046.Boundary()
             self.arrayEncodingStrategy = arrayEncodingStrategy
         }
 
@@ -102,7 +102,7 @@ extension Multipart {
             RFC_2045.ContentType(
                 type: "multipart",
                 subtype: "form-data",
-                parameters: ["boundary": boundary]
+                parameters: ["boundary": boundary.value]
             )
         }
     }
@@ -175,15 +175,10 @@ extension Multipart.Conversion: Conversion {
 
         // Step 3: Convert each field to an RFC_2046.BodyPart
         let parts: [RFC_2046.BodyPart] = encoder.fields.map { field in
-            // Use RFC_7578 for proper Content-Disposition header formatting
-            // This handles escaping of special characters in field names per RFC 2183/RFC 2231
-            let contentDisposition = RFC_7578.Form.Data.escapeContentDisposition(
-                name: field.name
-            )
-
-            // Create BodyPart with Content-Disposition header and text content
+            // Create BodyPart with typed Headers using RFC_2183 Content-Disposition
+            // This handles escaping of special characters in field names per RFC 2183
             return RFC_2046.BodyPart(
-                headers: ["Content-Disposition": contentDisposition],
+                headers: .formDataTextField(name: field.name),
                 text: field.value
             )
         }
@@ -493,7 +488,7 @@ extension FileUpload {
             let multipart = try RFC_2046.Multipart.formData(
                 fields: [:],
                 files: [file],
-                boundary: fileUpload.boundary
+                boundary: fileUpload.boundary.value
             )
 
             // Step 4: Render to RFC-compliant format with CRLF line endings

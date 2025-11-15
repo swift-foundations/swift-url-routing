@@ -2,6 +2,7 @@ import Foundation
 import Parsing
 import Testing
 import URLRouting
+import WHATWG_HTML_Forms
 
 #if canImport(FoundationNetworking)
     import FoundationNetworking
@@ -57,8 +58,8 @@ struct URLRoutingTests {
     func formData() throws {
         let p = Body {
             FormData {
-                WHATWG_HTML.FormData.Field("name", .string)
-                WHATWG_HTML.FormData.Field("age") { Int.parser() }
+                Form.Data.Field("name", .string)
+                Form.Data.Field("age") { Int.parser() }
             }
         }
 

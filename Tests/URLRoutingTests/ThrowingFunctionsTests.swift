@@ -2,6 +2,7 @@ import Foundation
 import Parsing
 import Testing
 import URLRouting
+import WHATWG_HTML_Forms
 
 #if canImport(FoundationNetworking)
     import FoundationNetworking
@@ -78,7 +79,7 @@ struct ThrowingFunctionsTests {
     func formDataWithThrowingFactory() throws {
         let parser = try Body {
             try FormData {
-                try WHATWG_HTML.FormData.Field("email") {
+                try Form.Data.Field("email") {
                     try Self.makeEmailParser()
                 }
             }
@@ -190,7 +191,7 @@ struct ThrowingFunctionsTests {
         // Test Body parser ambiguity
         let parser = Body {
             FormData {
-                WHATWG_HTML.FormData.Field("email") { Rest().map(.string) }  // No explicit try
+                Form.Data.Field("email") { Rest().map(.string) }  // No explicit try
             }
         }
 
