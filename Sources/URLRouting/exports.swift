@@ -5,10 +5,12 @@
 // MARK: - RFC Standards
 
 @_exported import RFC_2045
+@_exported import RFC_2046
 @_exported import RFC_3986
 @_exported import RFC_6265
 @_exported import RFC_7230
 @_exported import RFC_7231
+@_exported import RFC_7578
 
 // MARK: - WHATWG Standards
 
