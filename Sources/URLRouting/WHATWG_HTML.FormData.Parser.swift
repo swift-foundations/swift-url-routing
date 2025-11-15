@@ -2,12 +2,13 @@ import Foundation
 import OrderedCollections
 import Parsing
 import RFC_3986
-import WHATWG_HTML_Shared
+import WHATWG_HTML_Forms
+import WHATWG_HTML_FormData
 import WHATWG_URL_Encoding
 
-// MARK: - WHATWG HTML FormData Extension
+// MARK: - Form.Data Extension
 
-extension WHATWG_HTML.FormData {
+extension WHATWG_HTML_Forms.Form.Data {
     /// Parser for form-encoded data (application/x-www-form-urlencoded)
     ///
     /// Parses form-encoded data using field parsers.
@@ -18,7 +19,7 @@ extension WHATWG_HTML.FormData {
     ///
     /// Example:
     /// ```swift
-    /// WHATWG_HTML.FormData.Parser {
+    /// Form.Data.Parser {
     ///   Field("username", .string)
     ///   Field("age") { Int.parser() }
     /// }
@@ -61,7 +62,7 @@ extension WHATWG_HTML.FormData {
     }
 }
 
-extension WHATWG_HTML.FormData.Parser: ParserPrinter where FieldParsers: ParserPrinter {
+extension WHATWG_HTML_Forms.Form.Data.Parser: ParserPrinter where FieldParsers: ParserPrinter {
     @inlinable
     public func print(_ output: FieldParsers.Output, into input: inout Foundation.Data) rethrows {
         var fields = RFC_3986.URI.Request.Fields()
@@ -72,7 +73,7 @@ extension WHATWG_HTML.FormData.Parser: ParserPrinter where FieldParsers: ParserP
 
 // MARK: - Convenience Type Alias
 
-/// Convenience type alias for `WHATWG_HTML.FormData.Parser`
+/// Convenience type alias for `Form.Data.Parser`
 ///
 /// For cleaner code, you can use `FormData` instead of the fully qualified name:
 /// ```swift
@@ -80,7 +81,7 @@ extension WHATWG_HTML.FormData.Parser: ParserPrinter where FieldParsers: ParserP
 ///   Field("username", .string)
 /// }
 /// ```
-public typealias FormData = WHATWG_HTML.FormData.Parser
+public typealias FormData = WHATWG_HTML_Forms.Form.Data.Parser
 
 // MARK: - Data Encoding Extension
 

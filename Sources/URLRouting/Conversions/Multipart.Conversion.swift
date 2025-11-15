@@ -73,7 +73,7 @@ public enum MultipartArrayEncodingStrategy: Sendable {
 }
 
 extension Multipart {
-    public struct Conversion<Value: Codable>: @unchecked Sendable {
+    public struct Conversion: @unchecked Sendable {
         /// The unique boundary string used to separate multipart fields.
         public let boundary: String
 
@@ -177,7 +177,7 @@ extension Multipart.Conversion: Conversion {
         let parts: [RFC_2046.BodyPart] = encoder.fields.map { field in
             // Use RFC_7578 for proper Content-Disposition header formatting
             // This handles escaping of special characters in field names per RFC 2183/RFC 2231
-            let contentDisposition = RFC_7578.FormData.escapeContentDisposition(
+            let contentDisposition = RFC_7578.Form.Data.escapeContentDisposition(
                 name: field.name
             )
 
@@ -465,12 +465,12 @@ private struct MultipartSingleValueEncodingContainer: SingleValueEncodingContain
         }
     }
 }
-// MARK: - Multipart.FileUpload URLRouting Integration
+// MARK: - FileUpload URLRouting Integration
 
-extension Multipart.FileUpload {
+extension FileUpload {
     /// Internal conversion wrapper for Body() parser
     fileprivate struct BodyConversion: Parsing.Conversion {
-        let fileUpload: Multipart.FileUpload
+        let fileUpload: FileUpload
 
         func apply(_ input: Foundation.Data) throws -> Foundation.Data {
             try fileUpload.validate(input)
@@ -481,8 +481,8 @@ extension Multipart.FileUpload {
             // Step 1: Validate the file data
             try fileUpload.validate(data)
 
-            // Step 2: Create RFC 7578 FormData.File
-            let file = try RFC_7578.FormData.File(
+            // Step 2: Create RFC 7578 Form.Data.File
+            let file = try RFC_7578.Form.Data.File(
                 fieldName: fileUpload.fieldName,
                 filename: fileUpload.filename,
                 contentType: fileUpload.fileType.contentType,
@@ -509,7 +509,7 @@ extension Multipart.FileUpload {
     }
 }
 
-extension Multipart.FileUpload: @retroactive ParserPrinter {
+extension FileUpload: @retroactive ParserPrinter {
     public typealias Input = RFC_3986.URI.Request.Data
     public typealias Output = Foundation.Data
 
@@ -559,12 +559,12 @@ extension Multipart.FileUpload: @retroactive ParserPrinter {
     }
 }
 
-// MARK: - Multipart.FileUpload callAsFunction
+// MARK: - FileUpload callAsFunction
 
-extension Multipart.FileUpload {
+extension FileUpload {
     /// Callable syntax for creating file upload parsers.
     ///
-    /// This static method enables calling `Multipart.FileUpload` as a function, providing clean syntax
+    /// This static method enables calling `FileUpload` as a function, providing clean syntax
     /// for file upload routes.
     ///
     /// ## Example
@@ -573,7 +573,7 @@ extension Multipart.FileUpload {
     /// Route(.case(API.uploadAvatar)) {
     ///     Method.post
     ///     Path { "upload" / "avatar" }
-    ///     Multipart.FileUpload(
+    ///     FileUpload(
     ///         fieldName: "avatar",
     ///         filename: "profile.jpg",
     ///         fileType: .image(.jpeg)
@@ -592,9 +592,9 @@ extension Multipart.FileUpload {
         fieldName: String,
         filename: String,
         fileType: FileType,
-        maxSize: Int = Multipart.FileUpload.maxFileSize
-    ) throws -> Multipart.FileUpload {
-        try Multipart.FileUpload(
+        maxSize: Int = FileUpload.maxFileSize
+    ) throws -> FileUpload {
+        try FileUpload(
             fieldName: fieldName,
             filename: filename,
             fileType: fileType,
@@ -646,59 +646,96 @@ extension URLRouting.Conversion {
     public static func multipart<Value>(
         _ type: Value.Type,
         arrayEncodingStrategy: MultipartArrayEncodingStrategy = .accumulateValues
-    ) -> Self where Self == Multipart.Conversion<Value> {
+    ) -> Self where Self == Multipart<Value>.Conversion {
         .init(type, arrayEncodingStrategy: arrayEncodingStrategy)
     }
 }
 
-// MARK: - Multipart callAsFunction
+// MARK: - Multipart Parser
 
-extension Multipart {
-    /// Callable syntax for creating multipart form data parsers.
-    ///
-    /// This static method enables calling `Multipart` as a function, providing clean syntax
-    /// for multipart form data routes.
-    ///
-    /// ## Example
-    ///
-    /// **Before (verbose):**
-    /// ```swift
-    /// let conversion = Multipart.Conversion(UpdateRequest.self)
-    /// Headers {
-    ///     Field("Content-Type") { conversion.contentType.headerValue }
-    /// }
-    /// Body(conversion)
-    /// ```
-    ///
-    /// **After (concise):**
-    /// ```swift
-    /// Multipart(UpdateRequest.self, arrayEncodingStrategy: .brackets)
-    /// ```
+/// A parser that handles multipart/form-data for Codable types.
+///
+/// `Multipart<Value>` provides a clean parser that automatically handles both
+/// Content-Type headers and multipart body encoding/decoding.
+///
+/// ## Example
+///
+/// ```swift
+/// struct UpdateRequest: Codable {
+///     let name: String
+///     let subscribed: Bool
+/// }
+///
+/// Route(.case(API.update)) {
+///     Method.post
+///     Path { "v3" / "domain" / "members" }
+///     Multipart(UpdateRequest.self, arrayEncodingStrategy: .brackets)
+/// }
+/// ```
+///
+/// ## Usage
+///
+/// The parser combines Content-Type header parsing with body conversion:
+/// ```swift
+/// // Before (verbose):
+/// let conversion = Multipart.Conversion(UpdateRequest.self)
+/// Headers {
+///     Field("Content-Type") { conversion.contentType.headerValue }
+/// }
+/// Body(conversion)
+///
+/// // After (concise):
+/// Multipart(UpdateRequest.self, arrayEncodingStrategy: .brackets)
+/// ```
+public struct Multipart<Value: Codable>  {
+    public typealias Input = RFC_3986.URI.Request.Data
+    public typealias Output = Value
+
+    let type: Value.Type
+    let arrayEncodingStrategy: MultipartArrayEncodingStrategy
+
+    /// Creates a multipart parser for the specified Codable type.
     ///
     /// - Parameters:
-    ///   - type: The Codable type to convert to/from multipart form data
+    ///   - type: The Codable type to parse/print
     ///   - arrayEncodingStrategy: How to encode array fields (default: accumulate values)
-    /// - Returns: A parser that handles Content-Type header and body conversion
-    ///
-    /// ## Usage in Routes
-    ///
-    /// ```swift
-    /// Route(.case(API.update)) {
-    ///     Method.post
-    ///     Path { "v3" / "domain" / "members" }
-    ///     Multipart(UpdateRequest.self, arrayEncodingStrategy: .brackets)
-    /// }
-    /// ```
-    public static func callAsFunction<Value>(
+    public init(
         _ type: Value.Type,
         arrayEncodingStrategy: MultipartArrayEncodingStrategy = .accumulateValues
-    ) -> some ParserPrinter<RFC_3986.URI.Request.Data, Value> where Value: Codable {
+    ) {
+        self.type = type
+        self.arrayEncodingStrategy = arrayEncodingStrategy
+    }
+
+    public func parse(_ input: inout RFC_3986.URI.Request.Data) throws -> Value {
         let conversion = Multipart.Conversion(type, arrayEncodingStrategy: arrayEncodingStrategy)
-        return Parse {
+
+        // Parse Content-Type header
+        try Parse {
             Headers {
                 RFC_7230.Header.Field("Content-Type") { conversion.contentType.headerValue }
             }
-            Body(conversion)
-        }
+        }.parse(&input)
+
+        // Parse body
+        return try Body(conversion).parse(&input)
     }
+
+    public func print(_ output: Value, into input: inout RFC_3986.URI.Request.Data) throws {
+        let conversion = Multipart.Conversion(type, arrayEncodingStrategy: arrayEncodingStrategy)
+
+        // Print Content-Type header
+        try Parse {
+            Headers {
+                RFC_7230.Header.Field("Content-Type") { conversion.contentType.headerValue }
+            }
+        }.print((), into: &input)
+
+        // Print body
+        try Body(conversion).print(output, into: &input)
+    }
+}
+
+extension Multipart: ParserPrinter {
+    
 }

@@ -1,11 +1,12 @@
 import OrderedCollections
 import Parsing
 import RFC_3986
-import WHATWG_HTML_Shared
+import WHATWG_HTML_Forms
+import WHATWG_HTML_FormData
 
-// MARK: - WHATWG HTML FormData Field
+// MARK: - Form.Data Field
 
-extension WHATWG_HTML.FormData {
+extension WHATWG_HTML_Forms.Form.Data {
     /// Parses a named field's value for HTML form data.
     ///
     /// Useful for incrementally parsing values from various request fields, including ``Query``
@@ -14,7 +15,7 @@ extension WHATWG_HTML.FormData {
     /// For example, a search endpoint may include a few query items, which can be specified as fields:
     ///
     /// ```swift
-    /// WHATWG_HTML.FormData.Parser {
+    /// Form.Data.Parser {
     ///   Field("name", .string)
     ///   Field("age") { Int.parser() }
     /// }
@@ -123,7 +124,7 @@ extension WHATWG_HTML.FormData {
     }
 }
 
-extension WHATWG_HTML.FormData.Field: ParserPrinter where Value: ParserPrinter {
+extension WHATWG_HTML_Forms.Form.Data.Field: ParserPrinter where Value: ParserPrinter {
     @inlinable
     public func print(_ output: Value.Output, into input: inout RFC_3986.URI.Request.Fields) rethrows {
         if let defaultValue = self.defaultValue, Internal.isEqual(output, defaultValue) { return }
