@@ -88,7 +88,13 @@ extension RFC_3986.URI.Path {
 
             @inlinable
             public func parse(_ input: inout RFC_3986.URI.Request.Data) throws -> ComponentParser.Output {
-                guard input.path.count >= 1 else { throw RFC_3986.URI.Routing.Error() }
+                guard input.path.count >= 1 else {
+                    throw RFC_3986.URI.Routing.Error(
+                        component: .path,
+                        failure: .invalid("Path is too short"),
+                        context: "Expected at least 1 component, got \(input.path.count)"
+                    )
+                }
                 return try self.componentParser.parse(input.path.removeFirst())
             }
         }

@@ -113,7 +113,13 @@ extension RFC_3986.URI.Query {
                 var value = wrapped
             else {
                 guard let defaultValue = self.defaultValue
-                else { throw RFC_3986.URI.Routing.Error() }
+                else {
+                    throw RFC_3986.URI.Routing.Error(
+                        component: .query,
+                        failure: .missing,
+                        context: "Required query parameter '\(self.name)' not found"
+                    )
+                }
                 return defaultValue
             }
 

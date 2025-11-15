@@ -105,33 +105,53 @@ extension FileUpload.FileType {
         }
     }
     
-    /// Microsoft Excel (.xlsx) file type.
+    /// Microsoft Excel (.xlsx) file type with ZIP magic number validation.
     ///
-    /// Supports modern Excel files in Office Open XML format.
-    /// No content validation is performed.
+    /// Validates that the file is a genuine Office Open XML document (ZIP archive)
+    /// by checking for the ZIP magic number signature ("PK\x03\x04").
     ///
     /// - Content Type: `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`
     /// - File Extension: `xlsx`
-    /// - Note: Consider adding magic number validation for enhanced security
+    /// - Validation: Checks for ZIP magic number (Office Open XML is ZIP-based)
     public static let excel: Self = .init(
         contentType: RFC_2045.ContentType(
             type: "application",
             subtype: "vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         ),
         fileExtension: "xlsx"
-    )
+    ) { (data: Foundation.Data) in
+        // Office Open XML files (.xlsx) are ZIP archives
+        // ZIP magic number: 50 4B 03 04 (PK\x03\x04)
+        let zipMagic: [UInt8] = [0x50, 0x4B, 0x03, 0x04]
+        guard data.prefix(4).elementsEqual(zipMagic) else {
+            throw FileUpload.Error.contentMismatch(
+                expected: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                detected: nil
+            )
+        }
+    }
     
-    /// JSON (JavaScript Object Notation) file type.
+    /// JSON (JavaScript Object Notation) file type with format validation.
     ///
-    /// Standard JSON file format without content validation.
-    /// For validation, consider using a custom FileType with JSON parsing.
+    /// Validates that the file contains well-formed JSON by attempting to parse it.
+    /// This prevents invalid or malicious content disguised as JSON files.
     ///
     /// - Content Type: `application/json`
     /// - File Extension: `json`
+    /// - Validation: Verifies JSON can be deserialized
     public static let json: Self = .init(
         contentType: RFC_2045.ContentType(type: "application", subtype: "json"),
         fileExtension: "json"
-    )
+    ) { (data: Foundation.Data) in
+        do {
+            _ = try JSONSerialization.jsonObject(with: data, options: [])
+        } catch {
+            throw FileUpload.Error.contentMismatch(
+                expected: "application/json",
+                detected: nil
+            )
+        }
+    }
     
     /// Plain text file type.
     ///
@@ -180,19 +200,31 @@ extension FileUpload.FileType {
     
     // MARK: - Office Documents
     
-    /// Microsoft Word (.docx) file type.
+    /// Microsoft Word (.docx) file type with ZIP magic number validation.
     ///
-    /// Modern Word documents in Office Open XML format.
+    /// Validates that the file is a genuine Office Open XML document (ZIP archive)
+    /// by checking for the ZIP magic number signature ("PK\x03\x04").
     ///
     /// - Content Type: `application/vnd.openxmlformats-officedocument.wordprocessingml.document`
     /// - File Extension: `docx`
+    /// - Validation: Checks for ZIP magic number (Office Open XML is ZIP-based)
     public static let docx: Self = .init(
         contentType: RFC_2045.ContentType(
             type: "application",
             subtype: "vnd.openxmlformats-officedocument.wordprocessingml.document"
         ),
         fileExtension: "docx"
-    )
+    ) { (data: Foundation.Data) in
+        // Office Open XML files (.docx) are ZIP archives
+        // ZIP magic number: 50 4B 03 04 (PK\x03\x04)
+        let zipMagic: [UInt8] = [0x50, 0x4B, 0x03, 0x04]
+        guard data.prefix(4).elementsEqual(zipMagic) else {
+            throw FileUpload.Error.contentMismatch(
+                expected: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                detected: nil
+            )
+        }
+    }
     
     /// Legacy Microsoft Word (.doc) file type.
     ///

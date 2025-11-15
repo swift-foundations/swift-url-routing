@@ -54,7 +54,12 @@ extension RFC_7230.Body {
         @inlinable
         public func parse(_ input: inout RFC_3986.URI.Request.Data) throws -> Bytes.Output {
             guard var body = input.body
-            else { throw RFC_3986.URI.Routing.Error() }
+            else {
+                throw RFC_3986.URI.Routing.Error(
+                    component: .body,
+                    failure: .missing
+                )
+            }
 
             let output = try self.bytesParser.parse(&body)
             input.body = body

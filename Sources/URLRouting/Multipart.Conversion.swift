@@ -141,17 +141,12 @@ extension RFC_2046.Multipart.Conversion: Conversion {
     ///
     /// - Note: Parses multipart data using RFC 2046 parser and converts to Swift value via JSON.
     public func apply(_ input: Data) throws -> Value {
-        print("DEBUG apply() called with \(input.count) bytes")
-
         // Convert Data to String
         guard let string = String(data: input, encoding: .utf8) else {
-            print("DEBUG: Invalid UTF-8")
             throw Error.decodingFailed(
                 reason: "Invalid UTF-8 in multipart data"
             )
         }
-
-        print("DEBUG: String length = \(string.count)")
 
         // Parse multipart data using RFC 2046
         let multipart = try RFC_2046.Multipart.parse(
@@ -160,18 +155,13 @@ extension RFC_2046.Multipart.Conversion: Conversion {
             subtype: RFC_2046.Multipart.Subtype.formData
         )
 
-        print("DEBUG: Parsed \(multipart.parts.count) parts")
-
         // Extract form fields to dictionary
         let fields = multipart.extractFormFields()
-
-        print("DEBUG: Extracted \(fields.count) fields: \(fields)")
 
         // Convert dictionary to JSON and then decode to Value type
         let jsonData = try JSONSerialization.data(withJSONObject: fields)
         let decoder = JSONDecoder()
         let result = try decoder.decode(Value.self, from: jsonData)
-        print("DEBUG: Decoded successfully")
         return result
     }
 
@@ -184,11 +174,9 @@ extension RFC_2046.Multipart.Conversion: Conversion {
     /// - Returns: The multipart form data as `Data`
     /// - Throws: Encoding errors
     public func unapply(_ output: Value) throws -> Foundation.Data {
-        print("DEBUG unapply() called with output: \(output)")
         // Step 1: Extract field→value pairs using our custom encoder
         let fieldEncoder = RFC_2046.Multipart.Field.Encoder(multipartEncoder: encoder)
         try output.encode(to: fieldEncoder)
-        print("DEBUG encoder.fields count: \(fieldEncoder.fields.count)")
 
         // Step 2: Validate we have at least one field or file
         guard !fieldEncoder.fields.isEmpty || !fieldEncoder.files.isEmpty else {

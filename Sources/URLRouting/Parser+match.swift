@@ -24,7 +24,13 @@ extension Parser where Input == RFC_3986.URI.Request.Data {
     @inlinable
     public func match(request: URLRequest) throws -> Output {
         guard let data = RFC_3986.URI.Request.Data(request: request)
-        else { throw RFC_3986.URI.Routing.Error() }
+        else {
+            throw RFC_3986.URI.Routing.Error(
+                component: .request,
+                failure: .parseFailed("Unable to convert URLRequest to URI.Request.Data"),
+                context: "URL: \(request.url?.absoluteString ?? "nil")"
+            )
+        }
         return try self.parse(data)
     }
 
@@ -38,7 +44,13 @@ extension Parser where Input == RFC_3986.URI.Request.Data {
     @inlinable
     public func match(url: URL) throws -> Output {
         guard let data = RFC_3986.URI.Request.Data(url: url)
-        else { throw RFC_3986.URI.Routing.Error() }
+        else {
+            throw RFC_3986.URI.Routing.Error(
+                component: .url,
+                failure: .parseFailed("Unable to convert URL to URI.Request.Data"),
+                context: "URL: \(url.absoluteString)"
+            )
+        }
         return try self.parse(data)
     }
 

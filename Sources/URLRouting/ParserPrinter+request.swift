@@ -28,7 +28,12 @@ extension ParserPrinter where Input == RFC_3986.URI.Request.Data {
         var data = RFC_3986.URI.Request.Data()
         try self.print(route, into: &data)
         guard let request = URLRequest(data: data)
-        else { throw RFC_3986.URI.Routing.Error() }
+        else {
+            throw RFC_3986.URI.Routing.Error(
+                component: .request,
+                failure: .parseFailed("Unable to convert URI.Request.Data to URLRequest")
+            )
+        }
         return request
     }
 

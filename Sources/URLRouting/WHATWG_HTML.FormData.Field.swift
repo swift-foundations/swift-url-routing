@@ -110,7 +110,13 @@ extension WHATWG_HTML_Forms.Form.Data {
                 var value = wrapped
             else {
                 guard let defaultValue = self.defaultValue
-                else { throw RFC_3986.URI.Routing.Error() }
+                else {
+                    throw RFC_3986.URI.Routing.Error(
+                        component: .body,
+                        failure: .missing,
+                        context: "Required form field '\(self.name)' not found"
+                    )
+                }
                 return defaultValue
             }
 

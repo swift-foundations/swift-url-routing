@@ -105,7 +105,12 @@ extension RFC_7230.Header {
                 var value = wrapped
             else {
                 guard let defaultValue = self.defaultValue
-                else { throw RFC_3986.URI.Routing.Error() }
+                else {
+                    throw RFC_3986.URI.Routing.Error(
+                        component: .header(name: self.name),
+                        failure: .missing
+                    )
+                }
                 return defaultValue
             }
 

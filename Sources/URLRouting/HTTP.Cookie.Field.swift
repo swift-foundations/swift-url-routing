@@ -111,7 +111,12 @@ extension RFC_6265.Cookie {
                 var value = wrapped
             else {
                 guard let defaultValue = self.defaultValue
-                else { throw RFC_3986.URI.Routing.Error() }
+                else {
+                    throw RFC_3986.URI.Routing.Error(
+                        component: .cookie(name: self.name),
+                        failure: .missing
+                    )
+                }
                 return defaultValue
             }
 

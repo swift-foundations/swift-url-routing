@@ -43,8 +43,20 @@ extension RFC_3986.URI.Scheme {
 
         @inlinable
         public func parse(_ input: inout RFC_3986.URI.Request.Data) throws {
-            guard let scheme = input.scheme else { throw RFC_3986.URI.Routing.Error() }
-            try self.name.parse(scheme)
+            guard let scheme = input.scheme else {
+                throw RFC_3986.URI.Routing.Error(
+                    component: .scheme,
+                    failure: .missing
+                )
+            }
+            do {
+                try self.name.parse(scheme)
+            } catch {
+                throw RFC_3986.URI.Routing.Error(
+                    component: .scheme,
+                    failure: .mismatch(expected: self.name, actual: scheme)
+                )
+            }
             input.scheme = nil
         }
 

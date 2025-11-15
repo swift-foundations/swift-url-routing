@@ -53,8 +53,21 @@ extension RFC_7231.Method {
 
         @inlinable
         public func parse(_ input: inout RFC_3986.URI.Request.Data) throws {
-            guard let inputMethod = input.method else { throw RFC_3986.URI.Routing.Error() }
-            guard inputMethod == self.method else { throw RFC_3986.URI.Routing.Error() }
+            guard let inputMethod = input.method else {
+                throw RFC_3986.URI.Routing.Error(
+                    component: .method,
+                    failure: .missing
+                )
+            }
+            guard inputMethod == self.method else {
+                throw RFC_3986.URI.Routing.Error(
+                    component: .method,
+                    failure: .mismatch(
+                        expected: self.method.rawValue,
+                        actual: inputMethod.rawValue
+                    )
+                )
+            }
             input.method = nil
         }
 

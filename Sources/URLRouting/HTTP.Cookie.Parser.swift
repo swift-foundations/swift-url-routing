@@ -37,7 +37,12 @@ extension RFC_6265.Cookie {
         @inlinable
         public func parse(_ input: inout RFC_3986.URI.Request.Data) throws -> FieldParsers.Output {
             guard let cookie = input.headers["cookie"]
-            else { throw RFC_3986.URI.Routing.Error() }
+            else {
+                throw RFC_3986.URI.Routing.Error(
+                    component: .header(name: "cookie"),
+                    failure: .missing
+                )
+            }
 
             var fields: FieldParsers.Input = cookie.reduce(
                 into: .init([:], isCaseSensitive: true)

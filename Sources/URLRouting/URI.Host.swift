@@ -42,8 +42,20 @@ extension RFC_3986.URI.Host {
 
         @inlinable
         public func parse(_ input: inout RFC_3986.URI.Request.Data) throws {
-            guard let host = input.host else { throw RFC_3986.URI.Routing.Error() }
-            try self.name.parse(host)
+            guard let host = input.host else {
+                throw RFC_3986.URI.Routing.Error(
+                    component: .host,
+                    failure: .missing
+                )
+            }
+            do {
+                try self.name.parse(host)
+            } catch {
+                throw RFC_3986.URI.Routing.Error(
+                    component: .host,
+                    failure: .mismatch(expected: self.name, actual: host)
+                )
+            }
             input.host = nil
         }
 

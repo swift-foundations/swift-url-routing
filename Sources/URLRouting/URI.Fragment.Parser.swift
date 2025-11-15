@@ -69,7 +69,12 @@ extension RFC_3986.URI.Fragment {
 
         @inlinable
         public func parse(_ input: inout RFC_3986.URI.Request.Data) throws -> ValueParser.Output {
-            guard var fragment = input.fragment?[...] else { throw RFC_3986.URI.Routing.Error() }
+            guard var fragment = input.fragment?[...] else {
+                throw RFC_3986.URI.Routing.Error(
+                    component: .fragment,
+                    failure: .missing
+                )
+            }
             let output = try self.valueParser.parse(&fragment)
             input.fragment = String(fragment)
             return output
