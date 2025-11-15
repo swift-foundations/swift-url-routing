@@ -22,7 +22,7 @@ struct FileUploadTests {
 
     @Test("Create FileUpload with custom max size")
     func testCustomMaxSize() throws {
-        let customSize = 5 * 1024 * 1024  // 5MB
+        let customSize = Measurement(value: 5, unit: UnitInformationStorage.mebibytes)
         let fileUpload = try FileUpload(
             fieldName: "photo",
             filename: "image.jpg",
@@ -84,7 +84,7 @@ struct FileUploadTests {
                 fieldName: "document",
                 filename: "file.pdf",
                 fileType: .pdf,
-                maxSize: 0
+                maxSize: Measurement(value: 0, unit: .bytes)
             )
         }
     }
@@ -96,14 +96,14 @@ struct FileUploadTests {
                 fieldName: "document",
                 filename: "file.pdf",
                 fileType: .pdf,
-                maxSize: -1
+                maxSize: Measurement(value: -1, unit: .bytes)
             )
         }
     }
 
-    @Test("Max size exceeding 1GB throws error")
+    @Test("Max size exceeding 1 GiB throws error")
     func testMaxSizeExceedsLimitThrows() throws {
-        let overLimit = 1024 * 1024 * 1024 + 1  // 1GB + 1 byte
+        let overLimit = Measurement(value: 1.1, unit: UnitInformationStorage.gibibytes)
         #expect(throws: FileUpload.Error.self) {
             try FileUpload(
                 fieldName: "document",
@@ -131,7 +131,7 @@ struct FileUploadTests {
 
     @Test("Validate oversized file throws error")
     func testValidateOversizedFileThrows() throws {
-        let maxSize = 1024  // 1KB
+        let maxSize = Measurement(value: 1, unit: UnitInformationStorage.kibibytes)
         let fileUpload = try FileUpload(
             fieldName: "document",
             filename: "file.pdf",
@@ -139,7 +139,7 @@ struct FileUploadTests {
             maxSize: maxSize
         )
 
-        let largeData = Data(repeating: 0, count: maxSize + 1)
+        let largeData = Data(repeating: 0, count: 1025)  // 1025 bytes > 1 KiB (1024 bytes)
         #expect(throws: FileUpload.Error.self) {
             try fileUpload.validate(largeData)
         }
@@ -189,7 +189,7 @@ struct FileUploadTests {
 
     @Test("Validate file within size limit succeeds")
     func testValidateFileWithinSizeLimit() throws {
-        let maxSize = 1024  // 1KB
+        let maxSize = Measurement(value: 1, unit: UnitInformationStorage.kibibytes)
         let fileUpload = try FileUpload(
             fieldName: "document",
             filename: "file.txt",
@@ -197,7 +197,7 @@ struct FileUploadTests {
             maxSize: maxSize
         )
 
-        let validData = Data(repeating: 0, count: maxSize)
+        let validData = Data(repeating: 0, count: Int(maxSize.converted(to: .bytes).value))
         #expect(throws: Never.self) {
             try fileUpload.validate(validData)
         }
@@ -309,7 +309,10 @@ struct FileUploadTests {
     @Test("Error descriptions are user-friendly")
     func testErrorDescriptions() throws {
         let errors: [FileUpload.Error] = [
-            .fileTooLarge(size: 2000, maxSize: 1000),
+            .fileTooLarge(
+                size: Measurement(value: 2000, unit: .bytes),
+                maxSize: Measurement(value: 1000, unit: .bytes)
+            ),
             .invalidContentType("invalid/type"),
             .contentMismatch(expected: "application/pdf", detected: "text/plain"),
             .emptyData,
@@ -318,8 +321,8 @@ struct FileUploadTests {
             .emptyFieldName,
             .emptyFilename,
             .invalidFilename("path/file.txt"),
-            .invalidMaxSize(-1),
-            .maxSizeExceedsLimit(2000000000),
+            .invalidMaxSize(Measurement(value: -1, unit: .bytes)),
+            .maxSizeExceedsLimit(Measurement(value: 2, unit: UnitInformationStorage.gibibytes)),
         ]
 
         for error in errors {
@@ -363,12 +366,13 @@ struct FileUploadTests {
             fileType: .pdf
         )
 
-        #expect(fileUpload.maxSize == 10 * 1024 * 1024)  // 10MB
+        let expectedSize = Measurement(value: 10, unit: UnitInformationStorage.mebibytes)
+        #expect(fileUpload.maxSize == expectedSize)
     }
 
     @Test("FileUpload validates at exact max size")
     func testValidateAtExactMaxSize() throws {
-        let maxSize = 1024
+        let maxSize = Measurement(value: 1, unit: UnitInformationStorage.kibibytes)
         let fileUpload = try FileUpload(
             fieldName: "document",
             filename: "file.txt",
@@ -376,7 +380,7 @@ struct FileUploadTests {
             maxSize: maxSize
         )
 
-        let exactData = Data(repeating: 0, count: maxSize)
+        let exactData = Data(repeating: 0, count: Int(maxSize.converted(to: .bytes).value))
         #expect(throws: Never.self) {
             try fileUpload.validate(exactData)
         }
@@ -384,9 +388,18 @@ struct FileUploadTests {
 
     @Test("FileUpload error equality works")
     func testErrorEquality() throws {
-        let error1 = FileUpload.Error.fileTooLarge(size: 1000, maxSize: 500)
-        let error2 = FileUpload.Error.fileTooLarge(size: 1000, maxSize: 500)
-        let error3 = FileUpload.Error.fileTooLarge(size: 2000, maxSize: 500)
+        let error1 = FileUpload.Error.fileTooLarge(
+            size: Measurement(value: 1000, unit: .bytes),
+            maxSize: Measurement(value: 500, unit: .bytes)
+        )
+        let error2 = FileUpload.Error.fileTooLarge(
+            size: Measurement(value: 1000, unit: .bytes),
+            maxSize: Measurement(value: 500, unit: .bytes)
+        )
+        let error3 = FileUpload.Error.fileTooLarge(
+            size: Measurement(value: 2000, unit: .bytes),
+            maxSize: Measurement(value: 500, unit: .bytes)
+        )
 
         #expect(error1 == error2)
         #expect(error1 != error3)

@@ -68,11 +68,14 @@ public struct FileUpload: Sendable {
         /// The file type specification including validation rules.
         public let fileType: FileType
 
-        /// The default maximum file size (10MB).
-        public static let maxFileSize: Int = 10 * 1024 * 1024  // 10MB default
+        /// The default maximum file size (10 MiB).
+        ///
+        /// Note: Uses binary units (1 MiB = 1,048,576 bytes) per IEC 60027-2 standard,
+        /// as is standard for file sizes in computing.
+        public static let maxFileSize = Measurement(value: 10, unit: UnitInformationStorage.mebibytes)
 
         /// The maximum allowed file size for this upload.
-        public let maxSize: Int
+        public let maxSize: Measurement<UnitInformationStorage>
 
         /// Creates a new multipart file upload conversion.
         ///
@@ -80,23 +83,23 @@ public struct FileUpload: Sendable {
         ///   - fieldName: The form field name for this file upload
         ///   - filename: The filename to include in multipart headers
         ///   - fileType: The expected file type with validation rules
-        ///   - maxSize: Maximum file size in bytes (defaults to 10MB)
+        ///   - maxSize: Maximum file size (defaults to 10 MiB)
         ///
         /// ## Example
         ///
         /// ```swift
-        /// let pdfUpload = FileUpload(
+        /// let pdfUpload = try FileUpload(
         ///     fieldName: "document",
         ///     filename: "report.pdf",
         ///     fileType: .pdf,
-        ///     maxSize: 5 * 1024 * 1024  // 5MB limit
+        ///     maxSize: Measurement(value: 5, unit: .mebibytes)  // 5 MiB limit
         /// )
         /// ```
         public init(
             fieldName: String,
             filename: String,
             fileType: FileType,
-            maxSize: Int = FileUpload.maxFileSize
+            maxSize: Measurement<UnitInformationStorage> = FileUpload.maxFileSize
         ) throws {
             guard !fieldName.isEmpty else {
                 throw Error.emptyFieldName
@@ -110,11 +113,13 @@ public struct FileUpload: Sendable {
                 throw Error.invalidFilename(filename)
             }
 
-            guard maxSize > 0 else {
+            let bytesValue = maxSize.converted(to: .bytes).value
+            guard bytesValue > 0 else {
                 throw Error.invalidMaxSize(maxSize)
             }
 
-            guard maxSize <= 1024 * 1024 * 1024 else {
+            let oneGiB = Measurement(value: 1, unit: UnitInformationStorage.gibibytes)
+            guard maxSize <= oneGiB else {
                 throw Error.maxSizeExceedsLimit(maxSize)
             }
 
@@ -131,8 +136,10 @@ public struct FileUpload: Sendable {
                 throw Error.emptyData
             }
 
-            guard data.count <= maxSize else {
-                throw Error.fileTooLarge(size: data.count, maxSize: maxSize)
+            let maxBytes = Int(maxSize.converted(to: .bytes).value)
+            guard data.count <= maxBytes else {
+                let actualSize = Measurement(value: Double(data.count), unit: UnitInformationStorage.bytes)
+                throw Error.fileTooLarge(size: actualSize, maxSize: maxSize)
             }
 
             try fileType.validate(data)
@@ -205,9 +212,9 @@ extension FileUpload {
         /// File size exceeds the configured maximum.
         ///
         /// - Parameters:
-        ///   - size: The actual file size in bytes
-        ///   - maxSize: The maximum allowed size in bytes
-        case fileTooLarge(size: Int, maxSize: Int)
+        ///   - size: The actual file size
+        ///   - maxSize: The maximum allowed size
+        case fileTooLarge(size: Measurement<UnitInformationStorage>, maxSize: Measurement<UnitInformationStorage>)
 
         /// The provided content type is invalid or unsupported.
         ///
@@ -243,10 +250,10 @@ extension FileUpload {
         case invalidFilename(String)
 
         /// Max size is zero or negative.
-        case invalidMaxSize(Int)
+        case invalidMaxSize(Measurement<UnitInformationStorage>)
 
-        /// Max size exceeds maximum allowed (1GB).
-        case maxSizeExceedsLimit(Int)
+        /// Max size exceeds maximum allowed (1 GiB).
+        case maxSizeExceedsLimit(Measurement<UnitInformationStorage>)
     }
 }
 
@@ -256,9 +263,12 @@ extension FileUpload.Error {
     /// Each error case returns a descriptive message that can be displayed
     /// to users or logged for debugging purposes.
     public var errorDescription: String? {
+        let formatter = MeasurementFormatter()
+        formatter.unitStyle = .short
+
         switch self {
         case .fileTooLarge(let size, let maxSize):
-            return "File size \(size) exceeds maximum allowed size of \(maxSize) bytes"
+            return "File size \(formatter.string(from: size)) exceeds maximum allowed size of \(formatter.string(from: maxSize))"
         case .invalidContentType(let type):
             return "Invalid content type: \(type)"
         case .contentMismatch(let expected, let detected):
@@ -277,9 +287,9 @@ extension FileUpload.Error {
         case .invalidFilename(let filename):
             return "Filename '\(filename)' contains invalid path separators"
         case .invalidMaxSize(let size):
-            return "Max size \(size) must be positive"
+            return "Max size \(formatter.string(from: size)) must be positive"
         case .maxSizeExceedsLimit(let size):
-            return "Max size \(size) bytes exceeds maximum limit of 1GB"
+            return "Max size \(formatter.string(from: size)) exceeds maximum limit of 1 GiB"
         }
     }
 }
