@@ -136,7 +136,7 @@ extension RFC_7230.Header.Field.Parser: ParserPrinter where Value: ParserPrinter
         // This prevents header injection attacks
         _ = try RFC_7230.Header.Field.Value(String(printedValue))
 
-        try input.fields.updateValue(
+        input.fields.updateValue(
             forKey: input.isCaseSensitive ? self.name : self.name.lowercased(),
             insertingDefault: [],
             at: 0,
