@@ -81,9 +81,9 @@ extension RFC_2046.Multipart {
                let file = fileExtractor(value) {
                 try encoder.files.append(RFC_7578.Form.Data.File(
                     fieldName: key.stringValue,
-                    filename: file.filename,
+                    filename: try RFC_2183.Filename(file.filename),
                     contentType: file.contentType,
-                    content: file.data
+                    content: [UInt8](file.data)
                 ))
                 return
             }
@@ -136,9 +136,9 @@ extension RFC_2046.Multipart {
                     for file in files {
                         try encoder.files.append(RFC_7578.Form.Data.File(
                             fieldName: key.stringValue,
-                            filename: file.filename,
+                            filename: try RFC_2183.Filename(file.filename),
                             contentType: file.contentType,
-                            content: file.data
+                            content: [UInt8](file.data)
                         ))
                     }
                     return

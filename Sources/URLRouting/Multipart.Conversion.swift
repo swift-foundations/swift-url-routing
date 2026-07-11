@@ -123,7 +123,7 @@ extension RFC_2046.Multipart {
         public var contentType: RFC_2045.ContentType {
             RFC_2045.ContentType(__unchecked: (), type: "multipart",
                 subtype: "form-data",
-                parameters: ["boundary": boundary.value]
+                parameters: [.boundary: boundary.rawValue]
             )
         }
     }

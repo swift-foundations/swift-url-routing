@@ -1,6 +1,11 @@
 import RFC_3986
 
-extension URLRouting.Router where Input == RFC_3986.URI.Request.Data {
+// `URLRouting.Router<Output>` is a typealias for `any Parser.Bidirectional<…>`, an
+// existential — it cannot be extended directly. The router surface is instead added
+// as constrained extensions on the underlying protocols (matching `Parser+match.swift`):
+// parse-based lookups on `Parser.Protocol`, print-based construction on `Parser.Bidirectional`.
+
+extension Parser.`Protocol` where Input == RFC_3986.URI.Request.Data {
     /// Matches an RFC 3986 URI to a route.
     ///
     /// Parses the URI into request data and runs the router's parser.
@@ -35,7 +40,9 @@ extension URLRouting.Router where Input == RFC_3986.URI.Request.Data {
         let uri = try RFC_3986.URI(uriString)
         return try self.match(uri: uri)
     }
+}
 
+extension Parser.Bidirectional where Input == RFC_3986.URI.Request.Data {
     /// Prints a route to an RFC 3986 URI.
     ///
     /// Runs the router's printer and constructs an RFC-compliant URI.

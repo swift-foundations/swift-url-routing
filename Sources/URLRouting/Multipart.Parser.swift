@@ -39,7 +39,7 @@ import RFC_7230
 /// Headers {
 ///     Field("Content-Type") { conversion.contentType.headerValue }
 /// }
-/// Body(conversion)
+/// RFC_7230.Body.Parser(conversion)
 ///
 /// // After (concise):
 /// Multipart(UpdateRequest.self, arrayEncodingStrategy: .brackets)
@@ -76,7 +76,7 @@ extension Multipart: Parser.Bidirectional {
         }.parse(&input)
 
         // Parse body
-        return try Body(conversion).parse(&input)
+        return try RFC_7230.Body.Parser(conversion).parse(&input)
     }
 
     public func print(_ output: Value, into input: inout RFC_3986.URI.Request.Data) throws(RFC_3986.URI.Routing.Error) {
@@ -88,6 +88,6 @@ extension Multipart: Parser.Bidirectional {
         }.print((), into: &input)
 
         // Print body
-        try Body(conversion).print(output, into: &input)
+        try RFC_7230.Body.Parser(conversion).print(output, into: &input)
     }
 }

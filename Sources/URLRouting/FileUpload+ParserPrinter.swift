@@ -14,7 +14,7 @@ import RFC_7578
 // MARK: - FileUpload URLRouting Integration
 
 extension FileUpload {
-    /// Internal conversion wrapper for Body() parser
+    /// Internal conversion wrapper for RFC_7230.Body.Parser() parser
     internal struct BodyConversion: Parser.Conversion.`Protocol` {
         typealias Input = Foundation.Data
         typealias Output = Foundation.Data
@@ -48,7 +48,7 @@ extension FileUpload {
             let multipart = try RFC_2046.Multipart.formData(
                 fields: [:],
                 files: [file],
-                boundary: fileUpload.boundary.value
+                boundary: fileUpload.boundary.rawValue
             )
 
             // Step 4: Render to RFC-compliant format with CRLF line endings
@@ -89,7 +89,7 @@ extension FileUpload: Parser.Bidirectional {
         }.parse(&input)
 
         // Parse and validate body
-        return try Body(BodyConversion(fileUpload: self)).parse(&input)
+        return try RFC_7230.Body.Parser(BodyConversion(fileUpload: self)).parse(&input)
     }
 
     /// Prints the file data back into request format.
@@ -109,6 +109,6 @@ extension FileUpload: Parser.Bidirectional {
         }.print((), into: &input)
 
         // Print body
-        try Body(BodyConversion(fileUpload: self)).print(output, into: &input)
+        try RFC_7230.Body.Parser(BodyConversion(fileUpload: self)).print(output, into: &input)
     }
 }

@@ -47,7 +47,7 @@ extension WHATWG_HTML_Forms.Form.Data.File {
         self.init(
             name: upload.filename,
             type: upload.fileType.contentType.headerValue,
-            body: data
+            body: [UInt8](data)
         )
     }
 }

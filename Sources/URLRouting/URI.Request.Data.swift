@@ -243,7 +243,7 @@ extension RFC_3986.URI.Request.Data: Hashable {
 
 // MARK: - Fields Collection Conformance
 
-extension RFC_3986.URI.Request.Fields: Collection {
+extension RFC_3986.URI.Request.Fields: Swift.Collection {
     public typealias Element = OrderedDictionary<String, ArraySlice<Substring?>>.Element
     public typealias Index = OrderedDictionary<String, ArraySlice<Substring?>>.Index
 
