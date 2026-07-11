@@ -227,8 +227,8 @@ struct FileUploadTests {
         )
 
         let contentType = fileUpload.contentType
-        #expect(contentType.parameters["boundary"] != nil)
-        #expect(!contentType.parameters["boundary"]!.isEmpty)
+        #expect(contentType.parameters[.boundary] != nil)
+        #expect(!contentType.parameters[.boundary]!.isEmpty)
     }
 
     @Test("Each FileUpload has unique boundary")
@@ -245,8 +245,8 @@ struct FileUploadTests {
             fileType: .pdf
         )
 
-        let boundary1 = fileUpload1.contentType.parameters["boundary"]!
-        let boundary2 = fileUpload2.contentType.parameters["boundary"]!
+        let boundary1 = fileUpload1.contentType.parameters[.boundary]!
+        let boundary2 = fileUpload2.contentType.parameters[.boundary]!
 
         #expect(boundary1 != boundary2)
     }

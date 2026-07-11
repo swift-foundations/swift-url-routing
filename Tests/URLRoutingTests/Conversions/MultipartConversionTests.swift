@@ -13,7 +13,7 @@ struct MultipartConversionIntegrationTests {
     @Test("RFC_2046.Multipart.Conversion exists and is accessible")
     func testConversionExists() {
         let conversion = RFC_2046.Multipart.Conversion(TestRequest.self)
-        #expect(!conversion.boundary.value.isEmpty)
+        #expect(!conversion.boundary.rawValue.isEmpty)
         #expect(conversion.contentType.type == "multipart")
         #expect(conversion.contentType.subtype == "form-data")
     }
@@ -35,7 +35,7 @@ struct MultipartConversionIntegrationTests {
         let data = try conversion.unapply(request)
         let string = String(data: data, encoding: .utf8)!
 
-        #expect(string.contains(conversion.boundary.value))
+        #expect(string.contains(conversion.boundary.rawValue))
         #expect(string.contains("Content-Disposition"))
         #expect(string.contains("name"))
         #expect(string.contains("Test User"))

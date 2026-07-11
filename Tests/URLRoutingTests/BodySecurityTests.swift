@@ -3,7 +3,6 @@ import Foundation
 import URLRouting
 import RFC_3986
 import RFC_7230
-import Parsing
 
 @Suite("Body Security Tests")
 struct BodySecurityTests {
