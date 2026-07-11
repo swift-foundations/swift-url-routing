@@ -69,24 +69,15 @@ public struct Multipart<Value: Codable>  {
 extension Multipart: Parser.Bidirectional {
     public func parse(_ input: inout RFC_3986.URI.Request.Data) throws(RFC_3986.URI.Routing.Error) -> Value {
         let conversion = RFC_2046.Multipart.Conversion(type, arrayEncodingStrategy: arrayEncodingStrategy)
-
-        // Parse Content-Type header
-        try Headers {
-            RFC_7230.Header.Field.Parser("Content-Type") { conversion.contentType.headerValue }
-        }.parse(&input)
-
-        // Parse body
+        // The multipart body conversion carries its own boundary, so the Content-Type
+        // header is not required to decode; parse the body directly.
         return try RFC_7230.Body.Parser(conversion).parse(&input)
     }
 
     public func print(_ output: Value, into input: inout RFC_3986.URI.Request.Data) throws(RFC_3986.URI.Routing.Error) {
         let conversion = RFC_2046.Multipart.Conversion(type, arrayEncodingStrategy: arrayEncodingStrategy)
-
-        // Print Content-Type header
-        try Headers {
-            RFC_7230.Header.Field.Parser("Content-Type") { conversion.contentType.headerValue }
-        }.print((), into: &input)
-
+        // Emit the multipart/form-data Content-Type header (carrying the boundary).
+        input.headers["Content-Type"] = [Optional(Substring(conversion.contentType.headerValue))][...]
         // Print body
         try RFC_7230.Body.Parser(conversion).print(output, into: &input)
     }

@@ -145,19 +145,9 @@ extension RFC_2046.Multipart.Conversion: Parser.Conversion.`Protocol` {
     /// - Note: Parses multipart data using RFC 2046 parser and converts to Swift value via JSON.
     public func apply(_ input: Data) throws(RFC_3986.URI.Routing.Error) -> Value {
       do {
-        // Convert Data to String
-        guard let string = String(data: input, encoding: .utf8) else {
-            throw Error.decodingFailed(
-                reason: "Invalid UTF-8 in multipart data"
-            )
-        }
-
-        // Parse multipart data using RFC 2046
-        let multipart = try RFC_2046.Multipart.parse(
-            string,
-            boundary: boundary,
-            subtype: RFC_2046.Multipart.Subtype.formData
-        )
+        // Parse multipart data using RFC 2046 (byte-cursor parser).
+        let parser = RFC_2046.Multipart.Parser(boundary: boundary, subtype: .formData)
+        let multipart = try RFC_2046.Multipart.parse(from: [Byte](input), parser: parser)
 
         // Extract form fields to dictionary
         let fields = multipart.extractFormFields()
@@ -193,26 +183,32 @@ extension RFC_2046.Multipart.Conversion: Parser.Conversion.`Protocol` {
             )
         }
 
-        // Step 3: Convert text fields to RFC_2046.BodyPart
+        // Step 3: Convert text fields to RFC_2046.BodyPart. Content-Disposition comes
+        // from RFC 2183 (handles escaping of special characters in field names); the
+        // value is carried as body content. Built per-field to preserve duplicate
+        // field names (array encoding strategies repeat a name).
         let fieldParts: [RFC_2046.BodyPart] = fieldEncoder.fields.map { field in
-            // Create BodyPart with typed Headers using RFC_2183 Content-Disposition
-            // This handles escaping of special characters in field names per RFC 2183
-            return RFC_2046.BodyPart(
-                headers: .formDataTextField(name: field.name),
-                text: field.value
+            RFC_2046.BodyPart(
+                headers: RFC_2046.BodyPart.Headers(
+                    contentDisposition: .formData(name: field.name)
+                ),
+                content: RFC_2046.BodyPart.Content(field.value)
             )
         }
 
         // Step 4: Convert file fields to RFC_2046.BodyPart
         let fileParts: [RFC_2046.BodyPart] = fieldEncoder.files.map { file in
-            let base64Content = file.content.base64EncodedString()
+            let base64Content = Data(file.content).base64EncodedString()
             return RFC_2046.BodyPart(
                 headers: RFC_2046.BodyPart.Headers(
-                    contentDisposition: .formData(name: file.fieldName, filename: file.filename),
+                    contentDisposition: .formData(
+                        name: file.fieldName,
+                        filename: file.filename
+                    ),
                     contentType: file.contentType ?? .applicationOctetStream,
                     contentTransferEncoding: .base64
                 ),
-                text: base64Content
+                content: RFC_2046.BodyPart.Content(base64Content)
             )
         }
 
@@ -226,15 +222,10 @@ extension RFC_2046.Multipart.Conversion: Parser.Conversion.`Protocol` {
             boundary: boundary
         )
 
-        // Step 7: Render to RFC-compliant format with CRLF line endings
-        let rendered = multipart.render()
-
-        // Step 8: Convert to Data
-        guard let data = rendered.data(using: .utf8) else {
-            throw Error.encodingFailed
-        }
-
-        return data
+        // Step 7: Serialize to RFC-compliant bytes (CRLF line endings) and return as Data.
+        var buffer: [Byte] = []
+        RFC_2046.Multipart.serialize(multipart, into: &buffer)
+        return Data(buffer.map { $0.underlying } as [UInt8])
       } catch {
         throw RFC_3986.URI.Routing.Error(component: .body, failure: .parseFailed("\(error)"))
       }

@@ -39,9 +39,9 @@ extension FileUpload {
             // Step 2: Create RFC 7578 Form.Data.File
             let file = try RFC_7578.Form.Data.File(
                 fieldName: fileUpload.fieldName,
-                filename: fileUpload.filename,
+                filename: try RFC_2183.Filename(fileUpload.filename),
                 contentType: fileUpload.fileType.contentType,
-                content: data
+                content: [UInt8](data)
             )
 
             // Step 3: Build RFC 2046 multipart message using RFC 7578 formData
@@ -51,15 +51,10 @@ extension FileUpload {
                 boundary: fileUpload.boundary.rawValue
             )
 
-            // Step 4: Render to RFC-compliant format with CRLF line endings
-            let rendered = multipart.render()
-
-            // Step 5: Convert to Data
-            guard let result = rendered.data(using: String.Encoding.utf8) else {
-                throw Error.encodingError
-            }
-
-            return result
+            // Step 4: Serialize to RFC-compliant bytes (CRLF line endings) and return as Data.
+            var buffer: [Byte] = []
+            RFC_2046.Multipart.serialize(multipart, into: &buffer)
+            return Data(buffer.map { $0.underlying } as [UInt8])
           } catch {
             throw RFC_3986.URI.Routing.Error(component: .body, failure: .parseFailed("\(error)"))
           }
@@ -83,12 +78,7 @@ extension FileUpload: Parser.Bidirectional {
     /// - Returns: The validated file data
     /// - Throws: Validation or parsing errors
     public func parse(_ input: inout RFC_3986.URI.Request.Data) throws(RFC_3986.URI.Routing.Error) -> Foundation.Data {
-        // Parse Content-Type header
-        try Headers {
-            RFC_7230.Header.Field.Parser("Content-Type") { self.contentType.headerValue }
-        }.parse(&input)
-
-        // Parse and validate body
+        // The body conversion validates the file itself; parse it directly.
         return try RFC_7230.Body.Parser(BodyConversion(fileUpload: self)).parse(&input)
     }
 
@@ -103,11 +93,8 @@ extension FileUpload: Parser.Bidirectional {
     ///   - input: The URI request data to write into
     /// - Throws: Encoding errors
     public func print(_ output: Foundation.Data, into input: inout RFC_3986.URI.Request.Data) throws(RFC_3986.URI.Routing.Error) {
-        // Print Content-Type header
-        try Headers {
-            RFC_7230.Header.Field.Parser("Content-Type") { self.contentType.headerValue }
-        }.print((), into: &input)
-
+        // Emit the multipart/form-data Content-Type header (carrying the boundary).
+        input.headers["Content-Type"] = [Optional(Substring(self.contentType.headerValue))][...]
         // Print body
         try RFC_7230.Body.Parser(BodyConversion(fileUpload: self)).print(output, into: &input)
     }
