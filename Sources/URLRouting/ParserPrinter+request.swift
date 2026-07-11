@@ -5,8 +5,9 @@
 //  Created by Coen ten Thije Boonkkamp on 15/11/2025.
 //
 
+import Dependencies
 import Foundation
-import IssueReporting
+import LoggingExtras
 import OrderedCollections
 import Parsing
 import RFC_3986
@@ -51,7 +52,8 @@ extension ParserPrinter where Input == RFC_3986.URI.Request.Data {
             try self.print(route, into: &data)
             return URLComponents(data: data).url ?? URL(string: "#route-not-found")!
         } catch {
-            reportIssue(
+            @Dependency(\.logger) var logger
+            logger.error(
                 """
                 ---
                 Could not generate a URL for route:
@@ -84,7 +86,8 @@ extension ParserPrinter where Input == RFC_3986.URI.Request.Data {
             }
             return components.string ?? "#route-not-found"
         } catch {
-            reportIssue(
+            @Dependency(\.logger) var logger
+            logger.error(
                 """
                 ---
                 Could not generate a URL for route:

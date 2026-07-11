@@ -1,5 +1,6 @@
+import Dependencies
 import Foundation
-import IssueReporting
+import LoggingExtras
 import Parsing
 import RFC_3986
 
@@ -127,7 +128,8 @@ extension URLRouting.Client {
 
                 Use '\(Self.self).override' to supply a default response for this route.
                 """
-            reportIssue(message)
+            @Dependency(\.logger) var logger
+            logger.error("\(message)")
             throw UnimplementedEndpoint(message: message)
         }
     }
