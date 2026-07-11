@@ -1,13 +1,274 @@
 {
-  "originHash" : "9ae00ac1d3fc025b6165fdc0997ae5c33c21c62e41cca2c34b803c32241617bd",
+  "originHash" : "aa946109c46feda9fd6d10bd7ac740e63dbc9770b8ae500869218509c25dfc2f",
   "pins" : [
     {
-      "identity" : "swift-case-paths",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/pointfreeco/swift-case-paths",
+      "identity" : "swift-affine-geometry-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-affine-geometry-primitives.git",
       "state" : {
-        "revision" : "6989976265be3f8d2b5802c722f9ba168e227c71",
-        "version" : "1.7.2"
+        "branch" : "main",
+        "revision" : "7e7e695bc6c3fb920f63ccb96ca27da5ce1d33e8"
+      }
+    },
+    {
+      "identity" : "swift-affine-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-affine-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "8ffaa99f5501fb04e39920d895c476847d230b17"
+      }
+    },
+    {
+      "identity" : "swift-arm-standard",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-arm-ltd/swift-arm-standard.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "2eda6cc9ce3cd1b561308f34ed0c21870959fa14"
+      }
+    },
+    {
+      "identity" : "swift-array-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-array-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "9095121ba340c863b697bc3db5476be3f2762896"
+      }
+    },
+    {
+      "identity" : "swift-ascii-parser-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-ascii-parser-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "5b5e65571712005f0512f3d777b440a3f0b5816a"
+      }
+    },
+    {
+      "identity" : "swift-ascii-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-ascii-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "a03044433053aa02eea0f4fe55fb42d7146a5e60"
+      }
+    },
+    {
+      "identity" : "swift-ascii-serializer-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-ascii-serializer-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "948fdfd31468a2ac63256e7269f86026852c2ca0"
+      }
+    },
+    {
+      "identity" : "swift-async-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-async-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "5a71fc6c9fef14487bb864461faf35c22fb14d7d"
+      }
+    },
+    {
+      "identity" : "swift-axis-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-axis-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "8a34e2311405c1d3a4cc866efad8da403737b630"
+      }
+    },
+    {
+      "identity" : "swift-binary-leb128-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-binary-leb128-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "016b9eeea7bd350e55dd75fc9eee78ca40837043"
+      }
+    },
+    {
+      "identity" : "swift-binary-parser-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-binary-parser-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "03d39a670ee32cbccd69e2a526869232c842c3cd"
+      }
+    },
+    {
+      "identity" : "swift-binary-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-binary-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "5c52410c5c7274031b0b9e82105dcd220bdc56f9"
+      }
+    },
+    {
+      "identity" : "swift-binary-serializer-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-binary-serializer-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "56a9bd167022d6535984ca14832e52b4ed5c665e"
+      }
+    },
+    {
+      "identity" : "swift-bit-index-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-bit-index-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "324bc4cd95ff46db13651f46708ab6bde8255f0a"
+      }
+    },
+    {
+      "identity" : "swift-bit-pack-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-bit-pack-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "12c540f245cda3ee7f278708009327ba8be68057"
+      }
+    },
+    {
+      "identity" : "swift-bit-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-bit-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "3cc6f46ed5086014bb4084527fb100125761fb3b"
+      }
+    },
+    {
+      "identity" : "swift-bit-vector-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-bit-vector-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "6d938123d0d3b9491c330be58105cb8fa4314820"
+      }
+    },
+    {
+      "identity" : "swift-boundary-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-boundary-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "5018eae67a701cc23c0794435f597b214b419b88"
+      }
+    },
+    {
+      "identity" : "swift-buffer-linear-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-buffer-linear-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "e3ed9aff210f7ad2f985e6c9fb2f6853c44560c7"
+      }
+    },
+    {
+      "identity" : "swift-buffer-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-buffer-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "9f37bd6390e257fe5222dc47ae580f4b5b5b19bf"
+      }
+    },
+    {
+      "identity" : "swift-buffer-ring-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-buffer-ring-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "cc7ddeed2a8c24cb19f68d28e5fc2ae38514a75c"
+      }
+    },
+    {
+      "identity" : "swift-buffer-slots-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-buffer-slots-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "e6a88c65fe84f7e2c943b405aaeae4b68cad789e"
+      }
+    },
+    {
+      "identity" : "swift-byte-collection-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-byte-collection-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "84b43a8c011f404a0e227550c9a557feb33e0d20"
+      }
+    },
+    {
+      "identity" : "swift-byte-parser-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-byte-parser-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "4ae33ebfbf40ceff8594aca999f552525e86c705"
+      }
+    },
+    {
+      "identity" : "swift-byte-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-byte-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "15f95d66d26a68d636212e43a6ea64bb0f1a4ead"
+      }
+    },
+    {
+      "identity" : "swift-cache-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-cache-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "79ac43b4afc3ee88ee0d3989130adaffe7ae1cc6"
+      }
+    },
+    {
+      "identity" : "swift-cardinal-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-cardinal-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "9c44e3cbbcf5debe8b08644eabec84e50e3be529"
+      }
+    },
+    {
+      "identity" : "swift-carrier-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-carrier-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "d83cb935ede3b3c11ede8483740e9f650aabe767"
+      }
+    },
+    {
+      "identity" : "swift-clock-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-clock-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "a97f79abdd680b69af4e2679485f83f6110fe9fa"
+      }
+    },
+    {
+      "identity" : "swift-collection-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-collection-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "d8262b888999e93ca263941cae572f3daa93de32"
       }
     },
     {
@@ -20,30 +281,1029 @@
       }
     },
     {
-      "identity" : "swift-rfc-2388",
+      "identity" : "swift-column-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-column-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "92f5bda4d0f52ffe94ccb7a476d2501a437b60e3"
+      }
+    },
+    {
+      "identity" : "swift-comparison-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-comparison-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "fd78cb8851d296c57590f18079728d3e18494087"
+      }
+    },
+    {
+      "identity" : "swift-cpu",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-foundations/swift-cpu.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "8c99769d93834ba6c72c717e59420b7b94c843c2"
+      }
+    },
+    {
+      "identity" : "swift-cpu-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-cpu-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "e186cd048956e1dd87c2dbe92d2575d58f1e4bf0"
+      }
+    },
+    {
+      "identity" : "swift-cursor-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-cursor-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "c3f702d9a32fd512c3e74c04242f36eb1a8ad3a3"
+      }
+    },
+    {
+      "identity" : "swift-cyclic-index-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-cyclic-index-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "e6da7044a72996ac85c4669ad6684e1eda323c9b"
+      }
+    },
+    {
+      "identity" : "swift-cyclic-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-cyclic-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "609abc687eff1184a98b041f28d8e193dbfc3131"
+      }
+    },
+    {
+      "identity" : "swift-darwin",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-foundations/swift-darwin.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "355b82709d3183200715a6cda7b95f335f4e4d5b"
+      }
+    },
+    {
+      "identity" : "swift-darwin-standard",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-standards/swift-darwin-standard.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "71951ef00edbbe89f8584b9287138ef67a4c0020"
+      }
+    },
+    {
+      "identity" : "swift-decimal-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-decimal-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "7b6e220b4ce14251a6cb42372ae2e6415f3731c5"
+      }
+    },
+    {
+      "identity" : "swift-dependencies",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-foundations/swift-dependencies.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "6d898fa441d02e99268268790f5ba86b1476b9c5"
+      }
+    },
+    {
+      "identity" : "swift-dependency-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-dependency-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "d6a0ccdf1f92fdf300979ad56a6427cf52df1e24"
+      }
+    },
+    {
+      "identity" : "swift-deque-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-deque-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "7331a58ce0b04f9ce0130fd228e8d8a15dad0253"
+      }
+    },
+    {
+      "identity" : "swift-dictionary-ordered-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-dictionary-ordered-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "8f82040b3cd0329d21f53db1ee643893d8ff9eea"
+      }
+    },
+    {
+      "identity" : "swift-dictionary-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-dictionary-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "b7671787bd39b199727f1e1e4229c733ae36e189"
+      }
+    },
+    {
+      "identity" : "swift-dimension-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-dimension-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "4f9ed10b0b0ce0178341eb78add7d6aafd68a6d4"
+      }
+    },
+    {
+      "identity" : "swift-direction-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-direction-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "fce3e61150968893ada47ad1befbbcbd7ea4a3f2"
+      }
+    },
+    {
+      "identity" : "swift-domain-standard",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-standards/swift-domain-standard.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "8215e4f268d86a117a989ff3735bc8c6805e4d30"
+      }
+    },
+    {
+      "identity" : "swift-effect-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-effect-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "129d3fb9288dc5e77710840824667c6fbbae9257"
+      }
+    },
+    {
+      "identity" : "swift-either-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-either-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "dd8637455ae8f02e891d2478246c1734f1ad938c"
+      }
+    },
+    {
+      "identity" : "swift-environment",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-foundations/swift-environment.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "1d210b38eb2e0a9d2574cd6bf38f22ce6d2d857b"
+      }
+    },
+    {
+      "identity" : "swift-equation-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-equation-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "1056782304ac13e8a235d92c2d43c5093fc01e05"
+      }
+    },
+    {
+      "identity" : "swift-error-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-error-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "1ae8a2cc46adc3a5fc463fabd8597676c192ea35"
+      }
+    },
+    {
+      "identity" : "swift-finite-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-finite-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "d4bed64e441e9bac1ee3639a8c402c46083ee809"
+      }
+    },
+    {
+      "identity" : "swift-fixed-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-fixed-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "dabf2bb34816b6255068004105db6264a97a1490"
+      }
+    },
+    {
+      "identity" : "swift-format-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-format-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "739964fdb24afa53cd231c329f44c5ba652b1910"
+      }
+    },
+    {
+      "identity" : "swift-formatter-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-formatter-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "70dbc313e3f3f03a119dd7f6500435d90a39eac2"
+      }
+    },
+    {
+      "identity" : "swift-geometry-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-geometry-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "86a97b3e26820de58c261106c6f09b8a0e0b4d4b"
+      }
+    },
+    {
+      "identity" : "swift-glob-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-glob-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "c1fb4082b3f7f3a642cbcb630754baab5cd37eff"
+      }
+    },
+    {
+      "identity" : "swift-graph-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-graph-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "c08429a5e936add5a72a19aa23dcbf3853609c4a"
+      }
+    },
+    {
+      "identity" : "swift-hash-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-hash-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "f9da7c2484b203755125534753fa2696c0d8e967"
+      }
+    },
+    {
+      "identity" : "swift-hash-table-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-hash-table-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "1a34d9a3b1f272cf2dcd9a23209e8c4cd628ef3a"
+      }
+    },
+    {
+      "identity" : "swift-heap-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-heap-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "aec6303cf44e0576145450812e51b0fdafaa1498"
+      }
+    },
+    {
+      "identity" : "swift-ieee-754",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-ieee/swift-ieee-754.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "f1cc9d77beddba4c60b17b812ec200200abfc753"
+      }
+    },
+    {
+      "identity" : "swift-incits-4-1986",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-incits/swift-incits-4-1986.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "b67981b9d815575bdb91ee3be90a6b7f2b5aff4f"
+      }
+    },
+    {
+      "identity" : "swift-index-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-index-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "e6f25e4e03673b229fc84883da6a35bc282ff118"
+      }
+    },
+    {
+      "identity" : "swift-input-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-input-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "668c7bb78ebd625792560dd88f2848999269a78e"
+      }
+    },
+    {
+      "identity" : "swift-ipv4-standard",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-standards/swift-ipv4-standard.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "19aa4ffa77a5199a96392bd68e0c5adf49f69a85"
+      }
+    },
+    {
+      "identity" : "swift-ipv6-standard",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-standards/swift-ipv6-standard.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "0744c0c37b96205d927bf0d9bb9c13e279e427e8"
+      }
+    },
+    {
+      "identity" : "swift-iso-8601",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-iso/swift-iso-8601.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "aaf2e103fc8727dfd20ab0722745caa8a8595ccd"
+      }
+    },
+    {
+      "identity" : "swift-iso-9899",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-iso/swift-iso-9899.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "2dbdd7be478a7fa6074f813ccfbaca67973cdd10"
+      }
+    },
+    {
+      "identity" : "swift-iso-9945",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-iso/swift-iso-9945.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "96c29212d12f81fa3752f0e6a44d5014e13cd271"
+      }
+    },
+    {
+      "identity" : "swift-iterator-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-iterator-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "33390395b384e39a77fec7a36d45b9ce08ee2d22"
+      }
+    },
+    {
+      "identity" : "swift-kernel",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-foundations/swift-kernel.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "f5be0f6bdf8d0de9e4d9054984a0b173585ef96f"
+      }
+    },
+    {
+      "identity" : "swift-linear-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-linear-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "e2dd89eeaa09735352145fede94a3ba4c6472b47"
+      }
+    },
+    {
+      "identity" : "swift-linux",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-foundations/swift-linux.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "197fbb4a3418041cac0a90e899645f20d13edd74"
+      }
+    },
+    {
+      "identity" : "swift-linux-standard",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-linux-foundation/swift-linux-standard.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "c2903c21cf95a9dcc445ad0d9afff00bc1cc76f3"
+      }
+    },
+    {
+      "identity" : "swift-loader-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-loader-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "2f18d38a38f56ee50b01d74640dd3e2c3632c5c5"
+      }
+    },
+    {
+      "identity" : "swift-log",
       "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-log.git",
+      "state" : {
+        "revision" : "a878e7f8f46cfc0e1125e565b5c08e7d5272dc9a",
+        "version" : "1.14.0"
+      }
+    },
+    {
+      "identity" : "swift-logging-extras",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-foundations/swift-logging-extras.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "e3cf02b2a0bb74a3021457f30afbc2223bdb008f"
+      }
+    },
+    {
+      "identity" : "swift-machine-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-machine-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "bec5f73160ffda6f0ea624d1bf4ec61db1c38d4e"
+      }
+    },
+    {
+      "identity" : "swift-memory-allocation-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-memory-allocation-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "fd1128d57a9ce2643d1d4e62feb418bf45b915be"
+      }
+    },
+    {
+      "identity" : "swift-memory-cursor-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-memory-cursor-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "8844886f172d68172d87559420f6f28eed6e2f32"
+      }
+    },
+    {
+      "identity" : "swift-memory-heap-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-memory-heap-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "26506194be7aad67e73b7b978f1b71efada3489b"
+      }
+    },
+    {
+      "identity" : "swift-memory-inline-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-memory-inline-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "37ed6978c82f64b7f9603f2a1fda83b7e34e8227"
+      }
+    },
+    {
+      "identity" : "swift-memory-iterator-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-memory-iterator-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "51b50275a1f8e1adec39984462ec8717910c8593"
+      }
+    },
+    {
+      "identity" : "swift-memory-lock-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-memory-lock-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "f593463ef3f35194f258a6bfad7965f2ac58d769"
+      }
+    },
+    {
+      "identity" : "swift-memory-map-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-memory-map-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "386b14f9e9aa14a163e935cc3d2db40c21f71462"
+      }
+    },
+    {
+      "identity" : "swift-memory-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-memory-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "51d01448d407e48344c4816edbe1638c380f9986"
+      }
+    },
+    {
+      "identity" : "swift-memory-shared-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-memory-shared-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "f91e80969c51d543a470f1ed963a807c7b6adda7"
+      }
+    },
+    {
+      "identity" : "swift-memory-small-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-memory-small-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "7ebb05d72429e826abb8d64df3ceabf06a9f76c6"
+      }
+    },
+    {
+      "identity" : "swift-multipart-form-coding",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-foundations/swift-multipart-form-coding.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "7a46ea1d71b3bafb4ea0da643d27a18b55c3536e"
+      }
+    },
+    {
+      "identity" : "swift-numeric-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-numeric-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "feb0e21fa12d02176e4b97fcf5a9622877b311c9"
+      }
+    },
+    {
+      "identity" : "swift-optic-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-optic-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "450e05ada0d626b87b2ff4f782c9ed934b99d666"
+      }
+    },
+    {
+      "identity" : "swift-order-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-order-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "c377a5eb12e56d149d191294e7d102720feb49ad"
+      }
+    },
+    {
+      "identity" : "swift-ordinal-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-ordinal-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "d3cb28d1006a074aabaa5e2ef6ab6d0385da6cfa"
+      }
+    },
+    {
+      "identity" : "swift-ownership-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-ownership-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "4ae235f461a5aa6767eb88d9fb17753b27537a02"
+      }
+    },
+    {
+      "identity" : "swift-ownership-shared-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-ownership-shared-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "1c23ee8d6822d5cee1958e265ca57253a9f9a7af"
+      }
+    },
+    {
+      "identity" : "swift-pair-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-pair-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "ff0a7a3c47b3d9f1a38b180458381436f8272d3b"
+      }
+    },
+    {
+      "identity" : "swift-parser-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-parser-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "d29747eedaa4c03d0c22c60a641c2ec08e4cb3e2"
+      }
+    },
+    {
+      "identity" : "swift-path-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-path-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "b6f89d208cb7a1c9beede37a2f913984fa14b764"
+      }
+    },
+    {
+      "identity" : "swift-posix",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-foundations/swift-posix.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "cce45ba6b991d95c642be498a9eb8369c4b9ffbb"
+      }
+    },
+    {
+      "identity" : "swift-product-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-product-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "fd5266c8f407b1975f94beefbab7f4c5f9232454"
+      }
+    },
+    {
+      "identity" : "swift-property-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-property-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "8c52a6aefe33c9e96551a3917655297954982752"
+      }
+    },
+    {
+      "identity" : "swift-queue-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-queue-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "301ebff6dfa85d05bba99d9bc210be8bebfb2368"
+      }
+    },
+    {
+      "identity" : "swift-radix-formatter-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-radix-formatter-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "f5e93f115c2b37ff195981def3bdf1add1c64290"
+      }
+    },
+    {
+      "identity" : "swift-radix-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-radix-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "685d2c7080970b4c794c6099e435356d5e2270fd"
+      }
+    },
+    {
+      "identity" : "swift-random-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-random-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "4937c71734d46149d089d3f64fe81427b83a20c1"
+      }
+    },
+    {
+      "identity" : "swift-reference-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-reference-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "09329d62bd9957a8261a836f46661733385091fc"
+      }
+    },
+    {
+      "identity" : "swift-rfc-1035",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-ietf/swift-rfc-1035.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "1104b4ff5135da01d8ea7a8cbedc03c446f22c88"
+      }
+    },
+    {
+      "identity" : "swift-rfc-1123",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-ietf/swift-rfc-1123.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "d58ebf033ac3caa4824306ec562b559a2de10d2a"
+      }
+    },
+    {
+      "identity" : "swift-rfc-2045",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-ietf/swift-rfc-2045.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "61f9c7ba35699bfe2163581f73bab83f0d9d9fe2"
+      }
+    },
+    {
+      "identity" : "swift-rfc-2046",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-ietf/swift-rfc-2046.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "d91f5abe1b3914ab9457d0bfdfed5608d124c736"
+      }
+    },
+    {
+      "identity" : "swift-rfc-2183",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-ietf/swift-rfc-2183.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "fa44cde30e8466d484bd4e579a901f8963d412ae"
+      }
+    },
+    {
+      "identity" : "swift-rfc-2388",
+      "kind" : "localSourceControl",
       "location" : "https://github.com/swift-standards/swift-rfc-2388",
       "state" : {
-        "revision" : "97e99450c04150cfd638af842c8bf3ec3b1eb60f",
-        "version" : "0.1.0"
+        "branch" : "main",
+        "revision" : "a6c725adb2aef7528273f173cf062053fa834d52"
+      }
+    },
+    {
+      "identity" : "swift-rfc-3492",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-ietf/swift-rfc-3492.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "5b11d2090c67667815f8f4ab92eb59c92c613c45"
       }
     },
     {
       "identity" : "swift-rfc-3986",
-      "kind" : "remoteSourceControl",
+      "kind" : "localSourceControl",
       "location" : "https://github.com/swift-standards/swift-rfc-3986.git",
       "state" : {
-        "revision" : "dfaa7f5898bbe10e76053b0a9b529ab28ab46504",
-        "version" : "0.1.3"
+        "branch" : "main",
+        "revision" : "eef4aaa9034d98589907fd89cb65ee5fcd835308"
+      }
+    },
+    {
+      "identity" : "swift-rfc-3987",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-ietf/swift-rfc-3987.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "47eed3bb989e1faa586361592911cb744d456597"
+      }
+    },
+    {
+      "identity" : "swift-rfc-4007",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-ietf/swift-rfc-4007.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "28705353986297fbfd1111b208ea153f25d15105"
+      }
+    },
+    {
+      "identity" : "swift-rfc-4291",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-ietf/swift-rfc-4291.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "6bdac392db9a59d012d06b6ddee72e2b930069eb"
+      }
+    },
+    {
+      "identity" : "swift-rfc-4648",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-ietf/swift-rfc-4648.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "d24c8cf50bfa2a8f1fc89fc45775e388b7e4cddb"
+      }
+    },
+    {
+      "identity" : "swift-rfc-5321",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-ietf/swift-rfc-5321.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "8795c5944b770e68a4961fc4642fe512b24ded11"
+      }
+    },
+    {
+      "identity" : "swift-rfc-5322",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-ietf/swift-rfc-5322.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "6acfb84185e7c861e350bda6a91a50ee7e8bed45"
+      }
+    },
+    {
+      "identity" : "swift-rfc-5890",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-ietf/swift-rfc-5890.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "084354f0deb4e506441348da3e882b9888d143e6"
+      }
+    },
+    {
+      "identity" : "swift-rfc-5952",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-ietf/swift-rfc-5952.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "53020b6bcab6f762977e21f8d3979ef43e1a551d"
+      }
+    },
+    {
+      "identity" : "swift-rfc-6265",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-ietf/swift-rfc-6265.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "c52fbccedce55e64e412216ea31f6cdbc6226923"
       }
     },
     {
       "identity" : "swift-rfc-6570",
-      "kind" : "remoteSourceControl",
+      "kind" : "localSourceControl",
       "location" : "https://github.com/swift-standards/swift-rfc-6570.git",
       "state" : {
-        "revision" : "1af24c9835c95525eed8a21efbd8d34f280a757f",
-        "version" : "0.1.0"
+        "branch" : "main",
+        "revision" : "9fae0c9b6c41b35d5beba9dee3ff11da88e9884f"
+      }
+    },
+    {
+      "identity" : "swift-rfc-7230",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-ietf/swift-rfc-7230.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "319c94a751761d17bdc66b8d4032b06bbfa45b36"
+      }
+    },
+    {
+      "identity" : "swift-rfc-7231",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-ietf/swift-rfc-7231.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "bb1df1f16b3cb120bd6c0414f3a35e4a16dd6a69"
+      }
+    },
+    {
+      "identity" : "swift-rfc-7578",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-ietf/swift-rfc-7578.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "31495254a5520fbdb2c0fe5724f6f81f97188ef0"
+      }
+    },
+    {
+      "identity" : "swift-rfc-791",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-ietf/swift-rfc-791.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "57833328204eece15aed1f8b5340ac6a8cd1ee88"
+      }
+    },
+    {
+      "identity" : "swift-sequence-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-sequence-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "9cfed98d7a3d67f5e055313b22d02388c219bd32"
+      }
+    },
+    {
+      "identity" : "swift-serializer-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-serializer-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "ed367f2d0495d4609e1a4c9c6211f979e2edb172"
+      }
+    },
+    {
+      "identity" : "swift-set-ordered-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-set-ordered-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "1cb704c854771db54e702cf6c2edfc3197e3e122"
+      }
+    },
+    {
+      "identity" : "swift-set-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-set-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "f262cb374209bd8419795bb333a8c724b5fbfe6b"
+      }
+    },
+    {
+      "identity" : "swift-source-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-source-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "78a66ca83b503d3f48e966af024759ec9c1cf930"
+      }
+    },
+    {
+      "identity" : "swift-span-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-span-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "8f36141cd165a9edf37c6b4525d4ea8afaf2f5e2"
+      }
+    },
+    {
+      "identity" : "swift-stack-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-stack-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "697a478043718f818d83ac4f61d799dde172d7a6"
+      }
+    },
+    {
+      "identity" : "swift-standard-library-extensions",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-standard-library-extensions.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "c137a9be7224fec3590feb8ed326766ddd492f66"
+      }
+    },
+    {
+      "identity" : "swift-storage-generational-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-storage-generational-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "a2d3d881700ef0f47d88f9222cc7ce923f616726"
+      }
+    },
+    {
+      "identity" : "swift-storage-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-storage-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "fecd96cb870e768d2aa0ebfa642d9a6401c6d977"
+      }
+    },
+    {
+      "identity" : "swift-storage-split-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-storage-split-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "3f773c65b2cf6d7803e3f4d485485aeb9df7d006"
+      }
+    },
+    {
+      "identity" : "swift-string-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-string-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "855ab6d31727b30c305116afcd2088e608ba51f1"
+      }
+    },
+    {
+      "identity" : "swift-strings",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-foundations/swift-strings.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "90ae6a6ab2c791362c32a733237858e714c87f80"
       }
     },
     {
@@ -56,12 +1316,138 @@
       }
     },
     {
-      "identity" : "xctest-dynamic-overlay",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/pointfreeco/xctest-dynamic-overlay",
+      "identity" : "swift-system-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-system-primitives.git",
       "state" : {
-        "revision" : "4c27acf5394b645b70d8ba19dc249c0472d5f618",
-        "version" : "1.7.0"
+        "branch" : "main",
+        "revision" : "b1cd3784529eb6da4bbc7b19408ec9e1926b3b6b"
+      }
+    },
+    {
+      "identity" : "swift-tagged-collection-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-tagged-collection-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "9829054972889b3b63da130b7f2478a510b9deb6"
+      }
+    },
+    {
+      "identity" : "swift-tagged-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-tagged-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "d5c93cb64cbc27a3b9e1d2c4ca9ce1c6ec0b5495"
+      }
+    },
+    {
+      "identity" : "swift-terminal-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-terminal-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "ccdc83ca5eb10df0b3112d79225a89519b2daf11"
+      }
+    },
+    {
+      "identity" : "swift-text-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-text-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "8b8a8efbf04ddc29941c5dc8c6ae9e1454ab263a"
+      }
+    },
+    {
+      "identity" : "swift-time-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-time-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "140cf0ba93feea50fa4b516cf673d0462ab0bbce"
+      }
+    },
+    {
+      "identity" : "swift-url-form-coding",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-foundations/swift-url-form-coding.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "041a4a7b6aeb990fa3bd43058ba5b36518d60549"
+      }
+    },
+    {
+      "identity" : "swift-vector-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-vector-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "c41d3257c72e87633ef86d564d6ecb4785ecaeed"
+      }
+    },
+    {
+      "identity" : "swift-whatwg-html",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-whatwg/swift-whatwg-html.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "30b8b7530ba8505f2ce87323c87c2eecd1e39d2f"
+      }
+    },
+    {
+      "identity" : "swift-whatwg-url",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-whatwg/swift-whatwg-url.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "fde4c8bfa8df4419910a3bacc32d374dad6e4977"
+      }
+    },
+    {
+      "identity" : "swift-windows",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-foundations/swift-windows.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "ec41ebde026028467bfc761056dcb3af6ad1d475"
+      }
+    },
+    {
+      "identity" : "swift-windows-standard",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-microsoft/swift-windows-standard.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "9f63a6ea479d8a4da7ac6a004799255fbcd34895"
+      }
+    },
+    {
+      "identity" : "swift-witness-primitives",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-primitives/swift-witness-primitives.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "6cc137cfa0ae0bf7ca0920973946ce4f4ea8dab9"
+      }
+    },
+    {
+      "identity" : "swift-witnesses",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-foundations/swift-witnesses.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "95f7c23e48273e8f947facea5d6b0e3af00d24d7"
+      }
+    },
+    {
+      "identity" : "swift-x86-standard",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-intel/swift-x86-standard.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "ca12ea088ab15fde6f99919bb56de21be1178d34"
       }
     }
   ],
