@@ -1,5 +1,4 @@
 import OrderedCollections
-import Parsing
 import RFC_3986
 import RFC_7230
 
@@ -15,7 +14,9 @@ extension RFC_7230.Header.Field {
     ///   Field.Parser("Content-Length") { Int.parser() }
     /// }
     /// ```
-    public struct Parser<Value: Parsing.Parser>: Parsing.Parser where Value.Input == Substring {
+    public struct Parser<Value: Parser.`Protocol`>: Parser.`Protocol` where Value.Input == Substring {
+        public typealias Failure = RFC_3986.URI.Routing.Error
+
         @usableFromInline
         let defaultValue: Value.Output?
 
@@ -26,18 +27,11 @@ extension RFC_7230.Header.Field {
         let valueParser: Value
 
         /// Initializes a named field parser.
-        ///
-        /// - Parameters:
-        ///   - name: The name of the field.
-        ///   - defaultValue: A default value if the field is absent. Prefer specifying a default over
-        ///     applying `Parser.replaceError(with:)` if parsing should fail for invalid values.
-        ///   - value: A parser that parses the field's substring value into something more
-        ///     well-structured.
         @inlinable
         public init(
             _ name: String,
             default defaultValue: Value.Output? = nil,
-            @ParserBuilder<Substring> _ value: () -> Value
+            @Parser.Builder<Substring> _ value: () -> Value
         ) {
             self.defaultValue = defaultValue
             self.name = name
@@ -45,20 +39,12 @@ extension RFC_7230.Header.Field {
         }
 
         /// Initializes a named field parser with a throwing closure.
-        ///
-        /// This overload allows using throwing factory functions within the parser builder.
-        ///
-        /// - Parameters:
-        ///   - name: The name of the field.
-        ///   - defaultValue: A default value if the field is absent. Prefer specifying a default over
-        ///     applying `Parser.replaceError(with:)` if parsing should fail for invalid values.
-        ///   - value: A throwing closure that creates a parser for the field's substring value.
         @_disfavoredOverload
         @inlinable
         public init(
             _ name: String,
             default defaultValue: Value.Output? = nil,
-            @ParserBuilder<Substring> _ value: () throws -> Value
+            @Parser.Builder<Substring> _ value: () throws -> Value
         ) rethrows {
             self.defaultValue = defaultValue
             self.name = name
@@ -66,22 +52,15 @@ extension RFC_7230.Header.Field {
         }
 
         /// Initializes a named field parser.
-        ///
-        /// - Parameters:
-        ///   - name: The name of the field.
-        ///   - value: A conversion that transforms the field's substring value into something more
-        ///     well-structured.
-        ///   - defaultValue: A default value if the field is absent. Prefer specifying a default over
-        ///     applying `Parser.replaceError(with:)` if parsing should fail for invalid values.
         @inlinable
-        public init<C>(
+        public init<C: Parser.Conversion.`Protocol`>(
             _ name: String,
             _ value: C,
             default defaultValue: Value.Output? = nil
-        ) where Value == Parsers.MapConversion<Parsers.ReplaceError<Rest<Substring>>, C> {
+        ) where Value == Parser.Converted<URLRouting.Rest<Substring>, C>, C.Input == Substring {
             self.defaultValue = defaultValue
             self.name = name
-            self.valueParser = Rest().replaceError(with: "").map(value)
+            self.valueParser = URLRouting.Rest().map(value)
         }
 
         @inlinable
@@ -90,16 +69,16 @@ extension RFC_7230.Header.Field {
             default defaultValue: Value.Output? = nil
         )
         where
-            Value == Parsers.MapConversion<
-                Parsers.ReplaceError<Rest<Substring>>, Conversions.SubstringToString
-            > {
+            Value == Parser.Converted<URLRouting.Rest<Substring>, Parser.Conversion.String> {
             self.defaultValue = defaultValue
             self.name = name
-            self.valueParser = Rest().replaceError(with: "").map(.string)
+            self.valueParser = URLRouting.Rest().map(.string)
         }
 
         @inlinable
-        public func parse(_ input: inout RFC_3986.URI.Request.Fields) throws -> Value.Output {
+        public func parse(
+            _ input: inout RFC_3986.URI.Request.Fields
+        ) throws(RFC_3986.URI.Routing.Error) -> Value.Output {
             guard
                 let wrapped = input[self.name]?.first,
                 var value = wrapped
@@ -114,7 +93,15 @@ extension RFC_7230.Header.Field {
                 return defaultValue
             }
 
-            let output = try self.valueParser.parse(&value)
+            let output: Value.Output
+            do {
+                output = try self.valueParser.parse(&value)
+            } catch {
+                throw RFC_3986.URI.Routing.Error(
+                    component: .header(name: self.name),
+                    failure: .parseFailed("\(error)")
+                )
+            }
             input[self.name]?.removeFirst()
             if input[self.name]?.isEmpty ?? true {
                 input[self.name] = nil
@@ -124,17 +111,34 @@ extension RFC_7230.Header.Field {
     }
 }
 
-extension RFC_7230.Header.Field.Parser: ParserPrinter where Value: ParserPrinter {
+extension RFC_7230.Header.Field.Parser: Parser.Bidirectional where Value: Parser.Bidirectional {
     @inlinable
-    public func print(_ output: Value.Output, into input: inout RFC_3986.URI.Request.Fields) throws {
+    public func print(
+        _ output: Value.Output,
+        into input: inout RFC_3986.URI.Request.Fields
+    ) throws(RFC_3986.URI.Routing.Error) {
         if let defaultValue = self.defaultValue, Internal.isEqual(output, defaultValue) { return }
 
         // Print the value
-        let printedValue = try self.valueParser.print(output)
+        let printedValue: Substring
+        do {
+            printedValue = try self.valueParser.print(output)
+        } catch {
+            throw RFC_3986.URI.Routing.Error(
+                component: .header(name: self.name),
+                failure: .parseFailed("\(error)")
+            )
+        }
 
-        // Validate against CRLF injection per RFC 7230 §3.2
-        // This prevents header injection attacks
-        _ = try RFC_7230.Header.Field.Value(String(printedValue))
+        // Validate against CRLF injection per RFC 7230 §3.2 (prevents header injection).
+        do {
+            _ = try RFC_7230.Header.Field.Value(String(printedValue))
+        } catch {
+            throw RFC_3986.URI.Routing.Error(
+                component: .header(name: self.name),
+                failure: .invalid("\(error)")
+            )
+        }
 
         input.fields.updateValue(
             forKey: input.isCaseSensitive ? self.name : self.name.lowercased(),
@@ -161,37 +165,40 @@ extension RFC_7230.Header {
     ///     ContentType { Prefix { $0 != ";" } }
     /// }
     /// ```
-    public struct ContentType<Value: Parsing.Parser>: Parsing.Parser where Value.Input == Substring {
+    public struct ContentType<Value: Parser.`Protocol`>: Parser.`Protocol` where Value.Input == Substring {
+        public typealias Failure = RFC_3986.URI.Routing.Error
+
         @usableFromInline
         let valueParser: RFC_7230.Header.Field.Parser<Value>
 
         /// Initializes a Content-Type header parser.
-        ///
-        /// - Parameter value: A parser builder closure for the content type value
         @inlinable
-        public init(@ParserBuilder<Substring> _ value: () -> Value) {
+        public init(@Parser.Builder<Substring> _ value: () -> Value) {
             self.valueParser = RFC_7230.Header.Field.Parser("Content-Type", value)
         }
 
         /// Initializes a Content-Type header parser with a throwing closure.
-        ///
-        /// - Parameter value: A throwing parser builder closure for the content type value
         @_disfavoredOverload
         @inlinable
-        public init(@ParserBuilder<Substring> _ value: () throws -> Value) rethrows {
+        public init(@Parser.Builder<Substring> _ value: () throws -> Value) rethrows {
             self.valueParser = try RFC_7230.Header.Field.Parser("Content-Type", value)
         }
 
         @inlinable
-        public func parse(_ input: inout RFC_3986.URI.Request.Fields) throws -> Value.Output {
+        public func parse(
+            _ input: inout RFC_3986.URI.Request.Fields
+        ) throws(RFC_3986.URI.Routing.Error) -> Value.Output {
             try self.valueParser.parse(&input)
         }
     }
 }
 
-extension RFC_7230.Header.ContentType: ParserPrinter where Value: ParserPrinter {
+extension RFC_7230.Header.ContentType: Parser.Bidirectional where Value: Parser.Bidirectional {
     @inlinable
-    public func print(_ output: Value.Output, into input: inout RFC_3986.URI.Request.Fields) throws {
+    public func print(
+        _ output: Value.Output,
+        into input: inout RFC_3986.URI.Request.Fields
+    ) throws(RFC_3986.URI.Routing.Error) {
         try self.valueParser.print(output, into: &input)
     }
 }

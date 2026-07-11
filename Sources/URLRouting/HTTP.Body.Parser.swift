@@ -1,5 +1,4 @@
 import Foundation
-import Parsing
 import RFC_3986
 import RFC_7230
 
@@ -31,7 +30,9 @@ extension RFC_7230.Body {
     ///     maxSize: Measurement(value: 50, unit: .mebibytes)
     /// )
     /// ```
-    public struct Parser<Bytes: Parsing.Parser>: Parsing.Parser where Bytes.Input == Data {
+    public struct Parser<Bytes: Parser.`Protocol`>: Parser.`Protocol` where Bytes.Input == Data {
+        public typealias Failure = RFC_3986.URI.Routing.Error
+
         @usableFromInline
         let bytesParser: Bytes
 
@@ -45,7 +46,7 @@ extension RFC_7230.Body {
 
         @inlinable
         public init(
-            @ParserBuilder<Data> _ bytesParser: () -> Bytes,
+            @Parser.Builder<Data> _ bytesParser: () -> Bytes,
             maxSize: Measurement<UnitInformationStorage> = Parser.defaultMaxSize
         ) {
             self.bytesParser = bytesParser()
@@ -55,7 +56,7 @@ extension RFC_7230.Body {
         @_disfavoredOverload
         @inlinable
         public init(
-            @ParserBuilder<Data> _ bytesParser: () throws -> Bytes,
+            @Parser.Builder<Data> _ bytesParser: () throws -> Bytes,
             maxSize: Measurement<UnitInformationStorage> = Parser.defaultMaxSize
         ) rethrows {
             self.bytesParser = try bytesParser()
@@ -70,12 +71,12 @@ extension RFC_7230.Body {
         ///   - bytesConversion: A conversion that transforms bytes into some other type.
         ///   - maxSize: Maximum allowed body size (defaults to 10 MiB)
         @inlinable
-        public init<C>(
+        public init<C: Parser.Conversion.`Protocol`>(
             _ bytesConversion: C,
             maxSize: Measurement<UnitInformationStorage> = Parser.defaultMaxSize
         )
-        where Bytes == Parsers.MapConversion<Parsers.ReplaceError<Rest<Data>>, C> {
-            self.bytesParser = Rest().replaceError(with: .init()).map(bytesConversion)
+        where Bytes == Parser.Converted<URLRouting.Rest<Data>, C>, C.Input == Data {
+            self.bytesParser = URLRouting.Rest().map(bytesConversion)
             self.maxSize = maxSize
         }
 
@@ -85,13 +86,15 @@ extension RFC_7230.Body {
         @inlinable
         public init(
             maxSize: Measurement<UnitInformationStorage> = Parser.defaultMaxSize
-        ) where Bytes == Parsers.ReplaceError<Rest<Bytes.Input>> {
-            self.bytesParser = Rest().replaceError(with: .init())
+        ) where Bytes == URLRouting.Rest<Data> {
+            self.bytesParser = URLRouting.Rest()
             self.maxSize = maxSize
         }
 
         @inlinable
-        public func parse(_ input: inout RFC_3986.URI.Request.Data) throws -> Bytes.Output {
+        public func parse(
+            _ input: inout RFC_3986.URI.Request.Data
+        ) throws(RFC_3986.URI.Routing.Error) -> Bytes.Output {
             guard var body = input.body
             else {
                 throw RFC_3986.URI.Routing.Error(
@@ -112,7 +115,15 @@ extension RFC_7230.Body {
                 )
             }
 
-            let output = try self.bytesParser.parse(&body)
+            let output: Bytes.Output
+            do {
+                output = try self.bytesParser.parse(&body)
+            } catch {
+                throw RFC_3986.URI.Routing.Error(
+                    component: .body,
+                    failure: .parseFailed("\(error)")
+                )
+            }
             input.body = body
 
             return output
@@ -120,10 +131,20 @@ extension RFC_7230.Body {
     }
 }
 
-extension RFC_7230.Body.Parser: ParserPrinter where Bytes: ParserPrinter {
+extension RFC_7230.Body.Parser: Parser.Bidirectional where Bytes: Parser.Bidirectional {
     @inlinable
-    public func print(_ output: Bytes.Output, into input: inout RFC_3986.URI.Request.Data) rethrows {
-        input.body = try self.bytesParser.print(output)
+    public func print(
+        _ output: Bytes.Output,
+        into input: inout RFC_3986.URI.Request.Data
+    ) throws(RFC_3986.URI.Routing.Error) {
+        do {
+            input.body = try self.bytesParser.print(output)
+        } catch {
+            throw RFC_3986.URI.Routing.Error(
+                component: .body,
+                failure: .parseFailed("\(error)")
+            )
+        }
     }
 }
 
@@ -136,9 +157,3 @@ extension RFC_7230.Body.Parser: ParserPrinter where Bytes: ParserPrinter {
 /// Body(.json(Comment.self))
 /// ```
 public typealias Body = RFC_7230.Body.Parser
-
-// MARK: - Parser Extension Compatibility
-
-extension Parser where Input == RFC_3986.URI.Request.Data {
-    public typealias Body = RFC_7230.Body.Parser
-}

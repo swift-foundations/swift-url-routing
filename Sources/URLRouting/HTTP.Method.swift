@@ -1,4 +1,3 @@
-import Parsing
 import RFC_3986
 import RFC_7231
 
@@ -11,12 +10,16 @@ extension RFC_7231.Method {
     ///
     /// Example:
     /// ```swift
-    /// Route(.case(SiteRoute.login)) {
+    /// Route(.case(\.login)) {
     ///   RFC_7231.Method.Parser.post  // Only route POST requests
     ///   ...
     /// }
     /// ```
-    public struct Parser: ParserPrinter, Sendable {
+    public struct Parser: Parser.Bidirectional, Sendable {
+        public typealias Input = RFC_3986.URI.Request.Data
+        public typealias Output = Void
+        public typealias Failure = RFC_3986.URI.Routing.Error
+
         @usableFromInline
         let method: RFC_7231.Method
 
@@ -26,10 +29,7 @@ extension RFC_7231.Method {
         ///
         /// > Note: If you are using a ``Route`` parser you do not need to specify `Method.get` (it is the
         /// > default).
-        nonisolated(unsafe) public static let get = OneOf {
-            Self(.head)
-            Self(.get)  // NB: Prefer printing "GET"
-        }
+        public static let get = Get()
 
         /// A parser of POST requests.
         public static let post = Self(.post)
@@ -52,7 +52,7 @@ extension RFC_7231.Method {
         }
 
         @inlinable
-        public func parse(_ input: inout RFC_3986.URI.Request.Data) throws {
+        public func parse(_ input: inout RFC_3986.URI.Request.Data) throws(RFC_3986.URI.Routing.Error) {
             guard let inputMethod = input.method else {
                 throw RFC_3986.URI.Routing.Error(
                     component: .method,
@@ -72,8 +72,47 @@ extension RFC_7231.Method {
         }
 
         @inlinable
-        public func print(_ output: (), into input: inout RFC_3986.URI.Request.Data) {
+        public func print(_ output: Void, into input: inout RFC_3986.URI.Request.Data) {
             input.method = self.method
+        }
+    }
+}
+
+// MARK: - GET (HEAD-or-GET alternative)
+
+extension RFC_7231.Method.Parser {
+    /// A parser-printer that recognizes HEAD or GET and prints GET.
+    ///
+    /// `Parser.OneOf` requires an `Input.Protocol` linear cursor (parity friction
+    /// F1); `RFC_3986.URI.Request.Data` is a structured carrier, not one, so the
+    /// two-way choice is hand-rolled: `parse` tries HEAD then GET (a failing
+    /// method matcher leaves the input untouched, so no backtracking is needed),
+    /// and `print` writes GET.
+    public struct Get: Parser.Bidirectional, Sendable {
+        public typealias Input = RFC_3986.URI.Request.Data
+        public typealias Output = Void
+        public typealias Failure = RFC_3986.URI.Routing.Error
+
+        @inlinable
+        public init() {}
+
+        @inlinable
+        public func parse(_ input: inout RFC_3986.URI.Request.Data) throws(RFC_3986.URI.Routing.Error) {
+            if (try? RFC_7231.Method.Parser(.head).parse(&input)) != nil { return }
+            if (try? RFC_7231.Method.Parser(.get).parse(&input)) != nil { return }
+            throw RFC_3986.URI.Routing.Error(
+                component: .method,
+                failure: .mismatch(
+                    expected: "GET",
+                    actual: input.method?.rawValue ?? "nil"
+                )
+            )
+        }
+
+        @inlinable
+        public func print(_ output: Void, into input: inout RFC_3986.URI.Request.Data) {
+            // NB: Prefer printing "GET"
+            input.method = .get
         }
     }
 }

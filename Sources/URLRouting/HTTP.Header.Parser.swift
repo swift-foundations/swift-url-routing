@@ -1,5 +1,4 @@
 import Foundation
-import Parsing
 import RFC_3986
 import RFC_7230
 
@@ -17,33 +16,48 @@ extension RFC_7230.Header {
     ///   Field("Authorization", .string)
     /// }
     /// ```
-    public struct Parser<FieldParsers: Parsing.Parser>: Parsing.Parser
+    public struct Parser<FieldParsers: Parser.`Protocol`>: Parser.`Protocol`
     where FieldParsers.Input == RFC_3986.URI.Request.Fields {
+        public typealias Failure = RFC_3986.URI.Routing.Error
+
         @usableFromInline
         let fieldParsers: FieldParsers
 
         @inlinable
-        public init(@ParserBuilder<RFC_3986.URI.Request.Fields> build: () -> FieldParsers) {
+        public init(@Parser.Builder<RFC_3986.URI.Request.Fields> build: () -> FieldParsers) {
             self.fieldParsers = build()
         }
 
         @_disfavoredOverload
         @inlinable
-        public init(@ParserBuilder<RFC_3986.URI.Request.Fields> build: () throws -> FieldParsers) rethrows {
+        public init(@Parser.Builder<RFC_3986.URI.Request.Fields> build: () throws -> FieldParsers) rethrows {
             self.fieldParsers = try build()
         }
 
         @inlinable
-        public func parse(_ input: inout RFC_3986.URI.Request.Data) rethrows -> FieldParsers.Output {
-            try self.fieldParsers.parse(&input.headers)
+        public func parse(
+            _ input: inout RFC_3986.URI.Request.Data
+        ) throws(RFC_3986.URI.Routing.Error) -> FieldParsers.Output {
+            do {
+                return try self.fieldParsers.parse(&input.headers)
+            } catch {
+                throw RFC_3986.URI.Routing.Error(component: .request, failure: .parseFailed("\(error)"))
+            }
         }
     }
 }
 
-extension RFC_7230.Header.Parser: ParserPrinter where FieldParsers: ParserPrinter {
+extension RFC_7230.Header.Parser: Parser.Bidirectional where FieldParsers: Parser.Bidirectional {
     @inlinable
-    public func print(_ output: FieldParsers.Output, into input: inout RFC_3986.URI.Request.Data) rethrows {
-        try self.fieldParsers.print(output, into: &input.headers)
+    public func print(
+        _ output: FieldParsers.Output,
+        into input: inout RFC_3986.URI.Request.Data
+    ) throws(RFC_3986.URI.Routing.Error) {
+        do {
+            try self.fieldParsers.print(output, into: &input.headers)
+        } catch {
+            throw RFC_3986.URI.Routing.Error(component: .request, failure: .parseFailed("\(error)"))
+        }
     }
 }
 

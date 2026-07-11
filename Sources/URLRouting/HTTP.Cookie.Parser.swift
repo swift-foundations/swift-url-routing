@@ -1,6 +1,5 @@
 import Foundation
 import OrderedCollections
-import Parsing
 import RFC_3986
 import RFC_6265
 
@@ -18,24 +17,28 @@ extension RFC_6265.Cookie {
     ///   Field("user_id") { Int.parser() }
     /// }
     /// ```
-    public struct Parser<FieldParsers: Parsing.Parser>: Parsing.Parser
+    public struct Parser<FieldParsers: Parser.`Protocol`>: Parser.`Protocol`
     where FieldParsers.Input == RFC_3986.URI.Request.Fields {
+        public typealias Failure = RFC_3986.URI.Routing.Error
+
         @usableFromInline
         let cookieParsers: FieldParsers
 
         @inlinable
-        public init(@ParserBuilder<RFC_3986.URI.Request.Fields> build: () -> FieldParsers) {
+        public init(@Parser.Builder<RFC_3986.URI.Request.Fields> build: () -> FieldParsers) {
             self.cookieParsers = build()
         }
 
         @_disfavoredOverload
         @inlinable
-        public init(@ParserBuilder<RFC_3986.URI.Request.Fields> build: () throws -> FieldParsers) rethrows {
+        public init(@Parser.Builder<RFC_3986.URI.Request.Fields> build: () throws -> FieldParsers) rethrows {
             self.cookieParsers = try build()
         }
 
         @inlinable
-        public func parse(_ input: inout RFC_3986.URI.Request.Data) throws -> FieldParsers.Output {
+        public func parse(
+            _ input: inout RFC_3986.URI.Request.Data
+        ) throws(RFC_3986.URI.Routing.Error) -> FieldParsers.Output {
             guard let cookie = input.headers["cookie"]
             else {
                 throw RFC_3986.URI.Routing.Error(
@@ -61,16 +64,33 @@ extension RFC_6265.Cookie {
                 }
             }
 
-            return try self.cookieParsers.parse(&fields)
+            do {
+                return try self.cookieParsers.parse(&fields)
+            } catch {
+                throw RFC_3986.URI.Routing.Error(
+                    component: .header(name: "cookie"),
+                    failure: .parseFailed("\(error)")
+                )
+            }
         }
     }
 }
 
-extension RFC_6265.Cookie.Parser: ParserPrinter where FieldParsers: ParserPrinter {
+extension RFC_6265.Cookie.Parser: Parser.Bidirectional where FieldParsers: Parser.Bidirectional {
     @inlinable
-    public func print(_ output: FieldParsers.Output, into input: inout RFC_3986.URI.Request.Data) rethrows {
+    public func print(
+        _ output: FieldParsers.Output,
+        into input: inout RFC_3986.URI.Request.Data
+    ) throws(RFC_3986.URI.Routing.Error) {
         var cookies = RFC_3986.URI.Request.Fields()
-        try self.cookieParsers.print(output, into: &cookies)
+        do {
+            try self.cookieParsers.print(output, into: &cookies)
+        } catch {
+            throw RFC_3986.URI.Routing.Error(
+                component: .header(name: "cookie"),
+                failure: .parseFailed("\(error)")
+            )
+        }
 
         input.headers["cookie", default: []].prepend(
             cookies
