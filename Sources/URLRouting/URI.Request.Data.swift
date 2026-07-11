@@ -1,6 +1,5 @@
 import Foundation
 import OrderedCollections
-import Parsing
 import RFC_3986
 import RFC_7231
 
@@ -282,10 +281,6 @@ extension RFC_3986.URI.Request.Fields: Hashable {
         hasher.combine(self.fields)
     }
 }
-
-// MARK: - Parsing Protocol Conformance
-
-extension RFC_3986.URI.Request.Data: _EmptyInitializable {}
 
 // MARK: - Convenience Type Alias
 

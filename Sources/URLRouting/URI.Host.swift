@@ -1,4 +1,3 @@
-import Parsing
 import RFC_3986
 
 // MARK: - RFC 3986 URI Host Extension
@@ -18,12 +17,16 @@ extension RFC_3986.URI.Host {
     ///
     /// Example:
     /// ```swift
-    /// Route(.case(SiteRoute.api)) {
+    /// Route(.case(\.api)) {
     ///   RFC_3986.URI.Host.Parser("api.example.com")
     ///   ...
     /// }
     /// ```
-    public struct Parser: ParserPrinter, Sendable {
+    public struct Parser: Parser.Bidirectional, Sendable {
+        public typealias Input = RFC_3986.URI.Request.Data
+        public typealias Output = Void
+        public typealias Failure = RFC_3986.URI.Routing.Error
+
         @usableFromInline
         let name: String
 
@@ -41,15 +44,16 @@ extension RFC_3986.URI.Host {
         }
 
         @inlinable
-        public func parse(_ input: inout RFC_3986.URI.Request.Data) throws {
+        public func parse(_ input: inout RFC_3986.URI.Request.Data) throws(RFC_3986.URI.Routing.Error) {
             guard let host = input.host else {
                 throw RFC_3986.URI.Routing.Error(
                     component: .host,
                     failure: .missing
                 )
             }
+            var remaining = host[...]
             do {
-                try self.name.parse(host)
+                try self.name.parse(&remaining)
             } catch {
                 throw RFC_3986.URI.Routing.Error(
                     component: .host,
@@ -60,7 +64,7 @@ extension RFC_3986.URI.Host {
         }
 
         @inlinable
-        public func print(_ output: (), into input: inout RFC_3986.URI.Request.Data) {
+        public func print(_ output: Void, into input: inout RFC_3986.URI.Request.Data) {
             input.host = self.name
         }
     }

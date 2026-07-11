@@ -1,4 +1,3 @@
-import Parsing
 import RFC_3986
 
 // MARK: - RFC 3986 URI Route
@@ -8,140 +7,174 @@ extension RFC_3986.URI {
     /// particular URI endpoint.
     ///
     /// `RFC_3986.URI.Route` is a domain-specific version of `Parse`, suited to RFC-compliant URI routing.
-    public struct Route<Parsers: Parser>: Parser where Parsers.Input == RFC_3986.URI.Request.Data {
+    public struct Route<Parsers: Parser.`Protocol`>: Parser.`Protocol` where Parsers.Input == RFC_3986.URI.Request.Data {
+        public typealias Failure = RFC_3986.URI.Routing.Error
+
         @usableFromInline
         let parsers: Parsers
 
         @inlinable
         public init<Upstream, NewOutput>(
             _ transform: @escaping (Upstream.Output) -> NewOutput,
-            @ParserBuilder<RFC_3986.URI.Request.Data> with build: () -> Upstream
+            @Parser.Builder<RFC_3986.URI.Request.Data> with build: () -> Upstream
         )
         where
             Upstream.Input == RFC_3986.URI.Request.Data,
-            Parsers == Parsing.Parsers.Map<Upstream, NewOutput> {
+            Parsers == Parser.Map<Upstream, NewOutput> {
             self.parsers = build().map(transform)
         }
 
         @inlinable
         public init<Upstream, NewOutput>(
             _ transform: @escaping (Upstream.Output) -> NewOutput,
-            @ParserBuilder<RFC_3986.URI.Request.Data> with build: () throws -> Upstream
+            @Parser.Builder<RFC_3986.URI.Request.Data> with build: () throws -> Upstream
         ) rethrows
         where
             Upstream.Input == RFC_3986.URI.Request.Data,
-            Parsers == Parsing.Parsers.Map<Upstream, NewOutput> {
+            Parsers == Parser.Map<Upstream, NewOutput> {
             self.parsers = try build().map(transform)
         }
 
         @_disfavoredOverload
         @inlinable
-        public init<Upstream, NewOutput>(
+        public init<Upstream, NewOutput: Equatable>(
             _ output: NewOutput,
-            @ParserBuilder<RFC_3986.URI.Request.Data> with build: () -> Upstream
+            @Parser.Builder<RFC_3986.URI.Request.Data> with build: () -> Upstream
         )
         where
             Upstream.Input == RFC_3986.URI.Request.Data,
-            Parsers == Parsing.Parsers.MapConstant<Upstream, NewOutput> {
-            self.parsers = build().map { output }
+            Upstream.Output == Void,
+            Parsers == Parser.Converted<Upstream, Parser.Conversion.Fixed<NewOutput>> {
+            self.parsers = build().map(.fixed(output))
         }
 
         @_disfavoredOverload
         @inlinable
-        public init<Upstream, NewOutput>(
+        public init<Upstream, NewOutput: Equatable>(
             _ output: NewOutput,
-            @ParserBuilder<RFC_3986.URI.Request.Data> with build: () throws -> Upstream
+            @Parser.Builder<RFC_3986.URI.Request.Data> with build: () throws -> Upstream
         ) rethrows
         where
             Upstream.Input == RFC_3986.URI.Request.Data,
-            Parsers == Parsing.Parsers.MapConstant<Upstream, NewOutput> {
-            self.parsers = try build().map { output }
+            Upstream.Output == Void,
+            Parsers == Parser.Converted<Upstream, Parser.Conversion.Fixed<NewOutput>> {
+            self.parsers = try build().map(.fixed(output))
         }
 
         @inlinable
-        public init<NewOutput>(
+        public init<NewOutput: Equatable>(
             _ output: NewOutput
         )
         where
-            Parsers == Parsing.Parsers.MapConstant<Always<RFC_3986.URI.Request.Data, Void>, NewOutput> {
+            Parsers == Parser.Converted<Parser.Always<RFC_3986.URI.Request.Data, Void>, Parser.Conversion.Fixed<NewOutput>> {
             self.init(output) {
-                Always<RFC_3986.URI.Request.Data, Void>(())
+                Parser.Always<RFC_3986.URI.Request.Data, Void>(())
             }
         }
 
         @inlinable
-        public init<C: Conversion, P: Parser>(
+        public init<C: Parser.Conversion.`Protocol`, P: Parser.`Protocol`>(
             _ conversion: C,
-            @ParserBuilder<RFC_3986.URI.Request.Data> with parsers: () -> P
+            @Parser.Builder<RFC_3986.URI.Request.Data> with parsers: () -> P
         )
         where
             P.Input == RFC_3986.URI.Request.Data,
-            Parsers == Parsing.Parsers.MapConversion<P, C> {
+            C.Input == P.Output,
+            Parsers == Parser.Converted<P, C> {
             self.parsers = parsers().map(conversion)
         }
 
         @_disfavoredOverload
         @inlinable
-        public init<C: Conversion, P: Parser>(
+        public init<C: Parser.Conversion.`Protocol`, P: Parser.`Protocol`>(
             _ conversion: C,
-            @ParserBuilder<RFC_3986.URI.Request.Data> with parsers: () throws -> P
+            @Parser.Builder<RFC_3986.URI.Request.Data> with parsers: () throws -> P
         ) rethrows
         where
             P.Input == RFC_3986.URI.Request.Data,
-            Parsers == Parsing.Parsers.MapConversion<P, C> {
+            C.Input == P.Output,
+            Parsers == Parser.Converted<P, C> {
             self.parsers = try parsers().map(conversion)
         }
 
         @inlinable
-        public init<C: Conversion>(
+        public init<C: Parser.Conversion.`Protocol`>(
             _ conversion: C
-        ) where Parsers == Parsing.Parsers.MapConversion<Always<RFC_3986.URI.Request.Data, Void>, C> {
+        ) where
+            C.Input == Void,
+            Parsers == Parser.Converted<Parser.Always<RFC_3986.URI.Request.Data, Void>, C> {
             self.init(conversion) {
-                Always<RFC_3986.URI.Request.Data, Void>(())
+                Parser.Always<RFC_3986.URI.Request.Data, Void>(())
             }
         }
 
         @inlinable
-        public func parse(_ input: inout RFC_3986.URI.Request.Data) throws -> Parsers.Output {
-            let output = try self.parsers.parse(&input)
+        public func parse(
+            _ input: inout RFC_3986.URI.Request.Data
+        ) throws(RFC_3986.URI.Routing.Error) -> Parsers.Output {
+            let output: Parsers.Output
+            do {
+                output = try self.parsers.parse(&input)
+            } catch {
+                throw RFC_3986.URI.Routing.Error(component: .request, failure: .parseFailed("\(error)"))
+            }
             if input.method != nil {
                 try Method.get.parse(&input)
             }
-            try RFC_3986.URI.PathEnd().parse(input)
+            var pathEndInput = input
+            try RFC_3986.URI.PathEnd().parse(&pathEndInput)
             return output
         }
     }
 }
 
-extension RFC_3986.URI.Route: ParserPrinter where Parsers: ParserPrinter {
+extension RFC_3986.URI.Route: Parser.Bidirectional where Parsers: Parser.Bidirectional {
     @inlinable
-    public func print(_ output: Parsers.Output, into input: inout RFC_3986.URI.Request.Data) rethrows {
-        try self.parsers.print(output, into: &input)
+    public func print(
+        _ output: Parsers.Output,
+        into input: inout RFC_3986.URI.Request.Data
+    ) throws(RFC_3986.URI.Routing.Error) {
+        do {
+            try self.parsers.print(output, into: &input)
+        } catch {
+            throw RFC_3986.URI.Routing.Error(component: .request, failure: .parseFailed("\(error)"))
+        }
     }
 }
 
 extension RFC_3986.URI {
     @usableFromInline
-    struct PathEnd: ParserPrinter {
+    struct PathEnd: Parser.Bidirectional {
+        @usableFromInline
+        typealias Input = RFC_3986.URI.Request.Data
+        @usableFromInline
+        typealias Output = Void
+        @usableFromInline
+        typealias Failure = RFC_3986.URI.Routing.Error
+
         @inlinable
         init() {}
 
         @inlinable
-        func parse(_ input: inout RFC_3986.URI.Request.Data) throws {
+        func parse(_ input: inout RFC_3986.URI.Request.Data) throws(RFC_3986.URI.Routing.Error) {
             guard var first = input.path.first else { return }
-            try End().parse(&first)
+            do {
+                try Parser.End().parse(&first)
+            } catch {
+                throw RFC_3986.URI.Routing.Error(
+                    component: .path,
+                    failure: .invalid("Path component not fully consumed"),
+                    context: "\(error)"
+                )
+            }
         }
 
         @inlinable
-        func print(_ output: (), into input: inout Input) throws {
+        func print(_ output: Void, into input: inout RFC_3986.URI.Request.Data) throws(RFC_3986.URI.Routing.Error) {
             guard var first = input.path.first else { return }
-            try End().print((), into: &first)
+            Parser.End().print((), into: &first)
         }
     }
-}
-
-extension RFC_3986.URI.PathEnd {
-    @usableFromInline typealias Input = RFC_3986.URI.Request.Data
 }
 
 // MARK: - Convenience Type Aliases
@@ -150,7 +183,7 @@ extension RFC_3986.URI.PathEnd {
 ///
 /// For cleaner code, you can use `URIRoute` instead of `RFC_3986.URI.Route`:
 /// ```swift
-/// URIRoute(.case(AppRoute.home)) {
+/// URIRoute(.case(\.home)) {
 ///   Path { "home" }
 /// }
 /// ```
@@ -160,7 +193,7 @@ public typealias URIRoute = RFC_3986.URI.Route
 ///
 /// For cleaner code, you can use `Route` instead of `RFC_3986.URI.Route`:
 /// ```swift
-/// Route(.case(AppRoute.home)) {
+/// Route(.case(\.home)) {
 ///   Path { "home" }
 /// }
 /// ```

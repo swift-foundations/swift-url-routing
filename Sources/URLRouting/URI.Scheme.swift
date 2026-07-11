@@ -1,4 +1,3 @@
-import Parsing
 import RFC_3986
 
 // MARK: - RFC 3986 URI Scheme Extension
@@ -18,12 +17,16 @@ extension RFC_3986.URI.Scheme {
     ///
     /// Example:
     /// ```swift
-    /// Route(.case(SiteRoute.custom)) {
+    /// Route(.case(\.custom)) {
     ///   RFC_3986.URI.Scheme.Parser("custom")  // Only route custom:// requests
     ///   ...
     /// }
     /// ```
-    public struct Parser: ParserPrinter, Sendable {
+    public struct Parser: Parser.Bidirectional, Sendable {
+        public typealias Input = RFC_3986.URI.Request.Data
+        public typealias Output = Void
+        public typealias Failure = RFC_3986.URI.Routing.Error
+
         @usableFromInline
         let name: String
 
@@ -42,15 +45,16 @@ extension RFC_3986.URI.Scheme {
         }
 
         @inlinable
-        public func parse(_ input: inout RFC_3986.URI.Request.Data) throws {
+        public func parse(_ input: inout RFC_3986.URI.Request.Data) throws(RFC_3986.URI.Routing.Error) {
             guard let scheme = input.scheme else {
                 throw RFC_3986.URI.Routing.Error(
                     component: .scheme,
                     failure: .missing
                 )
             }
+            var remaining = scheme[...]
             do {
-                try self.name.parse(scheme)
+                try self.name.parse(&remaining)
             } catch {
                 throw RFC_3986.URI.Routing.Error(
                     component: .scheme,
@@ -61,7 +65,7 @@ extension RFC_3986.URI.Scheme {
         }
 
         @inlinable
-        public func print(_ output: (), into input: inout RFC_3986.URI.Request.Data) {
+        public func print(_ output: Void, into input: inout RFC_3986.URI.Request.Data) {
             input.scheme = self.name
         }
     }

@@ -1,4 +1,3 @@
-import Parsing
 import RFC_3986
 
 // MARK: - RFC 3986 URI Path Builder
@@ -22,7 +21,7 @@ extension RFC_3986.URI.Path {
     @resultBuilder
     public enum Builder {
         @inlinable
-        public static func buildPartialBlock<P: Parsing.Parser>(first: P) -> P
+        public static func buildPartialBlock<P: Parser.`Protocol`>(first: P) -> P
         where P.Input == RFC_3986.URI.Request.Data {
             first
         }
@@ -42,10 +41,10 @@ extension RFC_3986.URI.Path {
 
         @_disfavoredOverload
         @inlinable
-        public static func buildPartialBlock<P0: Parsing.Parser, P1: Parsing.Parser, each O1, O2>(
+        public static func buildPartialBlock<P0: Parser.`Protocol`, P1: Parser.`Protocol`, each O1, O2>(
             accumulated: P0,
             next: P1
-        ) -> Parsers.Map<Take2<P0, P1>, (repeat each O1, O2)>
+        ) -> Parser.Map<Take2<P0, P1>, (repeat each O1, O2)>
         where
             P0.Input == RFC_3986.URI.Request.Data,
             P1.Input == RFC_3986.URI.Request.Data,
@@ -59,25 +58,14 @@ extension RFC_3986.URI.Path {
         }
 
         @inlinable
-        public static func buildExpression<P: Parsing.Parser>(_ parser: P) -> Component<P> where P.Input == Substring {
+        public static func buildExpression<P: Parser.`Protocol`>(_ parser: P) -> Component<P> where P.Input == Substring {
             Component(parser)
         }
 
-        @inlinable
-        @_disfavoredOverload
-        public static func buildExpression<P: Parsing.Parser>(
-            _ parser: P
-        ) -> Component<From<Conversions.SubstringToUTF8View, Substring.UTF8View, P>>
-        where P.Input == Substring.UTF8View {
-            Component(
-                From(.utf8) {
-                    parser
-                }
-            )
-        }
-
-        public struct Component<ComponentParser: Parsing.Parser>: Parsing.Parser
+        public struct Component<ComponentParser: Parser.`Protocol`>: Parser.`Protocol`
         where ComponentParser.Input == Substring {
+            public typealias Failure = RFC_3986.URI.Routing.Error
+
             @usableFromInline
             let componentParser: ComponentParser
 
@@ -87,7 +75,9 @@ extension RFC_3986.URI.Path {
             }
 
             @inlinable
-            public func parse(_ input: inout RFC_3986.URI.Request.Data) throws -> ComponentParser.Output {
+            public func parse(
+                _ input: inout RFC_3986.URI.Request.Data
+            ) throws(RFC_3986.URI.Routing.Error) -> ComponentParser.Output {
                 guard input.path.count >= 1 else {
                     throw RFC_3986.URI.Routing.Error(
                         component: .path,
@@ -95,24 +85,44 @@ extension RFC_3986.URI.Path {
                         context: "Expected at least 1 component, got \(input.path.count)"
                     )
                 }
-                return try self.componentParser.parse(input.path.removeFirst())
+                var component = input.path.removeFirst()
+                do {
+                    return try self.componentParser.parse(&component)
+                } catch {
+                    throw RFC_3986.URI.Routing.Error(
+                        component: .path,
+                        failure: .parseFailed("\(error)")
+                    )
+                }
             }
         }
     }
 }
 
-extension RFC_3986.URI.Path.Builder.Component: ParserPrinter where ComponentParser: ParserPrinter {
+extension RFC_3986.URI.Path.Builder.Component: Parser.Bidirectional where ComponentParser: Parser.Bidirectional {
     @inlinable
-    public func print(_ output: ComponentParser.Output, into input: inout RFC_3986.URI.Request.Data) rethrows {
-        try input.path.prepend(self.componentParser.print(output))
+    public func print(
+        _ output: ComponentParser.Output,
+        into input: inout RFC_3986.URI.Request.Data
+    ) throws(RFC_3986.URI.Routing.Error) {
+        do {
+            try input.path.prepend(self.componentParser.print(output))
+        } catch {
+            throw RFC_3986.URI.Routing.Error(
+                component: .path,
+                failure: .parseFailed("\(error)")
+            )
+        }
     }
 }
 
 // MARK: - Helper Types for buildPartialBlock
 
 extension RFC_3986.URI.Path.Builder {
-    public struct SkipFirst<P0: Parsing.Parser, P1: Parsing.Parser>: Parsing.Parser
+    public struct SkipFirst<P0: Parser.`Protocol`, P1: Parser.`Protocol`>: Parser.`Protocol`
     where P0.Input == RFC_3986.URI.Request.Data, P1.Input == RFC_3986.URI.Request.Data, P0.Output == Void {
+        public typealias Failure = RFC_3986.URI.Routing.Error
+
         @usableFromInline let p0: P0, p1: P1
 
         @usableFromInline init(_ p0: P0, _ p1: P1) {
@@ -120,14 +130,22 @@ extension RFC_3986.URI.Path.Builder {
             self.p1 = p1
         }
 
-        @inlinable public func parse(_ input: inout RFC_3986.URI.Request.Data) rethrows -> P1.Output {
-            try self.p0.parse(&input)
-            return try self.p1.parse(&input)
+        @inlinable public func parse(
+            _ input: inout RFC_3986.URI.Request.Data
+        ) throws(RFC_3986.URI.Routing.Error) -> P1.Output {
+            do {
+                try self.p0.parse(&input)
+                return try self.p1.parse(&input)
+            } catch {
+                throw RFC_3986.URI.Routing.Error(component: .path, failure: .parseFailed("\(error)"))
+            }
         }
     }
 
-    public struct SkipSecond<P0: Parsing.Parser, P1: Parsing.Parser>: Parsing.Parser
+    public struct SkipSecond<P0: Parser.`Protocol`, P1: Parser.`Protocol`>: Parser.`Protocol`
     where P0.Input == RFC_3986.URI.Request.Data, P1.Input == RFC_3986.URI.Request.Data, P1.Output == Void {
+        public typealias Failure = RFC_3986.URI.Routing.Error
+
         @usableFromInline let p0: P0, p1: P1
 
         @usableFromInline init(_ p0: P0, _ p1: P1) {
@@ -135,15 +153,23 @@ extension RFC_3986.URI.Path.Builder {
             self.p1 = p1
         }
 
-        @inlinable public func parse(_ input: inout RFC_3986.URI.Request.Data) rethrows -> P0.Output {
-            let o0 = try self.p0.parse(&input)
-            try self.p1.parse(&input)
-            return o0
+        @inlinable public func parse(
+            _ input: inout RFC_3986.URI.Request.Data
+        ) throws(RFC_3986.URI.Routing.Error) -> P0.Output {
+            do {
+                let o0 = try self.p0.parse(&input)
+                try self.p1.parse(&input)
+                return o0
+            } catch {
+                throw RFC_3986.URI.Routing.Error(component: .path, failure: .parseFailed("\(error)"))
+            }
         }
     }
 
-    public struct Take2<P0: Parsing.Parser, P1: Parsing.Parser>: Parsing.Parser
+    public struct Take2<P0: Parser.`Protocol`, P1: Parser.`Protocol`>: Parser.`Protocol`
     where P0.Input == RFC_3986.URI.Request.Data, P1.Input == RFC_3986.URI.Request.Data {
+        public typealias Failure = RFC_3986.URI.Routing.Error
+
         @usableFromInline let p0: P0, p1: P1
 
         @usableFromInline init(_ p0: P0, _ p1: P1) {
@@ -151,32 +177,59 @@ extension RFC_3986.URI.Path.Builder {
             self.p1 = p1
         }
 
-        @inlinable public func parse(_ input: inout RFC_3986.URI.Request.Data) rethrows -> (P0.Output, P1.Output) {
-            let o0 = try self.p0.parse(&input)
-            let o1 = try self.p1.parse(&input)
-            return (o0, o1)
+        @inlinable public func parse(
+            _ input: inout RFC_3986.URI.Request.Data
+        ) throws(RFC_3986.URI.Routing.Error) -> (P0.Output, P1.Output) {
+            do {
+                let o0 = try self.p0.parse(&input)
+                let o1 = try self.p1.parse(&input)
+                return (o0, o1)
+            } catch {
+                throw RFC_3986.URI.Routing.Error(component: .path, failure: .parseFailed("\(error)"))
+            }
         }
     }
 }
 
-extension RFC_3986.URI.Path.Builder.SkipFirst: ParserPrinter where P0: ParserPrinter, P1: ParserPrinter {
-    @inlinable public func print(_ output: P1.Output, into input: inout RFC_3986.URI.Request.Data) rethrows {
-        try self.p1.print(output, into: &input)
-        try self.p0.print((), into: &input)
+extension RFC_3986.URI.Path.Builder.SkipFirst: Parser.Bidirectional where P0: Parser.Bidirectional, P1: Parser.Bidirectional {
+    @inlinable public func print(
+        _ output: P1.Output,
+        into input: inout RFC_3986.URI.Request.Data
+    ) throws(RFC_3986.URI.Routing.Error) {
+        do {
+            try self.p1.print(output, into: &input)
+            try self.p0.print((), into: &input)
+        } catch {
+            throw RFC_3986.URI.Routing.Error(component: .path, failure: .parseFailed("\(error)"))
+        }
     }
 }
 
-extension RFC_3986.URI.Path.Builder.SkipSecond: ParserPrinter where P0: ParserPrinter, P1: ParserPrinter {
-    @inlinable public func print(_ output: P0.Output, into input: inout RFC_3986.URI.Request.Data) rethrows {
-        try self.p1.print((), into: &input)
-        try self.p0.print(output, into: &input)
+extension RFC_3986.URI.Path.Builder.SkipSecond: Parser.Bidirectional where P0: Parser.Bidirectional, P1: Parser.Bidirectional {
+    @inlinable public func print(
+        _ output: P0.Output,
+        into input: inout RFC_3986.URI.Request.Data
+    ) throws(RFC_3986.URI.Routing.Error) {
+        do {
+            try self.p1.print((), into: &input)
+            try self.p0.print(output, into: &input)
+        } catch {
+            throw RFC_3986.URI.Routing.Error(component: .path, failure: .parseFailed("\(error)"))
+        }
     }
 }
 
-extension RFC_3986.URI.Path.Builder.Take2: ParserPrinter where P0: ParserPrinter, P1: ParserPrinter {
-    @inlinable public func print(_ output: (P0.Output, P1.Output), into input: inout RFC_3986.URI.Request.Data) rethrows {
-        try self.p1.print(output.1, into: &input)
-        try self.p0.print(output.0, into: &input)
+extension RFC_3986.URI.Path.Builder.Take2: Parser.Bidirectional where P0: Parser.Bidirectional, P1: Parser.Bidirectional {
+    @inlinable public func print(
+        _ output: (P0.Output, P1.Output),
+        into input: inout RFC_3986.URI.Request.Data
+    ) throws(RFC_3986.URI.Routing.Error) {
+        do {
+            try self.p1.print(output.1, into: &input)
+            try self.p0.print(output.0, into: &input)
+        } catch {
+            throw RFC_3986.URI.Routing.Error(component: .path, failure: .parseFailed("\(error)"))
+        }
     }
 }
 

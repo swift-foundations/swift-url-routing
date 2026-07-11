@@ -1,4 +1,3 @@
-import Parsing
 import RFC_3986
 
 // MARK: - RFC 3986 URI Path Extension
@@ -34,16 +33,11 @@ extension RFC_3986.URI.Path {
     /// }
     /// .match(uri: "/users/42")  // ✅ Works
     /// .match(uri: "/users/../admin")  // ❌ Throws error
-    ///
-    /// // Explicit bypass for rare cases
-    /// try RFC_3986.URI.Path.Parser.unchecked {
-    ///   "files"
-    ///   Rest()
-    /// }
-    /// .match(uri: "/files/../other")  // ✅ Allowed (use with caution!)
     /// ```
-    public struct Parser<ComponentParsers: Parsing.Parser>: Parsing.Parser
+    public struct Parser<ComponentParsers: Parser.`Protocol`>: Parser.`Protocol`
     where ComponentParsers.Input == RFC_3986.URI.Request.Data {
+        public typealias Failure = RFC_3986.URI.Routing.Error
+
         @usableFromInline
         let componentParsers: ComponentParsers
 
@@ -89,17 +83,23 @@ extension RFC_3986.URI.Path {
         }
 
         @inlinable
-        public func parse(_ input: inout RFC_3986.URI.Request.Data) throws -> ComponentParsers.Output {
+        public func parse(
+            _ input: inout RFC_3986.URI.Request.Data
+        ) throws(RFC_3986.URI.Routing.Error) -> ComponentParsers.Output {
             // Validate path security before parsing (unless explicitly bypassed)
             if !skipSecurityValidation {
                 try validatePathSecurity(input.path)
             }
 
-            return try self.componentParsers.parse(&input)
+            do {
+                return try self.componentParsers.parse(&input)
+            } catch {
+                throw RFC_3986.URI.Routing.Error(component: .path, failure: .parseFailed("\(error)"))
+            }
         }
 
         @usableFromInline
-        func validatePathSecurity(_ path: ArraySlice<Substring>) throws {
+        func validatePathSecurity(_ path: ArraySlice<Substring>) throws(RFC_3986.URI.Routing.Error) {
             for segment in path {
                 // Reject parent directory traversal
                 if segment == ".." {
@@ -114,10 +114,17 @@ extension RFC_3986.URI.Path {
     }
 }
 
-extension RFC_3986.URI.Path.Parser: ParserPrinter where ComponentParsers: ParserPrinter {
+extension RFC_3986.URI.Path.Parser: Parser.Bidirectional where ComponentParsers: Parser.Bidirectional {
     @inlinable
-    public func print(_ output: ComponentParsers.Output, into input: inout RFC_3986.URI.Request.Data) throws {
-        try self.componentParsers.print(output, into: &input)
+    public func print(
+        _ output: ComponentParsers.Output,
+        into input: inout RFC_3986.URI.Request.Data
+    ) throws(RFC_3986.URI.Routing.Error) {
+        do {
+            try self.componentParsers.print(output, into: &input)
+        } catch {
+            throw RFC_3986.URI.Routing.Error(component: .path, failure: .parseFailed("\(error)"))
+        }
 
         // Validate printed path security (unless explicitly bypassed)
         if !skipSecurityValidation {

@@ -1,18 +1,17 @@
 import Foundation
 import OrderedCollections
-import Parsing
 import RFC_3986
 
-extension ParserPrinter where Input == RFC_3986.URI.Request.Data {
+extension Parser.Bidirectional where Input == RFC_3986.URI.Request.Data {
     /// Prepends a router with a base URL for the purpose of printing.
     ///
     /// Useful for printing absolute URLs to a specific scheme, domain, and path prefix.
     ///
     /// ```swift
-    /// let apiRouter = router.baseURL("https://api.pointfree.co/v1")
+    /// let apiRouter = router.baseURL("https://api.example.com/v1")
     ///
     /// try apiRouter.print(.episodes(.episode(1, .index))
-    /// // https://api.pointfree.co/v1/episodes/1
+    /// // https://api.example.com/v1/episodes/1
     /// ```
     ///
     /// - Parameter urlString: A base URL string.
@@ -28,7 +27,7 @@ extension ParserPrinter where Input == RFC_3986.URI.Request.Data {
     ///
     /// ```swift
     /// let authenticatedRouter = router
-    ///   .baseRequestData(.init(headers: ["X-PointFree-Session": ["deadbeef"]]))
+    ///   .baseRequestData(.init(headers: ["X-Session": ["deadbeef"]]))
     /// ```
     ///
     /// - Parameter requestData: Default request data to print into.
@@ -46,20 +45,15 @@ extension RFC_3986.URI {
     /// the `baseURL` and `baseRequestData` operations on router, which constructs this type.
     ///
     /// ```swift
-    /// let apiRouter = router.baseURL("https://api.pointfree.co/v1")
+    /// let apiRouter = router.baseURL("https://api.example.com/v1")
     ///
     /// apiRouter.url(for: .episodes(.episode(1, .index)))
-    /// // https://api.pointfree.co/v1/episodes/1
-    ///
-    /// let authenticatedRouter = router
-    ///   .baseRequestData(.init(headers: ["X-PointFree-Session": ["deadbeef"]]))
-    ///
-    /// try authenticatedRouter.request(for: .home)
-    ///   .value(forHTTPHeaderField: "x-pointfree-session")
-    /// // "deadbeef"
+    /// // https://api.example.com/v1/episodes/1
     /// ```
-    public struct BaseURLPrinter<Upstream: ParserPrinter>: ParserPrinter
+    public struct BaseURLPrinter<Upstream: Parser.Bidirectional>: Parser.`Protocol`
     where Upstream.Input == RFC_3986.URI.Request.Data {
+        public typealias Failure = RFC_3986.URI.Routing.Error
+
         @usableFromInline
         let defaultRequestData: RFC_3986.URI.Request.Data
 
@@ -73,21 +67,36 @@ extension RFC_3986.URI {
         }
 
         @inlinable
-        public func parse(_ input: inout RFC_3986.URI.Request.Data) rethrows -> Upstream.Output {
-            try self.upstream.parse(&input)
+        public func parse(
+            _ input: inout RFC_3986.URI.Request.Data
+        ) throws(RFC_3986.URI.Routing.Error) -> Upstream.Output {
+            do {
+                return try self.upstream.parse(&input)
+            } catch {
+                throw RFC_3986.URI.Routing.Error(component: .request, failure: .parseFailed("\(error)"))
+            }
         }
+    }
+}
 
-        @inlinable
-        public func print(_ output: Upstream.Output, into input: inout RFC_3986.URI.Request.Data) rethrows {
+extension RFC_3986.URI.BaseURLPrinter: Parser.Bidirectional {
+    @inlinable
+    public func print(
+        _ output: Upstream.Output,
+        into input: inout RFC_3986.URI.Request.Data
+    ) throws(RFC_3986.URI.Routing.Error) {
+        do {
             try self.upstream.print(output, into: &input)
-            if let scheme = self.defaultRequestData.scheme { input.scheme = scheme }
-            if let userinfo = self.defaultRequestData.userinfo { input.userinfo = userinfo }
-            if let host = self.defaultRequestData.host { input.host = host }
-            if let port = self.defaultRequestData.port { input.port = port }
-            input.path.prepend(contentsOf: self.defaultRequestData.path)
-            input.query.fields.merge(self.defaultRequestData.query.fields) { $1 + $0 }
-            if let fragment = self.defaultRequestData.fragment { input.fragment = fragment }
-            input.headers.fields.merge(self.defaultRequestData.headers.fields) { $1 + $0 }
+        } catch {
+            throw RFC_3986.URI.Routing.Error(component: .request, failure: .parseFailed("\(error)"))
         }
+        if let scheme = self.defaultRequestData.scheme { input.scheme = scheme }
+        if let userinfo = self.defaultRequestData.userinfo { input.userinfo = userinfo }
+        if let host = self.defaultRequestData.host { input.host = host }
+        if let port = self.defaultRequestData.port { input.port = port }
+        input.path.prepend(contentsOf: self.defaultRequestData.path)
+        input.query.fields.merge(self.defaultRequestData.query.fields) { $1 + $0 }
+        if let fragment = self.defaultRequestData.fragment { input.fragment = fragment }
+        input.headers.fields.merge(self.defaultRequestData.headers.fields) { $1 + $0 }
     }
 }

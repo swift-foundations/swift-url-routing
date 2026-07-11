@@ -1,4 +1,3 @@
-import Parsing
 import RFC_3986
 
 // MARK: - RFC 3986 URI Fragment Extension
@@ -23,8 +22,9 @@ extension RFC_3986.URI.Fragment {
     ///   Digits()
     /// }
     /// ```
-    public struct Parser<ValueParser: Parsing.Parser>: Parsing.Parser
+    public struct Parser<ValueParser: Parser.`Protocol`>: Parser.`Protocol`
     where ValueParser.Input == Substring {
+        public typealias Failure = RFC_3986.URI.Routing.Error
 
         @usableFromInline
         let valueParser: ValueParser
@@ -33,10 +33,8 @@ extension RFC_3986.URI.Fragment {
         @inlinable
         public init()
         where
-            ValueParser == Parsers.MapConversion<
-                Parsers.ReplaceError<Rest<Substring>>, Conversions.SubstringToString
-            > {
-            self.valueParser = Rest().replaceError(with: "").map(.string)
+            ValueParser == Parser.Converted<URLRouting.Rest<Substring>, Parser.Conversion.String> {
+            self.valueParser = URLRouting.Rest().map(.string)
         }
 
         /// Initializes a fragment parser.
@@ -44,7 +42,7 @@ extension RFC_3986.URI.Fragment {
         /// - Parameter value: A parser that parses the fragment's substring value into something
         ///   more well-structured.
         @inlinable
-        public init(@ParserBuilder<Substring> value: () -> ValueParser) {
+        public init(@Parser.Builder<Substring> value: () -> ValueParser) {
             self.valueParser = value()
         }
 
@@ -53,7 +51,7 @@ extension RFC_3986.URI.Fragment {
         /// - Parameter value: A throwing closure that creates a parser for the fragment's substring
         ///   value.
         @inlinable
-        public init(@ParserBuilder<Substring> value: () throws -> ValueParser) rethrows {
+        public init(@Parser.Builder<Substring> value: () throws -> ValueParser) rethrows {
             self.valueParser = try value()
         }
 
@@ -62,30 +60,44 @@ extension RFC_3986.URI.Fragment {
         /// - Parameter value: A conversion that transforms the fragment's substring value into
         ///   some other type.
         @inlinable
-        public init<C>(_ value: C)
-        where ValueParser == Parsers.MapConversion<Parsers.ReplaceError<Rest<Substring>>, C> {
-            self.valueParser = Rest().replaceError(with: "").map(value)
+        public init<C: Parser.Conversion.`Protocol`>(_ value: C)
+        where ValueParser == Parser.Converted<URLRouting.Rest<Substring>, C>, C.Input == Substring {
+            self.valueParser = URLRouting.Rest().map(value)
         }
 
         @inlinable
-        public func parse(_ input: inout RFC_3986.URI.Request.Data) throws -> ValueParser.Output {
+        public func parse(
+            _ input: inout RFC_3986.URI.Request.Data
+        ) throws(RFC_3986.URI.Routing.Error) -> ValueParser.Output {
             guard var fragment = input.fragment?[...] else {
                 throw RFC_3986.URI.Routing.Error(
                     component: .fragment,
                     failure: .missing
                 )
             }
-            let output = try self.valueParser.parse(&fragment)
+            let output: ValueParser.Output
+            do {
+                output = try self.valueParser.parse(&fragment)
+            } catch {
+                throw RFC_3986.URI.Routing.Error(component: .fragment, failure: .parseFailed("\(error)"))
+            }
             input.fragment = String(fragment)
             return output
         }
     }
 }
 
-extension RFC_3986.URI.Fragment.Parser: ParserPrinter where ValueParser: ParserPrinter {
+extension RFC_3986.URI.Fragment.Parser: Parser.Bidirectional where ValueParser: Parser.Bidirectional {
     @inlinable
-    public func print(_ output: ValueParser.Output, into input: inout RFC_3986.URI.Request.Data) rethrows {
-        input.fragment = String(try self.valueParser.print(output))
+    public func print(
+        _ output: ValueParser.Output,
+        into input: inout RFC_3986.URI.Request.Data
+    ) throws(RFC_3986.URI.Routing.Error) {
+        do {
+            input.fragment = String(try self.valueParser.print(output))
+        } catch {
+            throw RFC_3986.URI.Routing.Error(component: .fragment, failure: .parseFailed("\(error)"))
+        }
     }
 }
 
