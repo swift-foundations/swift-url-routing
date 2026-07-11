@@ -76,7 +76,7 @@ extension FileUpload.FileType.ImageType {
     /// The validation checks the first 3 bytes of the file for the JPEG
     /// Start of Image (SOI) marker followed by the Application marker.
     public static let jpeg = Self(
-            contentType: RFC_2045.ContentType(type: "image", subtype: "jpeg"),
+            contentType: RFC_2045.ContentType(__unchecked: (), type: "image", subtype: "jpeg"),
             fileExtension: "jpg"
         ) { (data: Foundation.Data) in
             let jpegMagicNumbers: [UInt8] = [0xFF, 0xD8, 0xFF]
@@ -106,7 +106,7 @@ extension FileUpload.FileType.ImageType {
     /// - DOS-style line ending (CRLF)
     /// - DOS end-of-file character and Unix line ending
     public static let png = Self(
-            contentType: RFC_2045.ContentType(type: "image", subtype: "png"),
+            contentType: RFC_2045.ContentType(__unchecked: (), type: "image", subtype: "png"),
             fileExtension: "png"
         ) { (data: Foundation.Data) in
             let pngMagicNumbers: [UInt8] = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]
@@ -132,7 +132,7 @@ extension FileUpload.FileType.ImageType {
     /// - **GIF87a**: Original 1987 specification
     /// - **GIF89a**: Enhanced 1989 specification with animation support
     public static let gif = Self(
-            contentType: RFC_2045.ContentType(type: "image", subtype: "gif"),
+            contentType: RFC_2045.ContentType(__unchecked: (), type: "image", subtype: "gif"),
             fileExtension: "gif"
         ) { (data: Foundation.Data) in
             let gif87a = Data("GIF87a".utf8)
@@ -163,7 +163,7 @@ extension FileUpload.FileType.ImageType {
     /// - Bytes 4-7: File size (little-endian)
     /// - Bytes 8-11: "WEBP" (format identifier)
     public static let webp = Self(
-            contentType: RFC_2045.ContentType(type: "image", subtype: "webp"),
+            contentType: RFC_2045.ContentType(__unchecked: (), type: "image", subtype: "webp"),
             fileExtension: "webp"
         ) { (data: Foundation.Data) in
             let riffMagic = Data("RIFF".utf8)
@@ -194,7 +194,7 @@ extension FileUpload.FileType.ImageType {
     /// - **Intel**: `49 49 2A 00` (little-endian)
     /// - **Motorola**: `4D 4D 00 2A` (big-endian)
     public static let tiff = Self(
-            contentType: RFC_2045.ContentType(type: "image", subtype: "tiff"),
+            contentType: RFC_2045.ContentType(__unchecked: (), type: "image", subtype: "tiff"),
             fileExtension: "tiff"
         ) { (data: Foundation.Data) in
             let intelMagic: [UInt8] = [0x49, 0x49, 0x2A, 0x00]  // II*\0
@@ -225,7 +225,7 @@ extension FileUpload.FileType.ImageType {
     /// - "BM" indicates a Windows bitmap file
     /// - Other variants like "BA", "CI", "CP", "IC", "PT" exist but are rare
     public static let bmp = Self(
-            contentType: RFC_2045.ContentType(type: "image", subtype: "bmp"),
+            contentType: RFC_2045.ContentType(__unchecked: (), type: "image", subtype: "bmp"),
             fileExtension: "bmp"
         ) { (data: Foundation.Data) in
             let bmpMagic: [UInt8] = [0x42, 0x4D]  // "BM"
@@ -255,7 +255,7 @@ extension FileUpload.FileType.ImageType {
     /// - Note: This validation is basic due to HEIC's complex container format.
     ///   More sophisticated validation could check additional brand compatibility.
     public static let heic = Self(
-            contentType: RFC_2045.ContentType(type: "image", subtype: "heic"),
+            contentType: RFC_2045.ContentType(__unchecked: (), type: "image", subtype: "heic"),
             fileExtension: "heic"
         ) { (data: Foundation.Data) in
             // HEIC validation is complex due to its container format
@@ -292,7 +292,7 @@ extension FileUpload.FileType.ImageType {
     ///
     /// Like HEIC, it uses an ISOBMFF container format.
     public static let avif = Self(
-            contentType: RFC_2045.ContentType(type: "image", subtype: "avif"),
+            contentType: RFC_2045.ContentType(__unchecked: (), type: "image", subtype: "avif"),
             fileExtension: "avif"
         ) { (data: Foundation.Data) in
             // Similar to HEIC, AVIF uses a container format

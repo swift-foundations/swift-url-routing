@@ -161,8 +161,7 @@ extension FileUpload {
     /// request.setValue(upload.contentType.headerValue, forHTTPHeaderField: "Content-Type")
     /// ```
     public var contentType: RFC_2045.ContentType {
-        RFC_2045.ContentType(
-            type: "multipart",
+        RFC_2045.ContentType(__unchecked: (), type: "multipart",
             subtype: "form-data",
             parameters: ["boundary": boundary.value]
         )

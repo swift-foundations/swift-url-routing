@@ -121,8 +121,7 @@ extension RFC_2046.Multipart {
         ///
         /// Returns an RFC 2045 ContentType with the format: `multipart/form-data; boundary=<unique-boundary>`
         public var contentType: RFC_2045.ContentType {
-            RFC_2045.ContentType(
-                type: "multipart",
+            RFC_2045.ContentType(__unchecked: (), type: "multipart",
                 subtype: "form-data",
                 parameters: ["boundary": boundary.value]
             )

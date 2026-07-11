@@ -21,7 +21,7 @@ extension FileUpload {
     ///
     /// ```swift
     /// let xmlType = FileType(
-    ///     contentType: RFC_2045.ContentType(type: "application", subtype: "xml"),
+    ///     contentType: RFC_2045.ContentType(__unchecked: (), type: "application", subtype: "xml"),
     ///     fileExtension: "xml"
     /// ) { data in
     ///     // Custom validation logic
@@ -74,7 +74,7 @@ extension FileUpload.FileType {
     /// - File Extension: `csv`
     /// - Validation: UTF-8 text encoding check
     public static let csv: Self = .init(
-        contentType: RFC_2045.ContentType(type: "text", subtype: "csv"),
+        contentType: RFC_2045.ContentType(__unchecked: (), type: "text", subtype: "csv"),
         fileExtension: "csv"
     ) { (data: Foundation.Data) in
         guard let _ = String(data: data, encoding: .utf8) else {
@@ -94,7 +94,7 @@ extension FileUpload.FileType {
     /// - File Extension: `pdf`
     /// - Validation: Checks for "%PDF" magic number at file start
     public static let pdf: Self = .init(
-        contentType: RFC_2045.ContentType(type: "application", subtype: "pdf"),
+        contentType: RFC_2045.ContentType(__unchecked: (), type: "application", subtype: "pdf"),
         fileExtension: "pdf"
     ) { (data: Foundation.Data) in
         guard data.prefix(4).elementsEqual("%PDF".data(using: .utf8)!) else {
@@ -114,8 +114,7 @@ extension FileUpload.FileType {
     /// - File Extension: `xlsx`
     /// - Validation: Checks for ZIP magic number (Office Open XML is ZIP-based)
     public static let excel: Self = .init(
-        contentType: RFC_2045.ContentType(
-            type: "application",
+        contentType: RFC_2045.ContentType(__unchecked: (), type: "application",
             subtype: "vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         ),
         fileExtension: "xlsx"
@@ -140,7 +139,7 @@ extension FileUpload.FileType {
     /// - File Extension: `json`
     /// - Validation: Verifies JSON can be deserialized
     public static let json: Self = .init(
-        contentType: RFC_2045.ContentType(type: "application", subtype: "json"),
+        contentType: RFC_2045.ContentType(__unchecked: (), type: "application", subtype: "json"),
         fileExtension: "json"
     ) { (data: Foundation.Data) in
         do {
@@ -209,8 +208,7 @@ extension FileUpload.FileType {
     /// - File Extension: `docx`
     /// - Validation: Checks for ZIP magic number (Office Open XML is ZIP-based)
     public static let docx: Self = .init(
-        contentType: RFC_2045.ContentType(
-            type: "application",
+        contentType: RFC_2045.ContentType(__unchecked: (), type: "application",
             subtype: "vnd.openxmlformats-officedocument.wordprocessingml.document"
         ),
         fileExtension: "docx"
@@ -233,7 +231,7 @@ extension FileUpload.FileType {
     /// - Content Type: `application/msword`
     /// - File Extension: `doc`
     public static let doc: Self = .init(
-        contentType: RFC_2045.ContentType(type: "application", subtype: "msword"),
+        contentType: RFC_2045.ContentType(__unchecked: (), type: "application", subtype: "msword"),
         fileExtension: "doc"
     )
     
@@ -246,7 +244,7 @@ extension FileUpload.FileType {
     /// - Content Type: `application/zip`
     /// - File Extension: `zip`
     public static let zip: Self = .init(
-        contentType: RFC_2045.ContentType(type: "application", subtype: "zip"),
+        contentType: RFC_2045.ContentType(__unchecked: (), type: "application", subtype: "zip"),
         fileExtension: "zip"
     )
     
@@ -259,7 +257,7 @@ extension FileUpload.FileType {
     /// - Content Type: `audio/mpeg`
     /// - File Extension: `mp3`
     public static let mp3: Self = .init(
-        contentType: RFC_2045.ContentType(type: "audio", subtype: "mpeg"),
+        contentType: RFC_2045.ContentType(__unchecked: (), type: "audio", subtype: "mpeg"),
         fileExtension: "mp3"
     )
     
@@ -270,7 +268,7 @@ extension FileUpload.FileType {
     /// - Content Type: `audio/wav`
     /// - File Extension: `wav`
     public static let wav: Self = .init(
-        contentType: RFC_2045.ContentType(type: "audio", subtype: "wav"),
+        contentType: RFC_2045.ContentType(__unchecked: (), type: "audio", subtype: "wav"),
         fileExtension: "wav"
     )
     
@@ -283,7 +281,7 @@ extension FileUpload.FileType {
     /// - Content Type: `video/mp4`
     /// - File Extension: `mp4`
     public static let mp4: Self = .init(
-        contentType: RFC_2045.ContentType(type: "video", subtype: "mp4"),
+        contentType: RFC_2045.ContentType(__unchecked: (), type: "video", subtype: "mp4"),
         fileExtension: "mp4"
     )
     
@@ -296,7 +294,7 @@ extension FileUpload.FileType {
     /// - Content Type: `application/x-sqlite3`
     /// - File Extension: `sqlite`
     public static let sqlite: Self = .init(
-        contentType: RFC_2045.ContentType(type: "application", subtype: "x-sqlite3"),
+        contentType: RFC_2045.ContentType(__unchecked: (), type: "application", subtype: "x-sqlite3"),
         fileExtension: "sqlite"
     )
     
@@ -309,7 +307,7 @@ extension FileUpload.FileType {
     /// - Content Type: `text/x-swift`
     /// - File Extension: `swift`
     public static let swift: Self = .init(
-        contentType: RFC_2045.ContentType(type: "text", subtype: "x-swift"),
+        contentType: RFC_2045.ContentType(__unchecked: (), type: "text", subtype: "x-swift"),
         fileExtension: "swift"
     )
     
@@ -320,7 +318,7 @@ extension FileUpload.FileType {
     /// - Content Type: `application/javascript`
     /// - File Extension: `js`
     public static let javascript: Self = .init(
-        contentType: RFC_2045.ContentType(type: "application", subtype: "javascript"),
+        contentType: RFC_2045.ContentType(__unchecked: (), type: "application", subtype: "javascript"),
         fileExtension: "js"
     )
     
@@ -333,7 +331,7 @@ extension FileUpload.FileType {
     /// - Content Type: `font/ttf`
     /// - File Extension: `ttf`
     public static let ttf: Self = .init(
-        contentType: RFC_2045.ContentType(type: "font", subtype: "ttf"),
+        contentType: RFC_2045.ContentType(__unchecked: (), type: "font", subtype: "ttf"),
         fileExtension: "ttf"
     )
     
@@ -344,7 +342,7 @@ extension FileUpload.FileType {
     /// - Content Type: `image/svg+xml`
     /// - File Extension: `svg`
     public static let svg: Self = .init(
-        contentType: RFC_2045.ContentType(type: "image", subtype: "svg+xml"),
+        contentType: RFC_2045.ContentType(__unchecked: (), type: "image", subtype: "svg+xml"),
         fileExtension: "svg"
     )
 }
