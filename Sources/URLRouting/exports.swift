@@ -1,6 +1,20 @@
-// MARK: - Core Dependencies
+// MARK: - Core Dependencies — institute L1 parser engine (narrow families)
 
-@_exported import Parsing
+@_exported import Parser_Primitive
+@_exported import Parser_Take_Primitives
+@_exported import Parser_Skip_Primitives
+@_exported import Parser_Map_Primitives
+@_exported import Parser_Conversion_Primitives
+@_exported import Parser_Witness_Primitives
+@_exported import Parser_Error_Primitives
+@_exported import Parser_Always_Primitives
+@_exported import Parser_End_Primitives
+@_exported import Parser_Match_Primitives
+@_exported import Parser_Conformance_Primitives
+
+// MARK: - Enum-case addressing (Case.Path + @Cases, via swift-dual)
+
+@_exported import Dual
 
 // MARK: - RFC Standards
 

@@ -1,4 +1,3 @@
-import Parsing
 import RFC_3986
 import RFC_7231
 
@@ -14,8 +13,8 @@ extension URLRouting {
     /// Compatibility alias for PointFree's Query parser
     public typealias Query = RFC_3986.URI.Query.Parser
 
-    /// Compatibility alias for PointFree's Conversion protocol (from Parsing library)
-    public typealias Conversion = Parsing.Conversion
+    /// Compatibility alias for PointFree's Conversion protocol (institute L1 engine)
+    public typealias Conversion = Parser.Conversion.`Protocol`
 }
 
 /// Compatibility alias for PointFree's PathBuilder type
