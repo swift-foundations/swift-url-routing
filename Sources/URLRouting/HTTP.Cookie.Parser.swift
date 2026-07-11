@@ -17,7 +17,7 @@ extension RFC_6265.Cookie {
     ///   Field("user_id") { Int.parser() }
     /// }
     /// ```
-    public struct Parser<FieldParsers: Parser.`Protocol`>: Parser.`Protocol`
+    public struct Parser<FieldParsers: Parser_Primitive.Parser.`Protocol`>: Parser_Primitive.Parser.`Protocol`
     where FieldParsers.Input == RFC_3986.URI.Request.Fields {
         public typealias Failure = RFC_3986.URI.Routing.Error
 
@@ -25,13 +25,13 @@ extension RFC_6265.Cookie {
         let cookieParsers: FieldParsers
 
         @inlinable
-        public init(@Parser.Builder<RFC_3986.URI.Request.Fields> build: () -> FieldParsers) {
+        public init(@Parser_Primitive.Parser.Builder<RFC_3986.URI.Request.Fields> build: () -> FieldParsers) {
             self.cookieParsers = build()
         }
 
         @_disfavoredOverload
         @inlinable
-        public init(@Parser.Builder<RFC_3986.URI.Request.Fields> build: () throws -> FieldParsers) rethrows {
+        public init(@Parser_Primitive.Parser.Builder<RFC_3986.URI.Request.Fields> build: () throws -> FieldParsers) rethrows {
             self.cookieParsers = try build()
         }
 
@@ -76,7 +76,7 @@ extension RFC_6265.Cookie {
     }
 }
 
-extension RFC_6265.Cookie.Parser: Parser.Bidirectional where FieldParsers: Parser.Bidirectional {
+extension RFC_6265.Cookie.Parser: Parser_Primitive.Parser.Bidirectional where FieldParsers: Parser_Primitive.Parser.Bidirectional {
     @inlinable
     public func print(
         _ output: FieldParsers.Output,

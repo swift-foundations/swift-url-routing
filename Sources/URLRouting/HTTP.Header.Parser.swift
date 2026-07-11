@@ -16,7 +16,7 @@ extension RFC_7230.Header {
     ///   Field("Authorization", .string)
     /// }
     /// ```
-    public struct Parser<FieldParsers: Parser.`Protocol`>: Parser.`Protocol`
+    public struct Parser<FieldParsers: Parser_Primitive.Parser.`Protocol`>: Parser_Primitive.Parser.`Protocol`
     where FieldParsers.Input == RFC_3986.URI.Request.Fields {
         public typealias Failure = RFC_3986.URI.Routing.Error
 
@@ -24,13 +24,13 @@ extension RFC_7230.Header {
         let fieldParsers: FieldParsers
 
         @inlinable
-        public init(@Parser.Builder<RFC_3986.URI.Request.Fields> build: () -> FieldParsers) {
+        public init(@Parser_Primitive.Parser.Builder<RFC_3986.URI.Request.Fields> build: () -> FieldParsers) {
             self.fieldParsers = build()
         }
 
         @_disfavoredOverload
         @inlinable
-        public init(@Parser.Builder<RFC_3986.URI.Request.Fields> build: () throws -> FieldParsers) rethrows {
+        public init(@Parser_Primitive.Parser.Builder<RFC_3986.URI.Request.Fields> build: () throws -> FieldParsers) rethrows {
             self.fieldParsers = try build()
         }
 
@@ -47,7 +47,7 @@ extension RFC_7230.Header {
     }
 }
 
-extension RFC_7230.Header.Parser: Parser.Bidirectional where FieldParsers: Parser.Bidirectional {
+extension RFC_7230.Header.Parser: Parser_Primitive.Parser.Bidirectional where FieldParsers: Parser_Primitive.Parser.Bidirectional {
     @inlinable
     public func print(
         _ output: FieldParsers.Output,

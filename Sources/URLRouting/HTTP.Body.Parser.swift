@@ -30,7 +30,7 @@ extension RFC_7230.Body {
     ///     maxSize: Measurement(value: 50, unit: .mebibytes)
     /// )
     /// ```
-    public struct Parser<Bytes: Parser.`Protocol`>: Parser.`Protocol` where Bytes.Input == Data {
+    public struct Parser<Bytes: Parser_Primitive.Parser.`Protocol`>: Parser_Primitive.Parser.`Protocol` where Bytes.Input == Data {
         public typealias Failure = RFC_3986.URI.Routing.Error
 
         @usableFromInline
@@ -46,8 +46,8 @@ extension RFC_7230.Body {
 
         @inlinable
         public init(
-            @Parser.Builder<Data> _ bytesParser: () -> Bytes,
-            maxSize: Measurement<UnitInformationStorage> = Parser.defaultMaxSize
+            @Parser_Primitive.Parser.Builder<Data> _ bytesParser: () -> Bytes,
+            maxSize: Measurement<UnitInformationStorage> = Self.defaultMaxSize
         ) {
             self.bytesParser = bytesParser()
             self.maxSize = maxSize
@@ -56,8 +56,8 @@ extension RFC_7230.Body {
         @_disfavoredOverload
         @inlinable
         public init(
-            @Parser.Builder<Data> _ bytesParser: () throws -> Bytes,
-            maxSize: Measurement<UnitInformationStorage> = Parser.defaultMaxSize
+            @Parser_Primitive.Parser.Builder<Data> _ bytesParser: () throws -> Bytes,
+            maxSize: Measurement<UnitInformationStorage> = Self.defaultMaxSize
         ) rethrows {
             self.bytesParser = try bytesParser()
             self.maxSize = maxSize
@@ -71,11 +71,11 @@ extension RFC_7230.Body {
         ///   - bytesConversion: A conversion that transforms bytes into some other type.
         ///   - maxSize: Maximum allowed body size (defaults to 10 MiB)
         @inlinable
-        public init<C: Parser.Conversion.`Protocol`>(
+        public init<C: Parser_Primitive.Parser.Conversion.`Protocol`>(
             _ bytesConversion: C,
-            maxSize: Measurement<UnitInformationStorage> = Parser.defaultMaxSize
+            maxSize: Measurement<UnitInformationStorage> = Self.defaultMaxSize
         )
-        where Bytes == Parser.Converted<URLRouting.Rest<Data>, C>, C.Input == Data {
+        where Bytes == Parser_Primitive.Parser.Converted<URLRouting.Rest<Data>, C>, C.Input == Data {
             self.bytesParser = URLRouting.Rest().map(bytesConversion)
             self.maxSize = maxSize
         }
@@ -85,7 +85,7 @@ extension RFC_7230.Body {
         /// - Parameter maxSize: Maximum allowed body size (defaults to 10 MiB)
         @inlinable
         public init(
-            maxSize: Measurement<UnitInformationStorage> = Parser.defaultMaxSize
+            maxSize: Measurement<UnitInformationStorage> = Self.defaultMaxSize
         ) where Bytes == URLRouting.Rest<Data> {
             self.bytesParser = URLRouting.Rest()
             self.maxSize = maxSize
@@ -131,7 +131,7 @@ extension RFC_7230.Body {
     }
 }
 
-extension RFC_7230.Body.Parser: Parser.Bidirectional where Bytes: Parser.Bidirectional {
+extension RFC_7230.Body.Parser: Parser_Primitive.Parser.Bidirectional where Bytes: Parser_Primitive.Parser.Bidirectional {
     @inlinable
     public func print(
         _ output: Bytes.Output,

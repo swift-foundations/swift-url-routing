@@ -19,7 +19,7 @@ extension WHATWG_HTML_Forms.Form.Data {
     ///   Field("age") { Int.parser() }
     /// }
     /// ```
-    public struct Field<Value: Parser.`Protocol`>: Parser.`Protocol` where Value.Input == Substring {
+    public struct Field<Value: Parser_Primitive.Parser.`Protocol`>: Parser_Primitive.Parser.`Protocol` where Value.Input == Substring {
         public typealias Failure = RFC_3986.URI.Routing.Error
 
         @usableFromInline
@@ -36,7 +36,7 @@ extension WHATWG_HTML_Forms.Form.Data {
         public init(
             _ name: String,
             default defaultValue: Value.Output? = nil,
-            @Parser.Builder<Substring> _ value: () -> Value
+            @Parser_Primitive.Parser.Builder<Substring> _ value: () -> Value
         ) {
             self.defaultValue = defaultValue
             self.name = name
@@ -49,7 +49,7 @@ extension WHATWG_HTML_Forms.Form.Data {
         public init(
             _ name: String,
             default defaultValue: Value.Output? = nil,
-            @Parser.Builder<Substring> _ value: () throws -> Value
+            @Parser_Primitive.Parser.Builder<Substring> _ value: () throws -> Value
         ) rethrows {
             self.defaultValue = defaultValue
             self.name = name
@@ -58,11 +58,11 @@ extension WHATWG_HTML_Forms.Form.Data {
 
         /// Initializes a named field parser.
         @inlinable
-        public init<C: Parser.Conversion.`Protocol`>(
+        public init<C: Parser_Primitive.Parser.Conversion.`Protocol`>(
             _ name: String,
             _ value: C,
             default defaultValue: Value.Output? = nil
-        ) where Value == Parser.Converted<URLRouting.Rest<Substring>, C>, C.Input == Substring {
+        ) where Value == Parser_Primitive.Parser.Converted<URLRouting.Rest<Substring>, C>, C.Input == Substring {
             self.defaultValue = defaultValue
             self.name = name
             self.valueParser = URLRouting.Rest().map(value)
@@ -74,7 +74,7 @@ extension WHATWG_HTML_Forms.Form.Data {
             default defaultValue: Value.Output? = nil
         )
         where
-            Value == Parser.Converted<URLRouting.Rest<Substring>, Parser.Conversion.String> {
+            Value == Parser_Primitive.Parser.Converted<URLRouting.Rest<Substring>, Parser_Primitive.Parser.Conversion.String> {
             self.defaultValue = defaultValue
             self.name = name
             self.valueParser = URLRouting.Rest().map(.string)
@@ -118,7 +118,7 @@ extension WHATWG_HTML_Forms.Form.Data {
     }
 }
 
-extension WHATWG_HTML_Forms.Form.Data.Field: Parser.Bidirectional where Value: Parser.Bidirectional {
+extension WHATWG_HTML_Forms.Form.Data.Field: Parser_Primitive.Parser.Bidirectional where Value: Parser_Primitive.Parser.Bidirectional {
     @inlinable
     public func print(
         _ output: Value.Output,

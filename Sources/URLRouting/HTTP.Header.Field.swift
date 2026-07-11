@@ -14,7 +14,7 @@ extension RFC_7230.Header.Field {
     ///   Field.Parser("Content-Length") { Int.parser() }
     /// }
     /// ```
-    public struct Parser<Value: Parser.`Protocol`>: Parser.`Protocol` where Value.Input == Substring {
+    public struct Parser<Value: Parser_Primitive.Parser.`Protocol`>: Parser_Primitive.Parser.`Protocol` where Value.Input == Substring {
         public typealias Failure = RFC_3986.URI.Routing.Error
 
         @usableFromInline
@@ -31,7 +31,7 @@ extension RFC_7230.Header.Field {
         public init(
             _ name: String,
             default defaultValue: Value.Output? = nil,
-            @Parser.Builder<Substring> _ value: () -> Value
+            @Parser_Primitive.Parser.Builder<Substring> _ value: () -> Value
         ) {
             self.defaultValue = defaultValue
             self.name = name
@@ -44,7 +44,7 @@ extension RFC_7230.Header.Field {
         public init(
             _ name: String,
             default defaultValue: Value.Output? = nil,
-            @Parser.Builder<Substring> _ value: () throws -> Value
+            @Parser_Primitive.Parser.Builder<Substring> _ value: () throws -> Value
         ) rethrows {
             self.defaultValue = defaultValue
             self.name = name
@@ -53,11 +53,11 @@ extension RFC_7230.Header.Field {
 
         /// Initializes a named field parser.
         @inlinable
-        public init<C: Parser.Conversion.`Protocol`>(
+        public init<C: Parser_Primitive.Parser.Conversion.`Protocol`>(
             _ name: String,
             _ value: C,
             default defaultValue: Value.Output? = nil
-        ) where Value == Parser.Converted<URLRouting.Rest<Substring>, C>, C.Input == Substring {
+        ) where Value == Parser_Primitive.Parser.Converted<URLRouting.Rest<Substring>, C>, C.Input == Substring {
             self.defaultValue = defaultValue
             self.name = name
             self.valueParser = URLRouting.Rest().map(value)
@@ -69,7 +69,7 @@ extension RFC_7230.Header.Field {
             default defaultValue: Value.Output? = nil
         )
         where
-            Value == Parser.Converted<URLRouting.Rest<Substring>, Parser.Conversion.String> {
+            Value == Parser_Primitive.Parser.Converted<URLRouting.Rest<Substring>, Parser_Primitive.Parser.Conversion.String> {
             self.defaultValue = defaultValue
             self.name = name
             self.valueParser = URLRouting.Rest().map(.string)
@@ -111,7 +111,7 @@ extension RFC_7230.Header.Field {
     }
 }
 
-extension RFC_7230.Header.Field.Parser: Parser.Bidirectional where Value: Parser.Bidirectional {
+extension RFC_7230.Header.Field.Parser: Parser_Primitive.Parser.Bidirectional where Value: Parser_Primitive.Parser.Bidirectional {
     @inlinable
     public func print(
         _ output: Value.Output,
@@ -165,7 +165,7 @@ extension RFC_7230.Header {
     ///     ContentType { Prefix { $0 != ";" } }
     /// }
     /// ```
-    public struct ContentType<Value: Parser.`Protocol`>: Parser.`Protocol` where Value.Input == Substring {
+    public struct ContentType<Value: Parser_Primitive.Parser.`Protocol`>: Parser_Primitive.Parser.`Protocol` where Value.Input == Substring {
         public typealias Failure = RFC_3986.URI.Routing.Error
 
         @usableFromInline
@@ -173,14 +173,14 @@ extension RFC_7230.Header {
 
         /// Initializes a Content-Type header parser.
         @inlinable
-        public init(@Parser.Builder<Substring> _ value: () -> Value) {
+        public init(@Parser_Primitive.Parser.Builder<Substring> _ value: () -> Value) {
             self.valueParser = RFC_7230.Header.Field.Parser("Content-Type", value)
         }
 
         /// Initializes a Content-Type header parser with a throwing closure.
         @_disfavoredOverload
         @inlinable
-        public init(@Parser.Builder<Substring> _ value: () throws -> Value) rethrows {
+        public init(@Parser_Primitive.Parser.Builder<Substring> _ value: () throws -> Value) rethrows {
             self.valueParser = try RFC_7230.Header.Field.Parser("Content-Type", value)
         }
 
@@ -193,7 +193,7 @@ extension RFC_7230.Header {
     }
 }
 
-extension RFC_7230.Header.ContentType: Parser.Bidirectional where Value: Parser.Bidirectional {
+extension RFC_7230.Header.ContentType: Parser_Primitive.Parser.Bidirectional where Value: Parser_Primitive.Parser.Bidirectional {
     @inlinable
     public func print(
         _ output: Value.Output,

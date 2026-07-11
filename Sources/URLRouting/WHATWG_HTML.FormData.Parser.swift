@@ -23,7 +23,7 @@ extension WHATWG_HTML_Forms.Form.Data {
     ///   Field("age") { Int.parser() }
     /// }
     /// ```
-    public struct Parser<FieldParsers: Parser.`Protocol`>: Parser.`Protocol`
+    public struct Parser<FieldParsers: Parser_Primitive.Parser.`Protocol`>: Parser_Primitive.Parser.`Protocol`
     where FieldParsers.Input == RFC_3986.URI.Request.Fields {
         public typealias Failure = RFC_3986.URI.Routing.Error
 
@@ -31,13 +31,13 @@ extension WHATWG_HTML_Forms.Form.Data {
         let fieldParsers: FieldParsers
 
         @inlinable
-        public init(@Parser.Builder<RFC_3986.URI.Request.Fields> build: () -> FieldParsers) {
+        public init(@Parser_Primitive.Parser.Builder<RFC_3986.URI.Request.Fields> build: () -> FieldParsers) {
             self.fieldParsers = build()
         }
 
         @_disfavoredOverload
         @inlinable
-        public init(@Parser.Builder<RFC_3986.URI.Request.Fields> build: () throws -> FieldParsers) rethrows {
+        public init(@Parser_Primitive.Parser.Builder<RFC_3986.URI.Request.Fields> build: () throws -> FieldParsers) rethrows {
             self.fieldParsers = try build()
         }
 
@@ -74,7 +74,7 @@ extension WHATWG_HTML_Forms.Form.Data {
     }
 }
 
-extension WHATWG_HTML_Forms.Form.Data.Parser: Parser.Bidirectional where FieldParsers: Parser.Bidirectional {
+extension WHATWG_HTML_Forms.Form.Data.Parser: Parser_Primitive.Parser.Bidirectional where FieldParsers: Parser_Primitive.Parser.Bidirectional {
     @inlinable
     public func print(_ output: FieldParsers.Output, into input: inout Foundation.Data) throws(RFC_3986.URI.Routing.Error) {
         var fields = RFC_3986.URI.Request.Fields()
