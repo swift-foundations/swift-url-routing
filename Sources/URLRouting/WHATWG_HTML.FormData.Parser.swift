@@ -1,10 +1,9 @@
 import Foundation
 import OrderedCollections
-import Parsing
 import RFC_3986
 import WHATWG_HTML_Forms
 import WHATWG_HTML_FormData
-import WHATWG_URL_Encoding
+import WHATWG_Form_URL_Encoded
 
 // MARK: - Form.Data Extension
 
@@ -24,37 +23,50 @@ extension WHATWG_HTML_Forms.Form.Data {
     ///   Field("age") { Int.parser() }
     /// }
     /// ```
-    public struct Parser<FieldParsers: Parsing.Parser>: Parsing.Parser
+    public struct Parser<FieldParsers: Parser.`Protocol`>: Parser.`Protocol`
     where FieldParsers.Input == RFC_3986.URI.Request.Fields {
+        public typealias Failure = RFC_3986.URI.Routing.Error
+
         @usableFromInline
         let fieldParsers: FieldParsers
 
         @inlinable
-        public init(@ParserBuilder<RFC_3986.URI.Request.Fields> build: () -> FieldParsers) {
+        public init(@Parser.Builder<RFC_3986.URI.Request.Fields> build: () -> FieldParsers) {
             self.fieldParsers = build()
         }
 
         @_disfavoredOverload
         @inlinable
-        public init(@ParserBuilder<RFC_3986.URI.Request.Fields> build: () throws -> FieldParsers) rethrows {
+        public init(@Parser.Builder<RFC_3986.URI.Request.Fields> build: () throws -> FieldParsers) rethrows {
             self.fieldParsers = try build()
         }
 
         @inlinable
-        public func parse(_ input: inout Foundation.Data) rethrows -> FieldParsers.Output {
+        public func parse(_ input: inout Foundation.Data) throws(RFC_3986.URI.Routing.Error) -> FieldParsers.Output {
             var fields: FieldParsers.Input = String(decoding: input, as: UTF8.self)
                 .split(separator: "&")
                 .reduce(into: .init([:], isCaseSensitive: true)) { fields, field in
                     let pair =
                         field
                         .split(separator: "=", maxSplits: 1, omittingEmptySubsequences: false)
-                        .compactMap { WHATWG_URL_Encoding.percentDecode(String($0), plusAsSpace: true) }
+                        .compactMap {
+                            WHATWG_Form_URL_Encoded.PercentEncoding.decodeOrNil(String($0), plusAsSpace: true)
+                        }
                     let name = pair[0]
                     let value = pair.count == 2 ? pair[1][...] : nil
                     fields[name, default: []].append(value)
                 }
 
-            let output = try self.fieldParsers.parse(&fields)
+            let output: FieldParsers.Output
+            do {
+                output = try self.fieldParsers.parse(&fields)
+            } catch {
+                throw RFC_3986.URI.Routing.Error(
+                    component: .body,
+                    failure: .parseFailed("\(error)"),
+                    context: "Form data"
+                )
+            }
 
             input = .init(encoding: fields)
             return output
@@ -62,11 +74,19 @@ extension WHATWG_HTML_Forms.Form.Data {
     }
 }
 
-extension WHATWG_HTML_Forms.Form.Data.Parser: ParserPrinter where FieldParsers: ParserPrinter {
+extension WHATWG_HTML_Forms.Form.Data.Parser: Parser.Bidirectional where FieldParsers: Parser.Bidirectional {
     @inlinable
-    public func print(_ output: FieldParsers.Output, into input: inout Foundation.Data) rethrows {
+    public func print(_ output: FieldParsers.Output, into input: inout Foundation.Data) throws(RFC_3986.URI.Routing.Error) {
         var fields = RFC_3986.URI.Request.Fields()
-        try self.fieldParsers.print(output, into: &fields)
+        do {
+            try self.fieldParsers.print(output, into: &fields)
+        } catch {
+            throw RFC_3986.URI.Routing.Error(
+                component: .body,
+                failure: .parseFailed("\(error)"),
+                context: "Form data"
+            )
+        }
         input = .init(encoding: fields)
     }
 }
@@ -92,13 +112,13 @@ extension Foundation.Data {
             fields
                 .flatMap { pair -> [String] in
                     let (name, values) = pair
-                    let encodedName = WHATWG_URL_Encoding.percentEncode(name, spaceAsPlus: true)
+                    let encodedName = WHATWG_Form_URL_Encoded.PercentEncoding.encode(name, spaceAsPlus: true)
 
                     return values.compactMap { value in
                         guard let value = value
                         else { return encodedName }
 
-                        let encodedValue = WHATWG_URL_Encoding.percentEncode(String(value), spaceAsPlus: true)
+                        let encodedValue = WHATWG_Form_URL_Encoded.PercentEncoding.encode(String(value), spaceAsPlus: true)
                         return "\(encodedName)=\(encodedValue)"
                     }
                 }

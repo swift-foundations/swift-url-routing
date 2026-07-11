@@ -1,5 +1,4 @@
 import OrderedCollections
-import Parsing
 import RFC_3986
 import WHATWG_HTML_Forms
 import WHATWG_HTML_FormData
@@ -20,7 +19,9 @@ extension WHATWG_HTML_Forms.Form.Data {
     ///   Field("age") { Int.parser() }
     /// }
     /// ```
-    public struct Field<Value: Parsing.Parser>: Parsing.Parser where Value.Input == Substring {
+    public struct Field<Value: Parser.`Protocol`>: Parser.`Protocol` where Value.Input == Substring {
+        public typealias Failure = RFC_3986.URI.Routing.Error
+
         @usableFromInline
         let defaultValue: Value.Output?
 
@@ -31,18 +32,11 @@ extension WHATWG_HTML_Forms.Form.Data {
         let valueParser: Value
 
         /// Initializes a named field parser.
-        ///
-        /// - Parameters:
-        ///   - name: The name of the field.
-        ///   - defaultValue: A default value if the field is absent. Prefer specifying a default over
-        ///     applying `Parser.replaceError(with:)` if parsing should fail for invalid values.
-        ///   - value: A parser that parses the field's substring value into something more
-        ///     well-structured.
         @inlinable
         public init(
             _ name: String,
             default defaultValue: Value.Output? = nil,
-            @ParserBuilder<Substring> _ value: () -> Value
+            @Parser.Builder<Substring> _ value: () -> Value
         ) {
             self.defaultValue = defaultValue
             self.name = name
@@ -50,20 +44,12 @@ extension WHATWG_HTML_Forms.Form.Data {
         }
 
         /// Initializes a named field parser with a throwing closure.
-        ///
-        /// This overload allows using throwing factory functions within the parser builder.
-        ///
-        /// - Parameters:
-        ///   - name: The name of the field.
-        ///   - defaultValue: A default value if the field is absent. Prefer specifying a default over
-        ///     applying `Parser.replaceError(with:)` if parsing should fail for invalid values.
-        ///   - value: A throwing closure that creates a parser for the field's substring value.
         @_disfavoredOverload
         @inlinable
         public init(
             _ name: String,
             default defaultValue: Value.Output? = nil,
-            @ParserBuilder<Substring> _ value: () throws -> Value
+            @Parser.Builder<Substring> _ value: () throws -> Value
         ) rethrows {
             self.defaultValue = defaultValue
             self.name = name
@@ -71,22 +57,15 @@ extension WHATWG_HTML_Forms.Form.Data {
         }
 
         /// Initializes a named field parser.
-        ///
-        /// - Parameters:
-        ///   - name: The name of the field.
-        ///   - value: A conversion that transforms the field's substring value into something more
-        ///     well-structured.
-        ///   - defaultValue: A default value if the field is absent. Prefer specifying a default over
-        ///     applying `Parser.replaceError(with:)` if parsing should fail for invalid values.
         @inlinable
-        public init<C>(
+        public init<C: Parser.Conversion.`Protocol`>(
             _ name: String,
             _ value: C,
             default defaultValue: Value.Output? = nil
-        ) where Value == Parsers.MapConversion<Parsers.ReplaceError<Rest<Substring>>, C> {
+        ) where Value == Parser.Converted<URLRouting.Rest<Substring>, C>, C.Input == Substring {
             self.defaultValue = defaultValue
             self.name = name
-            self.valueParser = Rest().replaceError(with: "").map(value)
+            self.valueParser = URLRouting.Rest().map(value)
         }
 
         @inlinable
@@ -95,16 +74,16 @@ extension WHATWG_HTML_Forms.Form.Data {
             default defaultValue: Value.Output? = nil
         )
         where
-            Value == Parsers.MapConversion<
-                Parsers.ReplaceError<Rest<Substring>>, Conversions.SubstringToString
-            > {
+            Value == Parser.Converted<URLRouting.Rest<Substring>, Parser.Conversion.String> {
             self.defaultValue = defaultValue
             self.name = name
-            self.valueParser = Rest().replaceError(with: "").map(.string)
+            self.valueParser = URLRouting.Rest().map(.string)
         }
 
         @inlinable
-        public func parse(_ input: inout RFC_3986.URI.Request.Fields) throws -> Value.Output {
+        public func parse(
+            _ input: inout RFC_3986.URI.Request.Fields
+        ) throws(RFC_3986.URI.Routing.Error) -> Value.Output {
             guard
                 let wrapped = input[self.name]?.first,
                 var value = wrapped
@@ -120,7 +99,16 @@ extension WHATWG_HTML_Forms.Form.Data {
                 return defaultValue
             }
 
-            let output = try self.valueParser.parse(&value)
+            let output: Value.Output
+            do {
+                output = try self.valueParser.parse(&value)
+            } catch {
+                throw RFC_3986.URI.Routing.Error(
+                    component: .body,
+                    failure: .parseFailed("\(error)"),
+                    context: "Form field '\(self.name)'"
+                )
+            }
             input[self.name]?.removeFirst()
             if input[self.name]?.isEmpty ?? true {
                 input[self.name] = nil
@@ -130,15 +118,28 @@ extension WHATWG_HTML_Forms.Form.Data {
     }
 }
 
-extension WHATWG_HTML_Forms.Form.Data.Field: ParserPrinter where Value: ParserPrinter {
+extension WHATWG_HTML_Forms.Form.Data.Field: Parser.Bidirectional where Value: Parser.Bidirectional {
     @inlinable
-    public func print(_ output: Value.Output, into input: inout RFC_3986.URI.Request.Fields) rethrows {
+    public func print(
+        _ output: Value.Output,
+        into input: inout RFC_3986.URI.Request.Fields
+    ) throws(RFC_3986.URI.Routing.Error) {
         if let defaultValue = self.defaultValue, Internal.isEqual(output, defaultValue) { return }
-        try input.fields.updateValue(
+        let printed: Substring
+        do {
+            printed = try self.valueParser.print(output)
+        } catch {
+            throw RFC_3986.URI.Routing.Error(
+                component: .body,
+                failure: .parseFailed("\(error)"),
+                context: "Form field '\(self.name)'"
+            )
+        }
+        input.fields.updateValue(
             forKey: input.isCaseSensitive ? self.name : self.name.lowercased(),
             insertingDefault: [],
             at: 0,
-            with: { $0.prepend(try self.valueParser.print(output)) }
+            with: { $0.prepend(printed) }
         )
     }
 }
