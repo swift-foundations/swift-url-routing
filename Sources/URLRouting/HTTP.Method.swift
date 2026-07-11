@@ -15,7 +15,7 @@ extension RFC_7231.Method {
     ///   ...
     /// }
     /// ```
-    public struct Parser: Parser.Bidirectional, Sendable {
+    public struct Parser: Parser_Primitive.Parser.Bidirectional, Sendable {
         public typealias Input = RFC_3986.URI.Request.Data
         public typealias Output = Void
         public typealias Failure = RFC_3986.URI.Routing.Error
@@ -88,7 +88,7 @@ extension RFC_7231.Method.Parser {
     /// two-way choice is hand-rolled: `parse` tries HEAD then GET (a failing
     /// method matcher leaves the input untouched, so no backtracking is needed),
     /// and `print` writes GET.
-    public struct Get: Parser.Bidirectional, Sendable {
+    public struct Get: Parser_Primitive.Parser.Bidirectional, Sendable {
         public typealias Input = RFC_3986.URI.Request.Data
         public typealias Output = Void
         public typealias Failure = RFC_3986.URI.Routing.Error

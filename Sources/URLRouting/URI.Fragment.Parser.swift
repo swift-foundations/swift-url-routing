@@ -1,13 +1,10 @@
 import RFC_3986
 
 // MARK: - RFC 3986 URI Fragment Extension
-
-extension RFC_3986.URI {
-    /// Fragment component of a URI (RFC 3986 section 3.5)
-    ///
-    /// The fragment identifier identifies a secondary resource within a primary resource.
-    public enum Fragment {}
-}
+//
+// `RFC_3986.URI.Fragment` is the upstream typed fragment component (rfc-3986
+// tip); this file nests the routing parser inside it. (The former local
+// `public enum Fragment {}` namespace collided with the upstream type.)
 
 extension RFC_3986.URI.Fragment {
     /// Parser for URI fragment components
@@ -22,7 +19,7 @@ extension RFC_3986.URI.Fragment {
     ///   Digits()
     /// }
     /// ```
-    public struct Parser<ValueParser: Parser.`Protocol`>: Parser.`Protocol`
+    public struct Parser<ValueParser: Parser_Primitive.Parser.`Protocol`>: Parser_Primitive.Parser.`Protocol`
     where ValueParser.Input == Substring {
         public typealias Failure = RFC_3986.URI.Routing.Error
 
@@ -33,7 +30,7 @@ extension RFC_3986.URI.Fragment {
         @inlinable
         public init()
         where
-            ValueParser == Parser.Converted<URLRouting.Rest<Substring>, Parser.Conversion.String> {
+            ValueParser == Parser_Primitive.Parser.Converted<URLRouting.Rest<Substring>, Parser_Primitive.Parser.Conversion.String> {
             self.valueParser = URLRouting.Rest().map(.string)
         }
 
@@ -42,7 +39,7 @@ extension RFC_3986.URI.Fragment {
         /// - Parameter value: A parser that parses the fragment's substring value into something
         ///   more well-structured.
         @inlinable
-        public init(@Parser.Builder<Substring> value: () -> ValueParser) {
+        public init(@Parser_Primitive.Parser.Builder<Substring> value: () -> ValueParser) {
             self.valueParser = value()
         }
 
@@ -51,7 +48,7 @@ extension RFC_3986.URI.Fragment {
         /// - Parameter value: A throwing closure that creates a parser for the fragment's substring
         ///   value.
         @inlinable
-        public init(@Parser.Builder<Substring> value: () throws -> ValueParser) rethrows {
+        public init(@Parser_Primitive.Parser.Builder<Substring> value: () throws -> ValueParser) rethrows {
             self.valueParser = try value()
         }
 
@@ -60,8 +57,8 @@ extension RFC_3986.URI.Fragment {
         /// - Parameter value: A conversion that transforms the fragment's substring value into
         ///   some other type.
         @inlinable
-        public init<C: Parser.Conversion.`Protocol`>(_ value: C)
-        where ValueParser == Parser.Converted<URLRouting.Rest<Substring>, C>, C.Input == Substring {
+        public init<C: Parser_Primitive.Parser.Conversion.`Protocol`>(_ value: C)
+        where ValueParser == Parser_Primitive.Parser.Converted<URLRouting.Rest<Substring>, C>, C.Input == Substring {
             self.valueParser = URLRouting.Rest().map(value)
         }
 
@@ -87,7 +84,7 @@ extension RFC_3986.URI.Fragment {
     }
 }
 
-extension RFC_3986.URI.Fragment.Parser: Parser.Bidirectional where ValueParser: Parser.Bidirectional {
+extension RFC_3986.URI.Fragment.Parser: Parser_Primitive.Parser.Bidirectional where ValueParser: Parser_Primitive.Parser.Bidirectional {
     @inlinable
     public func print(
         _ output: ValueParser.Output,

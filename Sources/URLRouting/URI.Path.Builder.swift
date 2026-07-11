@@ -21,7 +21,7 @@ extension RFC_3986.URI.Path {
     @resultBuilder
     public enum Builder {
         @inlinable
-        public static func buildPartialBlock<P: Parser.`Protocol`>(first: P) -> P
+        public static func buildPartialBlock<P: Parser_Primitive.Parser.`Protocol`>(first: P) -> P
         where P.Input == RFC_3986.URI.Request.Data {
             first
         }
@@ -41,10 +41,10 @@ extension RFC_3986.URI.Path {
 
         @_disfavoredOverload
         @inlinable
-        public static func buildPartialBlock<P0: Parser.`Protocol`, P1: Parser.`Protocol`, each O1, O2>(
+        public static func buildPartialBlock<P0: Parser_Primitive.Parser.`Protocol`, P1: Parser_Primitive.Parser.`Protocol`, each O1, O2>(
             accumulated: P0,
             next: P1
-        ) -> Parser.Map<Take2<P0, P1>, (repeat each O1, O2)>
+        ) -> Parser_Primitive.Parser.Map<Take2<P0, P1>, (repeat each O1, O2)>
         where
             P0.Input == RFC_3986.URI.Request.Data,
             P1.Input == RFC_3986.URI.Request.Data,
@@ -58,11 +58,11 @@ extension RFC_3986.URI.Path {
         }
 
         @inlinable
-        public static func buildExpression<P: Parser.`Protocol`>(_ parser: P) -> Component<P> where P.Input == Substring {
+        public static func buildExpression<P: Parser_Primitive.Parser.`Protocol`>(_ parser: P) -> Component<P> where P.Input == Substring {
             Component(parser)
         }
 
-        public struct Component<ComponentParser: Parser.`Protocol`>: Parser.`Protocol`
+        public struct Component<ComponentParser: Parser_Primitive.Parser.`Protocol`>: Parser_Primitive.Parser.`Protocol`
         where ComponentParser.Input == Substring {
             public typealias Failure = RFC_3986.URI.Routing.Error
 
@@ -99,7 +99,7 @@ extension RFC_3986.URI.Path {
     }
 }
 
-extension RFC_3986.URI.Path.Builder.Component: Parser.Bidirectional where ComponentParser: Parser.Bidirectional {
+extension RFC_3986.URI.Path.Builder.Component: Parser_Primitive.Parser.Bidirectional where ComponentParser: Parser_Primitive.Parser.Bidirectional {
     @inlinable
     public func print(
         _ output: ComponentParser.Output,
@@ -119,7 +119,7 @@ extension RFC_3986.URI.Path.Builder.Component: Parser.Bidirectional where Compon
 // MARK: - Helper Types for buildPartialBlock
 
 extension RFC_3986.URI.Path.Builder {
-    public struct SkipFirst<P0: Parser.`Protocol`, P1: Parser.`Protocol`>: Parser.`Protocol`
+    public struct SkipFirst<P0: Parser_Primitive.Parser.`Protocol`, P1: Parser_Primitive.Parser.`Protocol`>: Parser_Primitive.Parser.`Protocol`
     where P0.Input == RFC_3986.URI.Request.Data, P1.Input == RFC_3986.URI.Request.Data, P0.Output == Void {
         public typealias Failure = RFC_3986.URI.Routing.Error
 
@@ -142,7 +142,7 @@ extension RFC_3986.URI.Path.Builder {
         }
     }
 
-    public struct SkipSecond<P0: Parser.`Protocol`, P1: Parser.`Protocol`>: Parser.`Protocol`
+    public struct SkipSecond<P0: Parser_Primitive.Parser.`Protocol`, P1: Parser_Primitive.Parser.`Protocol`>: Parser_Primitive.Parser.`Protocol`
     where P0.Input == RFC_3986.URI.Request.Data, P1.Input == RFC_3986.URI.Request.Data, P1.Output == Void {
         public typealias Failure = RFC_3986.URI.Routing.Error
 
@@ -166,7 +166,7 @@ extension RFC_3986.URI.Path.Builder {
         }
     }
 
-    public struct Take2<P0: Parser.`Protocol`, P1: Parser.`Protocol`>: Parser.`Protocol`
+    public struct Take2<P0: Parser_Primitive.Parser.`Protocol`, P1: Parser_Primitive.Parser.`Protocol`>: Parser_Primitive.Parser.`Protocol`
     where P0.Input == RFC_3986.URI.Request.Data, P1.Input == RFC_3986.URI.Request.Data {
         public typealias Failure = RFC_3986.URI.Routing.Error
 
@@ -191,7 +191,7 @@ extension RFC_3986.URI.Path.Builder {
     }
 }
 
-extension RFC_3986.URI.Path.Builder.SkipFirst: Parser.Bidirectional where P0: Parser.Bidirectional, P1: Parser.Bidirectional {
+extension RFC_3986.URI.Path.Builder.SkipFirst: Parser_Primitive.Parser.Bidirectional where P0: Parser_Primitive.Parser.Bidirectional, P1: Parser_Primitive.Parser.Bidirectional {
     @inlinable public func print(
         _ output: P1.Output,
         into input: inout RFC_3986.URI.Request.Data
@@ -205,7 +205,7 @@ extension RFC_3986.URI.Path.Builder.SkipFirst: Parser.Bidirectional where P0: Pa
     }
 }
 
-extension RFC_3986.URI.Path.Builder.SkipSecond: Parser.Bidirectional where P0: Parser.Bidirectional, P1: Parser.Bidirectional {
+extension RFC_3986.URI.Path.Builder.SkipSecond: Parser_Primitive.Parser.Bidirectional where P0: Parser_Primitive.Parser.Bidirectional, P1: Parser_Primitive.Parser.Bidirectional {
     @inlinable public func print(
         _ output: P0.Output,
         into input: inout RFC_3986.URI.Request.Data
@@ -219,7 +219,7 @@ extension RFC_3986.URI.Path.Builder.SkipSecond: Parser.Bidirectional where P0: P
     }
 }
 
-extension RFC_3986.URI.Path.Builder.Take2: Parser.Bidirectional where P0: Parser.Bidirectional, P1: Parser.Bidirectional {
+extension RFC_3986.URI.Path.Builder.Take2: Parser_Primitive.Parser.Bidirectional where P0: Parser_Primitive.Parser.Bidirectional, P1: Parser_Primitive.Parser.Bidirectional {
     @inlinable public func print(
         _ output: (P0.Output, P1.Output),
         into input: inout RFC_3986.URI.Request.Data

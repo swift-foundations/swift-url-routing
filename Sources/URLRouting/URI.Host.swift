@@ -1,13 +1,10 @@
 import RFC_3986
 
 // MARK: - RFC 3986 URI Host Extension
-
-extension RFC_3986.URI {
-    /// Host component of a URI (RFC 3986 section 3.2.2)
-    ///
-    /// The host identifies the server or resource location.
-    public enum Host {}
-}
+//
+// `RFC_3986.URI.Host` is the upstream typed host component (rfc-3986 tip);
+// this file nests the routing parser inside it. (The former local
+// `public enum Host {}` namespace collided with the upstream type.)
 
 extension RFC_3986.URI.Host {
     /// Parser for URI host components
@@ -22,7 +19,7 @@ extension RFC_3986.URI.Host {
     ///   ...
     /// }
     /// ```
-    public struct Parser: Parser.Bidirectional, Sendable {
+    public struct Parser: Parser_Primitive.Parser.Bidirectional, Sendable {
         public typealias Input = RFC_3986.URI.Request.Data
         public typealias Output = Void
         public typealias Failure = RFC_3986.URI.Routing.Error

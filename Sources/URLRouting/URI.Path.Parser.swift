@@ -1,13 +1,10 @@
 import RFC_3986
 
 // MARK: - RFC 3986 URI Path Extension
-
-extension RFC_3986.URI {
-    /// Path component of a URI (RFC 3986 section 3.3)
-    ///
-    /// The path identifies a resource within the scope of the scheme and authority.
-    public enum Path {}
-}
+//
+// `RFC_3986.URI.Path` is the upstream typed path component (rfc-3986 tip);
+// this file nests the routing parser inside it. (The former local
+// `public enum Path {}` namespace collided with the upstream type.)
 
 extension RFC_3986.URI.Path {
     /// Parser for URI path components with path traversal protection
@@ -34,7 +31,7 @@ extension RFC_3986.URI.Path {
     /// .match(uri: "/users/42")  // ✅ Works
     /// .match(uri: "/users/../admin")  // ❌ Throws error
     /// ```
-    public struct Parser<ComponentParsers: Parser.`Protocol`>: Parser.`Protocol`
+    public struct Parser<ComponentParsers: Parser_Primitive.Parser.`Protocol`>: Parser_Primitive.Parser.`Protocol`
     where ComponentParsers.Input == RFC_3986.URI.Request.Data {
         public typealias Failure = RFC_3986.URI.Routing.Error
 
@@ -114,7 +111,7 @@ extension RFC_3986.URI.Path {
     }
 }
 
-extension RFC_3986.URI.Path.Parser: Parser.Bidirectional where ComponentParsers: Parser.Bidirectional {
+extension RFC_3986.URI.Path.Parser: Parser_Primitive.Parser.Bidirectional where ComponentParsers: Parser_Primitive.Parser.Bidirectional {
     @inlinable
     public func print(
         _ output: ComponentParsers.Output,

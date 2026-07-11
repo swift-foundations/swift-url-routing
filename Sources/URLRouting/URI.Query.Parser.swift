@@ -1,13 +1,10 @@
 import RFC_3986
 
 // MARK: - RFC 3986 URI Query Extension
-
-extension RFC_3986.URI {
-    /// Query component of a URI (RFC 3986 section 3.4)
-    ///
-    /// The query provides additional parameters for identifying the resource.
-    public enum Query {}
-}
+//
+// `RFC_3986.URI.Query` is the upstream typed query component (rfc-3986 tip);
+// this file nests the routing parser inside it. (The former local
+// `public enum Query {}` namespace collided with the upstream type.)
 
 extension RFC_3986.URI.Query {
     /// Parser for URI query components
@@ -26,7 +23,7 @@ extension RFC_3986.URI.Query {
     ///   }
     /// }
     /// ```
-    public struct Parser<FieldParsers: Parser.`Protocol`>: Parser.`Protocol`
+    public struct Parser<FieldParsers: Parser_Primitive.Parser.`Protocol`>: Parser_Primitive.Parser.`Protocol`
     where FieldParsers.Input == RFC_3986.URI.Request.Fields {
         public typealias Failure = RFC_3986.URI.Routing.Error
 
@@ -34,13 +31,13 @@ extension RFC_3986.URI.Query {
         let fieldParsers: FieldParsers
 
         @inlinable
-        public init(@Parser.Builder<RFC_3986.URI.Request.Fields> build: () -> FieldParsers) {
+        public init(@Parser_Primitive.Parser.Builder<RFC_3986.URI.Request.Fields> build: () -> FieldParsers) {
             self.fieldParsers = build()
         }
 
         @_disfavoredOverload
         @inlinable
-        public init(@Parser.Builder<RFC_3986.URI.Request.Fields> build: () throws -> FieldParsers) rethrows {
+        public init(@Parser_Primitive.Parser.Builder<RFC_3986.URI.Request.Fields> build: () throws -> FieldParsers) rethrows {
             self.fieldParsers = try build()
         }
 
@@ -57,7 +54,7 @@ extension RFC_3986.URI.Query {
     }
 }
 
-extension RFC_3986.URI.Query.Parser: Parser.Bidirectional where FieldParsers: Parser.Bidirectional {
+extension RFC_3986.URI.Query.Parser: Parser_Primitive.Parser.Bidirectional where FieldParsers: Parser_Primitive.Parser.Bidirectional {
     @inlinable
     public func print(
         _ output: FieldParsers.Output,

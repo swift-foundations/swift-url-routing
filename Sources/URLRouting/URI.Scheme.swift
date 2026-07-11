@@ -1,13 +1,10 @@
 import RFC_3986
 
 // MARK: - RFC 3986 URI Scheme Extension
-
-extension RFC_3986.URI {
-    /// Scheme component of a URI (RFC 3986 section 3.1)
-    ///
-    /// The scheme identifies the protocol or namespace.
-    public enum Scheme {}
-}
+//
+// `RFC_3986.URI.Scheme` is the upstream typed scheme component (rfc-3986 tip);
+// this file nests the routing parser inside it. (The former local
+// `public enum Scheme {}` namespace collided with the upstream type.)
 
 extension RFC_3986.URI.Scheme {
     /// Parser for URI scheme components
@@ -22,7 +19,7 @@ extension RFC_3986.URI.Scheme {
     ///   ...
     /// }
     /// ```
-    public struct Parser: Parser.Bidirectional, Sendable {
+    public struct Parser: Parser_Primitive.Parser.Bidirectional, Sendable {
         public typealias Input = RFC_3986.URI.Request.Data
         public typealias Output = Void
         public typealias Failure = RFC_3986.URI.Routing.Error
