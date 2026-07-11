@@ -11,6 +11,8 @@
 @_exported import Parser_End_Primitives
 @_exported import Parser_Match_Primitives
 @_exported import Parser_Conformance_Primitives
+@_exported import Parser_OneOf_Primitives
+@_exported import Parser_Rest_Primitives
 
 // Substring / ArraySlice conformances to `Collection.Slice.Protocol` — required for
 // `Parser.End` (and other engine parsers) over the URI request carrier's Substring

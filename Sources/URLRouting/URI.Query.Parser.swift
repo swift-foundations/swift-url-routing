@@ -31,13 +31,13 @@ extension RFC_3986.URI.Query {
         let fieldParsers: FieldParsers
 
         @inlinable
-        public init(@Parser_Primitive.Parser.Builder<RFC_3986.URI.Request.Fields> build: () -> FieldParsers) {
+        public init(@URLRouting.Take.Builder<RFC_3986.URI.Request.Fields> build: () -> FieldParsers) {
             self.fieldParsers = build()
         }
 
         @_disfavoredOverload
         @inlinable
-        public init(@Parser_Primitive.Parser.Builder<RFC_3986.URI.Request.Fields> build: () throws -> FieldParsers) rethrows {
+        public init(@URLRouting.Take.Builder<RFC_3986.URI.Request.Fields> build: () throws -> FieldParsers) rethrows {
             self.fieldParsers = try build()
         }
 

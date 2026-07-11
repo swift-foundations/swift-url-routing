@@ -16,7 +16,7 @@ extension RFC_3986.URI {
         @inlinable
         public init<Upstream, NewOutput>(
             _ transform: @escaping (Upstream.Output) -> NewOutput,
-            @Parser.Builder<RFC_3986.URI.Request.Data> with build: () -> Upstream
+            @URLRouting.Take.Builder<RFC_3986.URI.Request.Data> with build: () -> Upstream
         )
         where
             Upstream.Input == RFC_3986.URI.Request.Data,
@@ -27,7 +27,7 @@ extension RFC_3986.URI {
         @inlinable
         public init<Upstream, NewOutput>(
             _ transform: @escaping (Upstream.Output) -> NewOutput,
-            @Parser.Builder<RFC_3986.URI.Request.Data> with build: () throws -> Upstream
+            @URLRouting.Take.Builder<RFC_3986.URI.Request.Data> with build: () throws -> Upstream
         ) rethrows
         where
             Upstream.Input == RFC_3986.URI.Request.Data,
@@ -39,7 +39,7 @@ extension RFC_3986.URI {
         @inlinable
         public init<Upstream, NewOutput: Equatable>(
             _ output: NewOutput,
-            @Parser.Builder<RFC_3986.URI.Request.Data> with build: () -> Upstream
+            @URLRouting.Take.Builder<RFC_3986.URI.Request.Data> with build: () -> Upstream
         )
         where
             Upstream.Input == RFC_3986.URI.Request.Data,
@@ -52,7 +52,7 @@ extension RFC_3986.URI {
         @inlinable
         public init<Upstream, NewOutput: Equatable>(
             _ output: NewOutput,
-            @Parser.Builder<RFC_3986.URI.Request.Data> with build: () throws -> Upstream
+            @URLRouting.Take.Builder<RFC_3986.URI.Request.Data> with build: () throws -> Upstream
         ) rethrows
         where
             Upstream.Input == RFC_3986.URI.Request.Data,
@@ -75,7 +75,7 @@ extension RFC_3986.URI {
         @inlinable
         public init<C: Parser.Conversion.`Protocol`, P: Parser.`Protocol`>(
             _ conversion: C,
-            @Parser.Builder<RFC_3986.URI.Request.Data> with parsers: () -> P
+            @URLRouting.Take.Builder<RFC_3986.URI.Request.Data> with parsers: () -> P
         )
         where
             P.Input == RFC_3986.URI.Request.Data,
@@ -88,7 +88,7 @@ extension RFC_3986.URI {
         @inlinable
         public init<C: Parser.Conversion.`Protocol`, P: Parser.`Protocol`>(
             _ conversion: C,
-            @Parser.Builder<RFC_3986.URI.Request.Data> with parsers: () throws -> P
+            @URLRouting.Take.Builder<RFC_3986.URI.Request.Data> with parsers: () throws -> P
         ) rethrows
         where
             P.Input == RFC_3986.URI.Request.Data,

@@ -25,13 +25,13 @@ extension RFC_6265.Cookie {
         let cookieParsers: FieldParsers
 
         @inlinable
-        public init(@Parser_Primitive.Parser.Builder<RFC_3986.URI.Request.Fields> build: () -> FieldParsers) {
+        public init(@URLRouting.Take.Builder<RFC_3986.URI.Request.Fields> build: () -> FieldParsers) {
             self.cookieParsers = build()
         }
 
         @_disfavoredOverload
         @inlinable
-        public init(@Parser_Primitive.Parser.Builder<RFC_3986.URI.Request.Fields> build: () throws -> FieldParsers) rethrows {
+        public init(@URLRouting.Take.Builder<RFC_3986.URI.Request.Fields> build: () throws -> FieldParsers) rethrows {
             self.cookieParsers = try build()
         }
 
