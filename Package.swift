@@ -15,6 +15,8 @@ let package = Package(
   ],
   dependencies: [
     .package(url: "https://github.com/apple/swift-collections", from: "1.0.3"),
+    .package(url: "https://github.com/swift-primitives/swift-parser-primitives.git", branch: "main"),
+    .package(url: "https://github.com/swift-foundations/swift-dual.git", branch: "main"),
     .package(url: "https://github.com/swift-foundations/swift-dependencies.git", branch: "main"),
     .package(url: "https://github.com/swift-foundations/swift-logging-extras.git", branch: "main"),
     .package(url: "https://github.com/swift-ietf/swift-rfc-3986.git", branch: "main"),
@@ -37,8 +39,26 @@ let package = Package(
         .product(name: "Dependencies", package: "swift-dependencies"),
         .product(name: "LoggingExtras", package: "swift-logging-extras"),
         .product(name: "OrderedCollections", package: "swift-collections"),
+        // Institute L1 parser engine — narrow per-family products (routing W2 swap
+        // off pointfree `Parsing`). Umbrella `Parser Primitives` avoided per R2.
+        .product(name: "Parser Primitive", package: "swift-parser-primitives"),
+        .product(name: "Parser Take Primitives", package: "swift-parser-primitives"),
+        .product(name: "Parser Skip Primitives", package: "swift-parser-primitives"),
+        .product(name: "Parser Map Primitives", package: "swift-parser-primitives"),
+        .product(name: "Parser Conversion Primitives", package: "swift-parser-primitives"),
+        .product(name: "Parser Witness Primitives", package: "swift-parser-primitives"),
+        .product(name: "Parser Error Primitives", package: "swift-parser-primitives"),
+        .product(name: "Parser Rest Primitives", package: "swift-parser-primitives"),
+        .product(name: "Parser Always Primitives", package: "swift-parser-primitives"),
+        .product(name: "Parser End Primitives", package: "swift-parser-primitives"),
+        .product(name: "Parser OneOf Primitives", package: "swift-parser-primitives"),
+        .product(name: "Parser Match Primitives", package: "swift-parser-primitives"),
+        .product(name: "Parser Conformance Primitives", package: "swift-parser-primitives"),
+        // Enum-case addressing for the `.case(\.case)` Route overloads (W1). The
+        // `Dual` product re-exports `Case_Paths` (Case.Path + @Cases) transitively.
+        .product(name: "Dual", package: "swift-dual"),
         .product(name: "RFC 3986", package: "swift-rfc-3986"),
-        .product(name: "RFC_6570", package: "swift-rfc-6570"),
+        .product(name: "RFC 6570", package: "swift-rfc-6570"),
         .product(name: "RFC 2045", package: "swift-rfc-2045"),
         .product(name: "RFC 2046", package: "swift-rfc-2046"),
         .product(name: "RFC 6265", package: "swift-rfc-6265"),

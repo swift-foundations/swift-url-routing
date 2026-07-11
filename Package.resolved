@@ -1,5 +1,5 @@
 {
-  "originHash" : "aa946109c46feda9fd6d10bd7ac740e63dbc9770b8ae500869218509c25dfc2f",
+  "originHash" : "c87ebd7efe7e6c45dd9ec0d94f2648d7f52214269d8239f6c55be45401c3ea51",
   "pins" : [
     {
       "identity" : "swift-affine-geometry-primitives",
@@ -274,10 +274,10 @@
     {
       "identity" : "swift-collections",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-collections",
+      "location" : "https://github.com/apple/swift-collections.git",
       "state" : {
-        "revision" : "3d2dc41a01f9e49d84f0a3925fb858bed64f702d",
-        "version" : "1.1.2"
+        "revision" : "a0cb0954ecb21e4e31b0070e6ed5674e8556685a",
+        "version" : "1.6.0"
       }
     },
     {
@@ -440,6 +440,15 @@
       "state" : {
         "branch" : "main",
         "revision" : "8215e4f268d86a117a989ff3735bc8c6805e4d30"
+      }
+    },
+    {
+      "identity" : "swift-dual",
+      "kind" : "localSourceControl",
+      "location" : "https://github.com/swift-foundations/swift-dual.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "bf484b009ba09822f201d7f695684927bd466d72"
       }
     },
     {
@@ -907,7 +916,7 @@
       "location" : "https://github.com/swift-primitives/swift-parser-primitives.git",
       "state" : {
         "branch" : "main",
-        "revision" : "d29747eedaa4c03d0c22c60a641c2ec08e4cb3e2"
+        "revision" : "0e81436e9a01c7cc323a6b6f70cbfe1ad8eb15f6"
       }
     },
     {
@@ -1039,7 +1048,7 @@
     {
       "identity" : "swift-rfc-2388",
       "kind" : "localSourceControl",
-      "location" : "https://github.com/swift-standards/swift-rfc-2388",
+      "location" : "https://github.com/swift-ietf/swift-rfc-2388.git",
       "state" : {
         "branch" : "main",
         "revision" : "a6c725adb2aef7528273f173cf062053fa834d52"
@@ -1057,7 +1066,7 @@
     {
       "identity" : "swift-rfc-3986",
       "kind" : "localSourceControl",
-      "location" : "https://github.com/swift-standards/swift-rfc-3986.git",
+      "location" : "https://github.com/swift-ietf/swift-rfc-3986.git",
       "state" : {
         "branch" : "main",
         "revision" : "eef4aaa9034d98589907fd89cb65ee5fcd835308"
@@ -1147,7 +1156,7 @@
     {
       "identity" : "swift-rfc-6570",
       "kind" : "localSourceControl",
-      "location" : "https://github.com/swift-standards/swift-rfc-6570.git",
+      "location" : "https://github.com/swift-ietf/swift-rfc-6570.git",
       "state" : {
         "branch" : "main",
         "revision" : "9fae0c9b6c41b35d5beba9dee3ff11da88e9884f"
