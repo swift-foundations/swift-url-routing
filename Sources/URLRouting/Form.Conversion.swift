@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Parsing
+import RFC_3986
 import URLFormCoding
 
 // MARK: - Form.Conversion
@@ -135,7 +135,11 @@ extension Form {
 
 // MARK: - Conversion Protocol Conformance
 
-extension Form.Conversion: Conversion {
+extension Form.Conversion: Parser.Conversion.`Protocol` {
+    public typealias Input = Foundation.Data
+    public typealias Output = Value
+    public typealias Failure = RFC_3986.URI.Routing.Error
+
     /// Converts URL form data to a Swift value.
     ///
     /// This method parses URL-encoded form data and converts it to the specified
@@ -162,8 +166,12 @@ extension Form.Conversion: Conversion {
     ///     print("Form decoding failed: \(error)")
     /// }
     /// ```
-    public func apply(_ input: Foundation.Data) throws -> Value {
-        try decoder.decode(Value.self, from: input)
+    public func apply(_ input: Foundation.Data) throws(RFC_3986.URI.Routing.Error) -> Value {
+        do {
+            return try decoder.decode(Value.self, from: input)
+        } catch {
+            throw RFC_3986.URI.Routing.Error(component: .body, failure: .parseFailed("\(error)"))
+        }
     }
 
     /// Converts a Swift value to URL form data.
@@ -192,7 +200,11 @@ extension Form.Conversion: Conversion {
     ///     print("Form encoding failed: \(error)")
     /// }
     /// ```
-    public func unapply(_ output: Value) throws -> Foundation.Data {
-        try encoder.encode(output)
+    public func unapply(_ output: Value) throws(RFC_3986.URI.Routing.Error) -> Foundation.Data {
+        do {
+            return try encoder.encode(output)
+        } catch {
+            throw RFC_3986.URI.Routing.Error(component: .body, failure: .parseFailed("\(error)"))
+        }
     }
 }

@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Parsing
 import RFC_2046
 import RFC_3986
 import RFC_7230
@@ -16,15 +15,24 @@ import RFC_7578
 
 extension FileUpload {
     /// Internal conversion wrapper for Body() parser
-    internal struct BodyConversion: Parsing.Conversion {
+    internal struct BodyConversion: Parser.Conversion.`Protocol` {
+        typealias Input = Foundation.Data
+        typealias Output = Foundation.Data
+        typealias Failure = RFC_3986.URI.Routing.Error
+
         let fileUpload: FileUpload
 
-        func apply(_ input: Foundation.Data) throws -> Foundation.Data {
-            try fileUpload.validate(input)
-            return input
+        func apply(_ input: Foundation.Data) throws(RFC_3986.URI.Routing.Error) -> Foundation.Data {
+            do {
+                try fileUpload.validate(input)
+                return input
+            } catch {
+                throw RFC_3986.URI.Routing.Error(component: .body, failure: .parseFailed("\(error)"))
+            }
         }
 
-        func unapply(_ data: Foundation.Data) throws -> Foundation.Data {
+        func unapply(_ data: Foundation.Data) throws(RFC_3986.URI.Routing.Error) -> Foundation.Data {
+          do {
             // Step 1: Validate the file data
             try fileUpload.validate(data)
 
@@ -52,13 +60,17 @@ extension FileUpload {
             }
 
             return result
+          } catch {
+            throw RFC_3986.URI.Routing.Error(component: .body, failure: .parseFailed("\(error)"))
+          }
         }
     }
 }
 
-extension FileUpload: ParserPrinter {
+extension FileUpload: Parser.Bidirectional {
     public typealias Input = RFC_3986.URI.Request.Data
     public typealias Output = Foundation.Data
+    public typealias Failure = RFC_3986.URI.Routing.Error
 
     /// Parses the request, extracting and validating file upload data.
     ///
@@ -70,17 +82,14 @@ extension FileUpload: ParserPrinter {
     /// - Parameter input: The URI request data
     /// - Returns: The validated file data
     /// - Throws: Validation or parsing errors
-    public func parse(_ input: inout RFC_3986.URI.Request.Data) throws -> Foundation.Data {
+    public func parse(_ input: inout RFC_3986.URI.Request.Data) throws(RFC_3986.URI.Routing.Error) -> Foundation.Data {
         // Parse Content-Type header
-        try Parse {
-            Headers {
-                RFC_7230.Header.Field.Parser("Content-Type") { self.contentType.headerValue }
-            }
+        try Headers {
+            RFC_7230.Header.Field.Parser("Content-Type") { self.contentType.headerValue }
         }.parse(&input)
 
         // Parse and validate body
-        let data = try Body(BodyConversion(fileUpload: self)).parse(&input)
-        return data
+        return try Body(BodyConversion(fileUpload: self)).parse(&input)
     }
 
     /// Prints the file data back into request format.
@@ -93,12 +102,10 @@ extension FileUpload: ParserPrinter {
     ///   - output: The file data to encode
     ///   - input: The URI request data to write into
     /// - Throws: Encoding errors
-    public func print(_ output: Foundation.Data, into input: inout RFC_3986.URI.Request.Data) throws {
+    public func print(_ output: Foundation.Data, into input: inout RFC_3986.URI.Request.Data) throws(RFC_3986.URI.Routing.Error) {
         // Print Content-Type header
-        try Parse {
-            Headers {
-                RFC_7230.Header.Field.Parser("Content-Type") { self.contentType.headerValue }
-            }
+        try Headers {
+            RFC_7230.Header.Field.Parser("Content-Type") { self.contentType.headerValue }
         }.print((), into: &input)
 
         // Print body

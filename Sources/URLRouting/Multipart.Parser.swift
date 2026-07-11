@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Parsing
 import RFC_2046
 import RFC_3986
 import RFC_7230
@@ -24,7 +23,7 @@ import RFC_7230
 ///     let subscribed: Bool
 /// }
 ///
-/// Route(.case(API.update)) {
+/// Route(.case(\.update)) {
 ///     Method.post
 ///     Path { "v3" / "domain" / "members" }
 ///     Multipart(UpdateRequest.self, arrayEncodingStrategy: .brackets)
@@ -48,6 +47,7 @@ import RFC_7230
 public struct Multipart<Value: Codable>  {
     public typealias Input = RFC_3986.URI.Request.Data
     public typealias Output = Value
+    public typealias Failure = RFC_3986.URI.Routing.Error
 
     let type: Value.Type
     let arrayEncodingStrategy: RFC_2046.Multipart.Array.EncodingStrategy
@@ -66,29 +66,25 @@ public struct Multipart<Value: Codable>  {
     }
 }
 
-extension Multipart: ParserPrinter {
-    public func parse(_ input: inout RFC_3986.URI.Request.Data) throws -> Value {
+extension Multipart: Parser.Bidirectional {
+    public func parse(_ input: inout RFC_3986.URI.Request.Data) throws(RFC_3986.URI.Routing.Error) -> Value {
         let conversion = RFC_2046.Multipart.Conversion(type, arrayEncodingStrategy: arrayEncodingStrategy)
 
         // Parse Content-Type header
-        try Parse {
-            Headers {
-                RFC_7230.Header.Field.Parser("Content-Type") { conversion.contentType.headerValue }
-            }
+        try Headers {
+            RFC_7230.Header.Field.Parser("Content-Type") { conversion.contentType.headerValue }
         }.parse(&input)
 
         // Parse body
         return try Body(conversion).parse(&input)
     }
 
-    public func print(_ output: Value, into input: inout RFC_3986.URI.Request.Data) throws {
+    public func print(_ output: Value, into input: inout RFC_3986.URI.Request.Data) throws(RFC_3986.URI.Routing.Error) {
         let conversion = RFC_2046.Multipart.Conversion(type, arrayEncodingStrategy: arrayEncodingStrategy)
 
         // Print Content-Type header
-        try Parse {
-            Headers {
-                RFC_7230.Header.Field.Parser("Content-Type") { conversion.contentType.headerValue }
-            }
+        try Headers {
+            RFC_7230.Header.Field.Parser("Content-Type") { conversion.contentType.headerValue }
         }.print((), into: &input)
 
         // Print body

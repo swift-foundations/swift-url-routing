@@ -6,10 +6,10 @@
 //
 
 import Foundation
-import Parsing
 import MultipartFormCoding
 import RFC_2045
 import RFC_2046
+import RFC_3986
 import RFC_7578
 
 // MARK: - RFC_2046.Multipart.Conversion
@@ -132,7 +132,11 @@ extension RFC_2046.Multipart {
 
 // MARK: - Conversion Protocol Conformance
 
-extension RFC_2046.Multipart.Conversion: Conversion {
+extension RFC_2046.Multipart.Conversion: Parser.Conversion.`Protocol` {
+    public typealias Input = Foundation.Data
+    public typealias Output = Value
+    public typealias Failure = RFC_3986.URI.Routing.Error
+
     /// Converts multipart form data to a Swift value.
     ///
     /// - Parameter input: The form data to decode
@@ -140,7 +144,8 @@ extension RFC_2046.Multipart.Conversion: Conversion {
     /// - Throws: Decoding errors
     ///
     /// - Note: Parses multipart data using RFC 2046 parser and converts to Swift value via JSON.
-    public func apply(_ input: Data) throws -> Value {
+    public func apply(_ input: Data) throws(RFC_3986.URI.Routing.Error) -> Value {
+      do {
         // Convert Data to String
         guard let string = String(data: input, encoding: .utf8) else {
             throw Error.decodingFailed(
@@ -163,6 +168,9 @@ extension RFC_2046.Multipart.Conversion: Conversion {
         let decoder = JSONDecoder()
         let result = try decoder.decode(Value.self, from: jsonData)
         return result
+      } catch {
+        throw RFC_3986.URI.Routing.Error(component: .body, failure: .parseFailed("\(error)"))
+      }
     }
 
     /// Converts a Swift value to multipart form data.
@@ -173,7 +181,8 @@ extension RFC_2046.Multipart.Conversion: Conversion {
     /// - Parameter output: The Swift value to encode
     /// - Returns: The multipart form data as `Data`
     /// - Throws: Encoding errors
-    public func unapply(_ output: Value) throws -> Foundation.Data {
+    public func unapply(_ output: Value) throws(RFC_3986.URI.Routing.Error) -> Foundation.Data {
+      do {
         // Step 1: Extract field→value pairs using our custom encoder
         let fieldEncoder = RFC_2046.Multipart.Field.Encoder(multipartEncoder: encoder)
         try output.encode(to: fieldEncoder)
@@ -227,6 +236,9 @@ extension RFC_2046.Multipart.Conversion: Conversion {
         }
 
         return data
+      } catch {
+        throw RFC_3986.URI.Routing.Error(component: .body, failure: .parseFailed("\(error)"))
+      }
     }
 }
 
