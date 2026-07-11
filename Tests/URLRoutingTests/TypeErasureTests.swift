@@ -6,6 +6,25 @@ import URLRouting
     import FoundationNetworking
 #endif
 
+// Router-output enums hoisted for `@Cases`; conversion-only enums stay local.
+
+@Cases
+private enum TEMyRoute: Equatable {
+    case get(Int)
+    case list
+}
+
+@Cases
+private enum TEItemRoute: Equatable {
+    case item(Int)
+}
+
+@Cases
+private enum TEAPIRoute: Equatable {
+    case create
+    case list
+}
+
 @Suite("Type Erasure")
 struct TypeErasureTests {
 
@@ -23,19 +42,16 @@ struct TypeErasureTests {
     // Test existential router type matching production pattern
     @Test("Existential router with AnyParserPrinter")
     func existentialRouter() throws {
-        enum MyRoute: Equatable {
-            case get(Int)
-            case list
-        }
+        typealias MyRoute = TEMyRoute
 
         struct MyRouter: ParserPrinter {
             var body: some URLRouting.Router<MyRoute> {
                 OneOf {
-                    Route(.case(MyRoute.get)) {
+                    Route(.case(MyRoute.cases.get)) {
                         Method.get
                         Path { Int.parser() }
                     }
-                    Route(.case(MyRoute.list)) {
+                    Route(.case(MyRoute.cases.list)) {
                         Method.get
                     }
                 }
@@ -57,13 +73,11 @@ struct TypeErasureTests {
     // Test .eraseToAnyParserPrinter() convenience method
     @Test(".eraseToAnyParserPrinter() method")
     func eraseToAnyParserPrinterMethod() throws {
-        enum ItemRoute: Equatable {
-            case item(Int)
-        }
+        typealias ItemRoute = TEItemRoute
 
         struct ItemRouter: ParserPrinter {
             var body: some URLRouting.Router<ItemRoute> {
-                Route(.case(ItemRoute.item)) {
+                Route(.case(ItemRoute.cases.item)) {
                     Method.get
                     Path { Int.parser() }
                 }
@@ -81,19 +95,16 @@ struct TypeErasureTests {
     // Test composition with erased routers matching production pattern
     @Test("Composition with erased routers")
     func compositionWithErasedRouters() throws {
-        enum APIRoute: Equatable {
-            case create
-            case list
-        }
+        typealias APIRoute = TEAPIRoute
 
         struct APIRouter: ParserPrinter {
             var body: some URLRouting.Router<APIRoute> {
                 OneOf {
-                    Route(.case(APIRoute.create)) {
+                    Route(.case(APIRoute.cases.create)) {
                         Method.post
                         Path { "create" }
                     }
-                    Route(.case(APIRoute.list)) {
+                    Route(.case(APIRoute.cases.list)) {
                         Method.get
                         Path { "list" }
                     }

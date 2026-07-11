@@ -13,25 +13,33 @@ struct HeaderSecurityTests {
         }
 
         // Test CR injection
-        #expect(throws: RFC_7230.Header.Field.ValidationError.self) {
+        // The header-field validation error is wrapped into the unified routing error
+        // at the `Headers` print boundary (its message preserves the CR/LF detail).
+        #expect(throws: RFC_3986.URI.Routing.Error.self) {
             var request = RFC_3986.URI.Request.Data()
             try parser.print("value\rwith\rCR", into: &request)
         }
 
         // Test LF injection
-        #expect(throws: RFC_7230.Header.Field.ValidationError.self) {
+        // The header-field validation error is wrapped into the unified routing error
+        // at the `Headers` print boundary (its message preserves the CR/LF detail).
+        #expect(throws: RFC_3986.URI.Routing.Error.self) {
             var request = RFC_3986.URI.Request.Data()
             try parser.print("value\nwith\nLF", into: &request)
         }
 
         // Test CRLF injection (classic header injection attack)
-        #expect(throws: RFC_7230.Header.Field.ValidationError.self) {
+        // The header-field validation error is wrapped into the unified routing error
+        // at the `Headers` print boundary (its message preserves the CR/LF detail).
+        #expect(throws: RFC_3986.URI.Routing.Error.self) {
             var request = RFC_3986.URI.Request.Data()
             try parser.print("value\r\nX-Evil: injected", into: &request)
         }
 
         // Test CRLF with body injection
-        #expect(throws: RFC_7230.Header.Field.ValidationError.self) {
+        // The header-field validation error is wrapped into the unified routing error
+        // at the `Headers` print boundary (its message preserves the CR/LF detail).
+        #expect(throws: RFC_3986.URI.Routing.Error.self) {
             var request = RFC_3986.URI.Request.Data()
             try parser.print("normal\r\n\r\n<script>alert('xss')</script>", into: &request)
         }
@@ -67,11 +75,17 @@ struct HeaderSecurityTests {
 
     @Test("Content-Type header with CRLF is rejected")
     func testContentTypeCRLFRejected() throws {
+        // `Prefix { … }` (pointfree) was a printer; the institute `Parser.Prefix.While`
+        // is parse-only, so the Content-Type value uses the bidirectional `Rest()` —
+        // it echoes the whole value through header-field validation, which is what this
+        // CRLF-rejection test exercises.
         let parser = Headers {
-            ContentType { Prefix { $0 != ";" } }
+            ContentType { Rest() }
         }
 
-        #expect(throws: RFC_7230.Header.Field.ValidationError.self) {
+        // The header-field validation error is wrapped into the unified routing error
+        // at the `Headers` print boundary (its message preserves the CR/LF detail).
+        #expect(throws: RFC_3986.URI.Routing.Error.self) {
             var request = RFC_3986.URI.Request.Data()
             try parser.print("text/html\r\nX-Evil: injected", into: &request)
         }

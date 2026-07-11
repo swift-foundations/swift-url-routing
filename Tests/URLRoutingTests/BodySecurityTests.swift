@@ -94,7 +94,7 @@ struct BodySecurityTests {
         do {
             _ = try parser.parse(&request)
             #expect(Bool(false), "Should have thrown error")
-        } catch let error as RFC_3986.URI.Routing.Error {
+        } catch let error {
             let description = error.errorDescription ?? ""
             #expect(description.contains("Body size"))
             #expect(description.contains("exceeds"))
@@ -165,7 +165,7 @@ struct BodySecurityTests {
         do {
             _ = try parser.parse(&request)
             #expect(Bool(false), "Should have thrown missing body error")
-        } catch let error as RFC_3986.URI.Routing.Error {
+        } catch let error {
             // Should be missing error, not size error
             if case .missing = error.failure {
                 // Expected

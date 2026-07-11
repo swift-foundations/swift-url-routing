@@ -2,6 +2,24 @@ import Testing
 import Foundation
 import URLRouting
 
+// Router-output enum hoisted to file scope for `@Cases` (the macro does not apply to
+// function-local types); its payload struct is hoisted alongside it. The two router
+// tests reference them via local typealiases. Multi-value case carries no argument
+// labels so `@Cases` synthesizes an unlabeled tuple `Case.Path` matching the builder.
+
+private struct MPUpdateRequest: Codable, Equatable {
+    let description: String?
+
+    init(description: String? = nil) {
+        self.description = description
+    }
+}
+
+@Cases
+private enum MPAPI: Equatable {
+    case update(String, MPUpdateRequest)
+}
+
 @Suite("RFC_2046.Multipart.Conversion Integration Tests")
 struct MultipartConversionIntegrationTests {
 
@@ -81,21 +99,12 @@ struct MultipartConversionIntegrationTests {
     @Test("URL generation with Multipart convenience function")
     func testURLGenerationWithMultipart() throws {
         // Test the new clean Multipart() syntax
-        struct UpdateRequest: Codable, Equatable {
-            let description: String?
-
-            init(description: String? = nil) {
-                self.description = description
-            }
-        }
-
-        enum API: Equatable {
-            case update(id: String, request: UpdateRequest)
-        }
+        typealias UpdateRequest = MPUpdateRequest
+        typealias API = MPAPI
 
         struct Router: ParserPrinter {
             var body: some URLRouting.Router<API> {
-                RFC_3986.URI.Route(.case(API.update)) {
+                RFC_3986.URI.Route(.case(API.cases.update)) {
                     Method.put
                     Path { "v3" }
                     Path { "routes" }
@@ -106,7 +115,7 @@ struct MultipartConversionIntegrationTests {
         }
 
         let router = Router()
-        let api: API = .update(id: "test-id", request: .init(description: "test"))
+        let api: API = .update("test-id", .init(description: "test"))
 
         // This should generate a URL with path "/v3/routes/test-id"
         let url = router.url(for: api)
@@ -118,26 +127,19 @@ struct MultipartConversionIntegrationTests {
     @Test("URL generation with RFC_2046.Multipart.Conversion WITHOUT Headers block")
     func testURLGenerationWithoutHeaders() throws {
         // Test if removing Headers fixes URL generation
-        struct UpdateRequest: Codable, Equatable {
-            let description: String?
-
-            init(description: String? = nil) {
-                self.description = description
-            }
-        }
-
-        enum API: Equatable {
-            case update(id: String, request: UpdateRequest)
-        }
+        typealias UpdateRequest = MPUpdateRequest
+        typealias API = MPAPI
 
         struct Router: ParserPrinter {
             var body: some URLRouting.Router<API> {
-                RFC_3986.URI.Route(.case(API.update)) {
+                RFC_3986.URI.Route(.case(API.cases.update)) {
                     Method.put
                     Path { "v3" }
                     Path { "routes" }
                     Path { Parse(.string) }
-                    Body(RFC_2046.Multipart.Conversion(
+                    // `Body` is qualified: unqualified, it resolves to this router's
+                    // `Body` associated type rather than the `RFC_7230.Body.Parser` alias.
+                    URLRouting.Body(RFC_2046.Multipart.Conversion(
                         UpdateRequest.self,
                         arrayEncodingStrategy: .accumulateValues
                     ))
@@ -146,7 +148,7 @@ struct MultipartConversionIntegrationTests {
         }
 
         let router = Router()
-        let api: API = .update(id: "test-id", request: .init(description: "test"))
+        let api: API = .update("test-id", .init(description: "test"))
 
         let url = router.url(for: api)
 
@@ -170,8 +172,10 @@ struct MultipartConversionIntegrationTests {
         let conversion = RFC_2046.Multipart.Conversion(EmptyableRequest.self)
         let emptyRequest = EmptyableRequest()
 
-        // Attempt to encode the empty request should throw
-        #expect(throws: RFC_2046.Multipart.Conversion<EmptyableRequest>.Error.self) {
+        // Attempt to encode the empty request should throw. The multipart conversion
+        // surfaces its `emptyRequest` failure through the unified routing error (the
+        // reason string is preserved in the wrapped description).
+        #expect(throws: RFC_3986.URI.Routing.Error.self) {
             try conversion.unapply(emptyRequest)
         }
 

@@ -23,12 +23,12 @@ struct ThrowingFunctionsTests {
     }
 
     /// Factory function that creates a parser (demonstrates throwing support in parser construction)
-    static func makeEmailParser() throws -> some Parser<Substring, String> {
+    static func makeEmailParser() throws -> some Parser.Bidirectional<Substring, String, Either<Never, Never>> {
         return Rest().map(.string)
     }
 
     /// Conditional parser factory
-    static func makeConditionalParser(useStrict: Bool) throws -> Parsers.MapConversion<Rest<Substring>, Conversions.SubstringToString> {
+    static func makeConditionalParser(useStrict: Bool) throws -> some Parser.Bidirectional<Substring, String, Either<Never, Never>> {
         // In real code, this might check configuration that could fail
         // For this example, we just return the same parser
         return Rest().map(.string)
@@ -91,7 +91,7 @@ struct ThrowingFunctionsTests {
 
     @Test("Path parser builder with throwing factory")
     func pathWithThrowingFactory() throws {
-        func makeUserParser() throws -> Parsers.MapConversion<Rest<Substring>, Conversions.SubstringToString> {
+        func makeUserParser() throws -> some Parser.Bidirectional<Substring, String, Either<Never, Never>> {
             // Could throw during configuration loading
             return Rest().map(.string)
         }
@@ -122,7 +122,7 @@ struct ThrowingFunctionsTests {
 
     @Test("Multiple fields with mixed throwing and non-throwing")
     func mixedThrowingAndNonThrowing() throws {
-        func makeAgeParser() throws -> Parsers.IntParser<Substring.UTF8View, Int> {
+        func makeAgeParser() throws -> some Parser.Bidirectional<Substring, Int, RFC_3986.URI.Routing.Error> {
             Int.parser()
         }
 
@@ -139,7 +139,8 @@ struct ThrowingFunctionsTests {
         var request = try #require(
             RFC_3986.URI.Request.Data(string: "/?name=John&email=john@example.com&age=30")
         )
-        let (name, email, age) = try parser.parse(&request)
+        // Three fields pair left-associatively into `((String, String), Int)`.
+        let ((name, email), age) = try parser.parse(&request)
         #expect(name == "John")
         #expect(email == "john@example.com")
         #expect(age == 30)
@@ -215,11 +216,7 @@ struct ThrowingFunctionsTests {
 
     @Test("ContentType with RFC_2045.ContentType.headerValue")
     func contentTypeWithRFC2045HeaderValue() throws {
-        let contentType = RFC_2045.ContentType(
-            type: "multipart",
-            subtype: "form-data",
-            parameters: ["boundary": "----boundary123"]
-        )
+        let contentType = try RFC_2045.ContentType("multipart/form-data; boundary=----boundary123")
 
         let parser = Headers {
             ContentType { contentType.headerValue }

@@ -9,40 +9,43 @@ import URLRouting
 @Suite("ParserPrinter request() Extensions Tests")
 struct ParserPrinterRequestTests {
 
+    // Multi-value cases carry NO argument labels: `@Cases` synthesizes an unlabeled
+    // tuple `Case.Path` for them, matching the builder's `(A, B)` output.
+    @Cases
     enum TestRoute: Equatable {
         case home
         case user(id: Int)
         case search(query: String)
-        case api(version: String, endpoint: String)
-        case userWithQuery(id: Int, filter: String)
+        case api(String, String)
+        case userWithQuery(Int, String)
     }
 
     struct TestRouter: ParserPrinter {
         var body: some URLRouting.Router<TestRoute> {
             OneOf {
-                RFC_3986.URI.Route(.case(TestRoute.home)) {
+                RFC_3986.URI.Route(.case(TestRoute.cases.home)) {
                     Path { "home" }
                 }
 
-                RFC_3986.URI.Route(.case(TestRoute.user)) {
+                RFC_3986.URI.Route(.case(TestRoute.cases.user)) {
                     Path { "users" }
                     Path { Int.parser() }
                 }
 
-                RFC_3986.URI.Route(.case(TestRoute.search)) {
+                RFC_3986.URI.Route(.case(TestRoute.cases.search)) {
                     Path { "search" }
                     Query {
                         Field("q", .string)
                     }
                 }
 
-                RFC_3986.URI.Route(.case(TestRoute.api)) {
+                RFC_3986.URI.Route(.case(TestRoute.cases.api)) {
                     Path { "api" }
                     Path { Parse(.string) }
                     Path { Parse(.string) }
                 }
 
-                RFC_3986.URI.Route(.case(TestRoute.userWithQuery)) {
+                RFC_3986.URI.Route(.case(TestRoute.cases.userWithQuery)) {
                     Path { "users" }
                     Path { Int.parser() }
                     Query {
@@ -83,7 +86,7 @@ struct ParserPrinterRequestTests {
     @Test("Generate URLRequest with multiple path components")
     func testRequestForRouteWithMultipleComponents() throws {
         let router = TestRouter()
-        let request = try router.request(for: .api(version: "v1", endpoint: "users"))
+        let request = try router.request(for: .api("v1", "users"))
 
         #expect(request.url?.path == "/api/v1/users")
     }
@@ -91,7 +94,7 @@ struct ParserPrinterRequestTests {
     @Test("Generate URLRequest with path and query parameters")
     func testRequestForRouteWithPathAndQuery() throws {
         let router = TestRouter()
-        let request = try router.request(for: .userWithQuery(id: 123, filter: "active"))
+        let request = try router.request(for: .userWithQuery(123, "active"))
 
         #expect(request.url?.path == "/users/123")
         #expect(request.url?.query?.contains("filter=active") == true)
@@ -138,7 +141,7 @@ struct ParserPrinterRequestTests {
     @Test("Generate URL with multiple path components")
     func testURLForRouteWithMultipleComponents() {
         let router = TestRouter()
-        let url = router.url(for: .api(version: "v2", endpoint: "posts"))
+        let url = router.url(for: .api("v2", "posts"))
 
         #expect(url.path == "/api/v2/posts")
     }
@@ -146,7 +149,7 @@ struct ParserPrinterRequestTests {
     @Test("Generate URL with path and query parameters")
     func testURLForRouteWithPathAndQuery() {
         let router = TestRouter()
-        let url = router.url(for: .userWithQuery(id: 456, filter: "inactive"))
+        let url = router.url(for: .userWithQuery(456, "inactive"))
 
         #expect(url.path == "/users/456")
         #expect(url.query?.contains("filter=inactive") == true)
@@ -192,7 +195,7 @@ struct ParserPrinterRequestTests {
     @Test("Generate URL path with multiple components")
     func testURLPathForRouteWithMultipleComponents() {
         let router = TestRouter()
-        let path = router.urlPath(for: .api(version: "v3", endpoint: "comments"))
+        let path = router.urlPath(for: .api("v3", "comments"))
 
         #expect(path == "/api/v3/comments")
     }
@@ -200,7 +203,7 @@ struct ParserPrinterRequestTests {
     @Test("Generate URL path with path and query")
     func testURLPathForRouteWithPathAndQuery() {
         let router = TestRouter()
-        let path = router.urlPath(for: .userWithQuery(id: 789, filter: "pending"))
+        let path = router.urlPath(for: .userWithQuery(789, "pending"))
 
         #expect(path.starts(with: "/users/789"))
         #expect(path.contains("filter=pending"))
@@ -250,7 +253,7 @@ struct ParserPrinterRequestTests {
     @Test("Round-trip: path -> match -> path")
     func testRoundTripPathMatchPath() throws {
         let router = TestRouter()
-        let originalRoute = TestRoute.api(version: "v1", endpoint: "users")
+        let originalRoute = TestRoute.api("v1", "users")
 
         let path = router.urlPath(for: originalRoute)
         let matchedRoute = try router.match(path: path)

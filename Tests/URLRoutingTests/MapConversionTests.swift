@@ -6,34 +6,56 @@ import URLRouting
     import FoundationNetworking
 #endif
 
+// Router-output enums are hoisted to file scope so `@Cases` can synthesize their
+// `.cases` witnesses (the macro does not apply to function-local types). Enums used
+// only through `.convert(apply:unapply:)` (explicit closures) stay function-local.
+
+@Cases
+private enum InnerRoute: Equatable {
+    case item(Int)
+    case list
+}
+
+@Cases
+private enum MapItemRoute: Equatable {
+    case get(Int)
+    case list
+}
+
+@Cases
+private enum MapAPIRoute: Equatable {
+    case get(Int)
+    case list
+}
+
+@Cases
+private enum Level1: Equatable {
+    case value(Int)
+}
+
 @Suite("Map and Conversion")
 struct MapConversionTests {
 
     // Test basic .map() with conversion on router
     @Test(".map() with conversion for route transformation")
     func mapWithConversion() throws {
-        enum InnerRoute: Equatable {
-            case item(Int)
-            case list
+        enum OuterRoute: Equatable {
+            case inner(InnerRoute)
+            case other
         }
 
         struct InnerRouter: ParserPrinter {
             var body: some URLRouting.Router<InnerRoute> {
                 OneOf {
-                    Route(.case(InnerRoute.item)) {
+                    Route(.case(InnerRoute.cases.item)) {
                         Method.get
                         Path { Int.parser() }
                     }
-                    Route(.case(InnerRoute.list)) {
+                    Route(.case(InnerRoute.cases.list)) {
                         Method.get
                     }
                 }
             }
-        }
-
-        enum OuterRoute: Equatable {
-            case inner(InnerRoute)
-            case other
         }
 
         // Create a mapped router that wraps InnerRoute in OuterRoute.inner
@@ -65,16 +87,11 @@ struct MapConversionTests {
     // Test function-based conversion matching production pattern
     @Test(".map() with function conversion")
     func mapWithFunctionConversion() throws {
-        enum ItemRoute: Equatable {
-            case get(Int)
-            case list
-        }
-
         enum AppRoute: Equatable {
-            case items(ItemRoute)
+            case items(MapItemRoute)
             case home
 
-            static func extractItems(_ route: AppRoute) -> ItemRoute? {
+            static func extractItems(_ route: AppRoute) -> MapItemRoute? {
                 if case .items(let itemRoute) = route {
                     return itemRoute
                 }
@@ -83,13 +100,13 @@ struct MapConversionTests {
         }
 
         struct ItemRouter: ParserPrinter {
-            var body: some URLRouting.Router<ItemRoute> {
+            var body: some URLRouting.Router<MapItemRoute> {
                 OneOf {
-                    Route(.case(ItemRoute.get)) {
+                    Route(.case(MapItemRoute.cases.get)) {
                         Method.get
                         Path { Int.parser() }
                     }
-                    Route(.case(ItemRoute.list)) {
+                    Route(.case(MapItemRoute.cases.list)) {
                         Method.get
                     }
                 }
@@ -116,19 +133,14 @@ struct MapConversionTests {
     // Test composition with .map() matching repotraffic pattern
     @Test("Router composition with .map()")
     func routerComposition() throws {
-        enum APIRoute: Equatable {
-            case get(Int)
-            case list
-        }
-
         struct APIRouter: ParserPrinter {
-            var body: some URLRouting.Router<APIRoute> {
+            var body: some URLRouting.Router<MapAPIRoute> {
                 OneOf {
-                    Route(.case(APIRoute.get)) {
+                    Route(.case(MapAPIRoute.cases.get)) {
                         Method.get
                         Path { Int.parser() }
                     }
-                    Route(.case(APIRoute.list)) {
+                    Route(.case(MapAPIRoute.cases.list)) {
                         Method.get
                     }
                 }
@@ -136,10 +148,10 @@ struct MapConversionTests {
         }
 
         enum AppRoute: Equatable {
-            case api(APIRoute)
+            case api(MapAPIRoute)
             case home
 
-            static func extractAPI(_ route: AppRoute) -> APIRoute? {
+            static func extractAPI(_ route: AppRoute) -> MapAPIRoute? {
                 if case .api(let apiRoute) = route {
                     return apiRoute
                 }
@@ -173,10 +185,6 @@ struct MapConversionTests {
     // Test chained .map() operations
     @Test("Chained .map() transformations")
     func chainedMaps() throws {
-        enum Level1: Equatable {
-            case value(Int)
-        }
-
         enum Level2: Equatable {
             case level1(Level1)
         }
@@ -187,7 +195,7 @@ struct MapConversionTests {
 
         struct Level1Router: ParserPrinter {
             var body: some URLRouting.Router<Level1> {
-                Route(.case(Level1.value)) {
+                Route(.case(Level1.cases.value)) {
                     Method.get
                     Path { Int.parser() }
                 }

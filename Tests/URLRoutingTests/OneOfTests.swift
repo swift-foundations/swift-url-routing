@@ -6,6 +6,36 @@ import URLRouting
     import FoundationNetworking
 #endif
 
+// Router-output enums hoisted to file scope for `@Cases` (macro does not apply to
+// function-local types). `private` keeps them file-scoped, so names may recur in
+// other test files.
+
+@Cases
+private enum OneOfTestRoute: Equatable {
+    case api
+    case view
+}
+
+@Cases
+private enum OneOfAPIRoute: Equatable {
+    case create
+    case list
+}
+
+@Cases
+private enum OneOfMainRoute: Equatable {
+    case api(OneOfAPIRoute)
+}
+
+@Cases
+private enum RESTRoute: Equatable {
+    case list
+    case create
+    case get(Int)
+    case update(Int)
+    case delete(Int)
+}
+
 @Suite("OneOf Combinator")
 struct OneOfTests {
 
@@ -30,18 +60,15 @@ struct OneOfTests {
     // Test OneOf with path alternatives matching production pattern
     @Test("OneOf with path alternatives")
     func pathAlternatives() throws {
-        enum TestRoute: Equatable {
-            case api
-            case view
-        }
+        typealias TestRoute = OneOfTestRoute
 
         struct TestRouter: ParserPrinter {
             var body: some URLRouting.Router<TestRoute> {
                 OneOf {
-                    Route(.case(TestRoute.api)) {
+                    Route(.case(TestRoute.cases.api)) {
                         Path { "api" }
                     }
-                    Route(.case(TestRoute.view)) {
+                    Route(.case(TestRoute.cases.view)) {
                         Path { "view" }
                     }
                 }
@@ -65,19 +92,17 @@ struct OneOfTests {
     // Test OneOf with nested routers matching production pattern
     @Test("OneOf with nested routers")
     func nestedRouters() throws {
-        enum APIRoute: Equatable {
-            case create
-            case list
-        }
+        typealias APIRoute = OneOfAPIRoute
+        typealias MainRoute = OneOfMainRoute
 
         struct APIRouter: ParserPrinter {
             var body: some URLRouting.Router<APIRoute> {
                 OneOf {
-                    Route(.case(APIRoute.create)) {
+                    Route(.case(APIRoute.cases.create)) {
                         Method.post
                         Path { "create" }
                     }
-                    Route(.case(APIRoute.list)) {
+                    Route(.case(APIRoute.cases.list)) {
                         Method.get
                         Path { "list" }
                     }
@@ -85,13 +110,9 @@ struct OneOfTests {
             }
         }
 
-        enum MainRoute: Equatable {
-            case api(APIRoute)
-        }
-
         struct MainRouter: ParserPrinter {
             var body: some URLRouting.Router<MainRoute> {
-                Route(.case(MainRoute.api)) {
+                Route(.case(MainRoute.cases.api)) {
                     Path { "api" }
                     APIRouter()
                 }
@@ -117,32 +138,24 @@ struct OneOfTests {
     // Test OneOf with complex route combinations
     @Test("OneOf with method and path combinations")
     func methodAndPathCombinations() throws {
-        enum RESTRoute: Equatable {
-            case list
-            case create
-            case get(Int)
-            case update(Int)
-            case delete(Int)
-        }
-
         struct RESTRouter: ParserPrinter {
             var body: some URLRouting.Router<RESTRoute> {
                 OneOf {
-                    Route(.case(RESTRoute.list)) {
+                    Route(.case(RESTRoute.cases.list)) {
                         Method.get
                     }
-                    Route(.case(RESTRoute.create)) {
+                    Route(.case(RESTRoute.cases.create)) {
                         Method.post
                     }
-                    Route(.case(RESTRoute.get)) {
+                    Route(.case(RESTRoute.cases.get)) {
                         Method.get
                         Path { Int.parser() }
                     }
-                    Route(.case(RESTRoute.update)) {
+                    Route(.case(RESTRoute.cases.update)) {
                         Method.patch
                         Path { Int.parser() }
                     }
-                    Route(.case(RESTRoute.delete)) {
+                    Route(.case(RESTRoute.cases.delete)) {
                         Method.delete
                         Path { Int.parser() }
                     }

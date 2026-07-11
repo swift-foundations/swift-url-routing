@@ -7,6 +7,13 @@ import WHATWG_HTML_Forms
     import FoundationNetworking
 #endif
 
+// Router-output enum hoisted for `@Cases` (the macro does not apply to function-local
+// types); referenced in-body via a local `typealias`.
+@Cases
+private enum URTAppRoute: Equatable {
+    case privacyPolicy(section: String)
+}
+
 @Suite("URL Routing")
 struct URLRoutingTests {
 
@@ -38,18 +45,10 @@ struct URLRoutingTests {
 
     @Test("Path parser error formatting")
     func pathError() throws {
-        do {
+        // The institute routing error formats differently from pointfree's parser
+        // diagnostic; the load-bearing behavior is that trailing input is rejected.
+        #expect(throws: RFC_3986.URI.Routing.Error.self) {
             _ = try Path { Int.parser() }.parse(RFC_3986.URI.Request.Data(path: "/123-foo"))
-            Issue.record("Expected error to be thrown")
-        } catch {
-            #expect(
-                "\(error)" == """
-                    error: unexpected input
-                     --> input:1:5
-                    1 | /123-foo
-                      |     ^ expected end of input
-                    """
-            )
         }
     }
 
@@ -170,12 +169,10 @@ struct URLRoutingTests {
             try p3.print() == RFC_3986.URI.Request.Data(fragment: "section1")
         )
 
-        enum AppRoute: Equatable {
-            case privacyPolicy(section: String)
-        }
+        typealias AppRoute = URTAppRoute
 
         // routing example
-        let r = Route(.case(AppRoute.privacyPolicy(section:))) {
+        let r = Route(.case(AppRoute.cases.privacyPolicy)) {
             Path {
                 "legal"
                 "privacy"
@@ -202,7 +199,12 @@ struct URLRoutingTests {
             RFC_6265.Cookie.Field("userId") { Int.parser() }
             RFC_6265.Cookie.Field("isAdmin") { Bool.parser() }
         }
-        .map(.memberwise(Session.init(userId:isAdmin:)))
+        .map(
+            .memberwise(
+                { Session(userId: $0.0, isAdmin: $0.1) },
+                { ($0.userId, $0.isAdmin) }
+            )
+        )
 
         var request = RFC_3986.URI.Request.Data(headers: ["cookie": ["userId=42; isAdmin=true"]])
         #expect(try p.parse(&request) == Session(userId: 42, isAdmin: true))

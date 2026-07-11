@@ -53,7 +53,7 @@ struct PathSecurityTests {
     func testNormalPathsAllowed() throws {
         let parser = Path {
             "users"
-            Digits()
+            Int.parser()
         }
 
         var request = RFC_3986.URI.Request.Data(path: "/users/42")
@@ -184,7 +184,9 @@ struct PathSecurityTests {
         do {
             _ = try parser.parse(&request)
             #expect(Bool(false), "Should have thrown")
-        } catch let error as RFC_3986.URI.Routing.Error {
+        } catch {
+            // Typed throws already binds `error` as RFC_3986.URI.Routing.Error; an
+            // explicit `as` downcast here trips a SILGen ownership crash (signal 6).
             let description = error.localizedDescription
             #expect(description.contains(".."))
             #expect(description.contains("traversal") || description.contains("directory"))

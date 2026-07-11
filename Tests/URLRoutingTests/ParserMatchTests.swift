@@ -9,33 +9,36 @@ import URLRouting
 @Suite("Parser match() Extensions Tests")
 struct ParserMatchTests {
 
+    // Multi-value cases carry NO argument labels so the synthesized `Case.Path` tuple
+    // matches the builder's unlabeled `(A, B)` output.
+    @Cases
     enum TestRoute: Equatable {
         case home
         case user(id: Int)
         case search(query: String)
-        case api(version: String, endpoint: String)
+        case api(String, String)
     }
 
-    struct TestRouter: Parser {
-        var body: some Parser<RFC_3986.URI.Request.Data, TestRoute> {
+    struct TestRouter: ParserPrinter {
+        var body: some URLRouting.Router<TestRoute> {
             OneOf {
-                RFC_3986.URI.Route(.case(TestRoute.home)) {
+                RFC_3986.URI.Route(.case(TestRoute.cases.home)) {
                     Path { "home" }
                 }
 
-                RFC_3986.URI.Route(.case(TestRoute.user)) {
+                RFC_3986.URI.Route(.case(TestRoute.cases.user)) {
                     Path { "users" }
                     Path { Int.parser() }
                 }
 
-                RFC_3986.URI.Route(.case(TestRoute.search)) {
+                RFC_3986.URI.Route(.case(TestRoute.cases.search)) {
                     Path { "search" }
                     Query {
                         Field("q", .string)
                     }
                 }
 
-                RFC_3986.URI.Route(.case(TestRoute.api)) {
+                RFC_3986.URI.Route(.case(TestRoute.cases.api)) {
                     Path { "api" }
                     Path { Parse(.string) }
                     Path { Parse(.string) }
@@ -79,7 +82,7 @@ struct ParserMatchTests {
         let request = URLRequest(url: URL(string: "https://example.com/api/v1/users")!)
 
         let route = try router.match(request: request)
-        #expect(route == .api(version: "v1", endpoint: "users"))
+        #expect(route == .api("v1", "users"))
     }
 
     @Test("Match URLRequest throws on invalid path")
@@ -186,7 +189,7 @@ struct ParserMatchTests {
         let router = TestRouter()
 
         let route = try router.match(path: "/api/v2/posts")
-        #expect(route == .api(version: "v2", endpoint: "posts"))
+        #expect(route == .api("v2", "posts"))
     }
 
     @Test("Match path string without leading slash")
@@ -243,9 +246,11 @@ struct ParserMatchTests {
             let category: String
         }
 
-        struct MultiQueryRouter: Parser {
-            var body: some Parser<RFC_3986.URI.Request.Data, QueryResult> {
-                RFC_3986.URI.Route(.memberwise(QueryResult.init)) {
+        struct MultiQueryRouter: ParserPrinter {
+            var body: some URLRouting.Router<QueryResult> {
+                RFC_3986.URI.Route(
+                    .memberwise(QueryResult.init, { ($0.query, $0.category) })
+                ) {
                     Path { "search" }
                     Query {
                         Field("q", .string)
