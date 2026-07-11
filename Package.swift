@@ -90,6 +90,10 @@ let package = Package(
       name: "Authenticating",
       dependencies: [
         "URLRouting",
+        // W3 E3: `@Dependency(APIRouter.self)` resolution in the consumer-evidenced
+        // Bearer convenience constructor. Package already in the graph (URLRouting
+        // depends on it); this is a target-edge addition only.
+        .product(name: "Dependencies", package: "swift-dependencies"),
         .product(name: "RFC 6750", package: "swift-rfc-6750"),
         .product(name: "RFC 7617", package: "swift-rfc-7617"),
       ]
@@ -103,7 +107,9 @@ let package = Package(
     .testTarget(
       name: "AuthenticatingTests",
       dependencies: [
-        "Authenticating"
+        "Authenticating",
+        // W3 E3: `TestDependencyKey` conformance for the convenience-constructor tests.
+        .product(name: "Dependencies", package: "swift-dependencies"),
       ]
     ),
   ]

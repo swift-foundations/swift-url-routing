@@ -6,6 +6,7 @@
 //  Full-suite coverage is the S3 wave gate; this is the build-verification smoke.
 //
 
+import Dependencies
 import Foundation
 import Testing
 
@@ -94,4 +95,61 @@ struct AuthenticatingTests {
             BearerAuth, BearerAuth.Router, EchoRouter.Route, EchoRouter, URLRouting.Client<EchoRouter.Route>
         >.ClientOutput.self)
     }
+
+    // MARK: Convenience constructors (W3 E3)
+
+    /// Binding `Client` to the `makeRequest` function type lets the tests drive the
+    /// closure the convenience constructors hand to `buildClient`.
+    typealias MakeRequest = @Sendable (EchoRouter.Route) throws -> URLRequest
+
+    @Test("Five-label init with makeRequest-shaped buildClient (Basic contract)")
+    func basicMakeRequestConstruction() throws {
+        let auth = try BasicAuth(username: "Aladdin", password: "open sesame")
+        let wrapper = Authenticating(
+            baseURL: URL(string: "https://api.example.com/v1")!,
+            auth: auth,
+            apiRouter: EchoRouter(),
+            authRouter: BasicAuth.Router(),
+            buildClient: { (makeRequest: @escaping MakeRequest) in makeRequest }
+        )
+
+        let request = try wrapper.client(EchoRouter.Route())
+        #expect(request.url?.absoluteString == "https://api.example.com/v1")
+        // RFC 7617 §2 example vector, printed by the auth router into every request.
+        #expect(request.value(forHTTPHeaderField: "Authorization") == "Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==")
+    }
+
+    @Test("Bearer init(baseURL:token:buildClient:) resolves router via @Dependency")
+    func bearerTokenConstruction() throws {
+        let wrapper = try Authenticating<
+            BearerAuth, BearerAuth.Router, EchoRouter.Route, EchoRouter, MakeRequest
+        >(
+            baseURL: URL(string: "https://api.example.com/v1")!,
+            token: "tok123"
+        ) { makeRequest in makeRequest }
+
+        #expect(wrapper.auth.token == "tok123")
+
+        let request = try wrapper.client(EchoRouter.Route())
+        #expect(request.url?.absoluteString == "https://api.example.com/v1")
+        #expect(request.value(forHTTPHeaderField: "Authorization") == "Bearer tok123")
+    }
+
+    @Test("Bearer convenience throws the typed credential error on an invalid token")
+    func bearerTokenValidation() {
+        #expect(throws: RFC_6750.Bearer.Error.self) {
+            _ = try Authenticating<
+                BearerAuth, BearerAuth.Router, EchoRouter.Route, EchoRouter, MakeRequest
+            >(
+                baseURL: URL(string: "https://api.example.com/v1")!,
+                token: ""
+            ) { makeRequest in makeRequest }
+        }
+    }
+}
+
+// MARK: - EchoRouter dependency registration (W3 E3)
+
+extension AuthenticatingTests.EchoRouter: Dependency.Key {
+    static var liveValue: Self { Self() }
 }
