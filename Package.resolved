@@ -1,5 +1,5 @@
 {
-  "originHash" : "c87ebd7efe7e6c45dd9ec0d94f2648d7f52214269d8239f6c55be45401c3ea51",
+  "originHash" : "f4f3d0f339a83bd50144c237f3f7b2659520eb544bde747e0c576ddbddbb526a",
   "pins" : [
     {
       "identity" : "swift-affine-geometry-primitives",
@@ -1160,15 +1160,6 @@
       "state" : {
         "branch" : "main",
         "revision" : "9fae0c9b6c41b35d5beba9dee3ff11da88e9884f"
-      }
-    },
-    {
-      "identity" : "swift-rfc-7230",
-      "kind" : "localSourceControl",
-      "location" : "https://github.com/swift-ietf/swift-rfc-7230.git",
-      "state" : {
-        "branch" : "main",
-        "revision" : "319c94a751761d17bdc66b8d4032b06bbfa45b36"
       }
     },
     {

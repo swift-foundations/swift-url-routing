@@ -5,10 +5,13 @@ import PackageDescription
 let package = Package(
   name: "swift-url-routing",
   platforms: [
-    .iOS(.v18),
-    .macOS(.v15),
-    .tvOS(.v18),
-    .watchOS(.v11),
+    // Bumped to match the institute ecosystem floor (all deps require v26 after
+    // the W2 update-first; swift-dual / swift-parser-primitives / RFC packages
+    // are all .v26). Forced by resolution, not a discretionary choice.
+    .iOS(.v26),
+    .macOS(.v26),
+    .tvOS(.v26),
+    .watchOS(.v26),
   ],
   products: [
     .library(name: "URLRouting", targets: ["URLRouting"])
