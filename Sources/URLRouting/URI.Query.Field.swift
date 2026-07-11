@@ -144,7 +144,7 @@ extension RFC_3986.URI.Query {
     }
 }
 
-extension RFC_3986.URI.Query.Field: Parser_Primitive.Parser.Bidirectional where Value: Parser_Primitive.Parser.Bidirectional {
+extension RFC_3986.URI.Query.Field: Parser_Primitive.Parser.Printer, Parser_Primitive.Parser.Bidirectional where Value: Parser_Primitive.Parser.Bidirectional {
     @inlinable
     public func print(
         _ output: Value.Output,

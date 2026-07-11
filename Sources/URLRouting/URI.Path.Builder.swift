@@ -99,7 +99,7 @@ extension RFC_3986.URI.Path {
     }
 }
 
-extension RFC_3986.URI.Path.Builder.Component: Parser_Primitive.Parser.Bidirectional where ComponentParser: Parser_Primitive.Parser.Bidirectional {
+extension RFC_3986.URI.Path.Builder.Component: Parser_Primitive.Parser.Printer, Parser_Primitive.Parser.Bidirectional where ComponentParser: Parser_Primitive.Parser.Bidirectional {
     @inlinable
     public func print(
         _ output: ComponentParser.Output,
@@ -191,7 +191,7 @@ extension RFC_3986.URI.Path.Builder {
     }
 }
 
-extension RFC_3986.URI.Path.Builder.SkipFirst: Parser_Primitive.Parser.Bidirectional where P0: Parser_Primitive.Parser.Bidirectional, P1: Parser_Primitive.Parser.Bidirectional {
+extension RFC_3986.URI.Path.Builder.SkipFirst: Parser_Primitive.Parser.Printer, Parser_Primitive.Parser.Bidirectional where P0: Parser_Primitive.Parser.Bidirectional, P1: Parser_Primitive.Parser.Bidirectional {
     @inlinable public func print(
         _ output: P1.Output,
         into input: inout RFC_3986.URI.Request.Data
@@ -205,7 +205,7 @@ extension RFC_3986.URI.Path.Builder.SkipFirst: Parser_Primitive.Parser.Bidirecti
     }
 }
 
-extension RFC_3986.URI.Path.Builder.SkipSecond: Parser_Primitive.Parser.Bidirectional where P0: Parser_Primitive.Parser.Bidirectional, P1: Parser_Primitive.Parser.Bidirectional {
+extension RFC_3986.URI.Path.Builder.SkipSecond: Parser_Primitive.Parser.Printer, Parser_Primitive.Parser.Bidirectional where P0: Parser_Primitive.Parser.Bidirectional, P1: Parser_Primitive.Parser.Bidirectional {
     @inlinable public func print(
         _ output: P0.Output,
         into input: inout RFC_3986.URI.Request.Data
@@ -219,7 +219,7 @@ extension RFC_3986.URI.Path.Builder.SkipSecond: Parser_Primitive.Parser.Bidirect
     }
 }
 
-extension RFC_3986.URI.Path.Builder.Take2: Parser_Primitive.Parser.Bidirectional where P0: Parser_Primitive.Parser.Bidirectional, P1: Parser_Primitive.Parser.Bidirectional {
+extension RFC_3986.URI.Path.Builder.Take2: Parser_Primitive.Parser.Printer, Parser_Primitive.Parser.Bidirectional where P0: Parser_Primitive.Parser.Bidirectional, P1: Parser_Primitive.Parser.Bidirectional {
     @inlinable public func print(
         _ output: (P0.Output, P1.Output),
         into input: inout RFC_3986.URI.Request.Data

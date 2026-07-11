@@ -111,7 +111,7 @@ extension RFC_3986.URI.Path {
     }
 }
 
-extension RFC_3986.URI.Path.Parser: Parser_Primitive.Parser.Bidirectional where ComponentParsers: Parser_Primitive.Parser.Bidirectional {
+extension RFC_3986.URI.Path.Parser: Parser_Primitive.Parser.Printer, Parser_Primitive.Parser.Bidirectional where ComponentParsers: Parser_Primitive.Parser.Bidirectional {
     @inlinable
     public func print(
         _ output: ComponentParsers.Output,

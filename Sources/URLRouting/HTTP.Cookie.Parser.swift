@@ -76,7 +76,7 @@ extension RFC_6265.Cookie {
     }
 }
 
-extension RFC_6265.Cookie.Parser: Parser_Primitive.Parser.Bidirectional where FieldParsers: Parser_Primitive.Parser.Bidirectional {
+extension RFC_6265.Cookie.Parser: Parser_Primitive.Parser.Printer, Parser_Primitive.Parser.Bidirectional where FieldParsers: Parser_Primitive.Parser.Bidirectional {
     @inlinable
     public func print(
         _ output: FieldParsers.Output,

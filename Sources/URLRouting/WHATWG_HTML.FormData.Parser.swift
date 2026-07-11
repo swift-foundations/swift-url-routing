@@ -74,7 +74,7 @@ extension WHATWG_HTML_Forms.Form.Data {
     }
 }
 
-extension WHATWG_HTML_Forms.Form.Data.Parser: Parser_Primitive.Parser.Bidirectional where FieldParsers: Parser_Primitive.Parser.Bidirectional {
+extension WHATWG_HTML_Forms.Form.Data.Parser: Parser_Primitive.Parser.Printer, Parser_Primitive.Parser.Bidirectional where FieldParsers: Parser_Primitive.Parser.Bidirectional {
     @inlinable
     public func print(_ output: FieldParsers.Output, into input: inout Foundation.Data) throws(RFC_3986.URI.Routing.Error) {
         var fields = RFC_3986.URI.Request.Fields()

@@ -84,7 +84,7 @@ extension RFC_3986.URI.Fragment {
     }
 }
 
-extension RFC_3986.URI.Fragment.Parser: Parser_Primitive.Parser.Bidirectional where ValueParser: Parser_Primitive.Parser.Bidirectional {
+extension RFC_3986.URI.Fragment.Parser: Parser_Primitive.Parser.Printer, Parser_Primitive.Parser.Bidirectional where ValueParser: Parser_Primitive.Parser.Bidirectional {
     @inlinable
     public func print(
         _ output: ValueParser.Output,

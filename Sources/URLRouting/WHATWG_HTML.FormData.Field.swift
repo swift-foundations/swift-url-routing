@@ -118,7 +118,7 @@ extension WHATWG_HTML_Forms.Form.Data {
     }
 }
 
-extension WHATWG_HTML_Forms.Form.Data.Field: Parser_Primitive.Parser.Bidirectional where Value: Parser_Primitive.Parser.Bidirectional {
+extension WHATWG_HTML_Forms.Form.Data.Field: Parser_Primitive.Parser.Printer, Parser_Primitive.Parser.Bidirectional where Value: Parser_Primitive.Parser.Bidirectional {
     @inlinable
     public func print(
         _ output: Value.Output,

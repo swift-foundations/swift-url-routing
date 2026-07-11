@@ -131,7 +131,7 @@ extension RFC_7230.Body {
     }
 }
 
-extension RFC_7230.Body.Parser: Parser_Primitive.Parser.Bidirectional where Bytes: Parser_Primitive.Parser.Bidirectional {
+extension RFC_7230.Body.Parser: Parser_Primitive.Parser.Printer, Parser_Primitive.Parser.Bidirectional where Bytes: Parser_Primitive.Parser.Bidirectional {
     @inlinable
     public func print(
         _ output: Bytes.Output,

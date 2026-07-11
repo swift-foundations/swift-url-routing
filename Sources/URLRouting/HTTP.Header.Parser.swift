@@ -47,7 +47,7 @@ extension RFC_7230.Header {
     }
 }
 
-extension RFC_7230.Header.Parser: Parser_Primitive.Parser.Bidirectional where FieldParsers: Parser_Primitive.Parser.Bidirectional {
+extension RFC_7230.Header.Parser: Parser_Primitive.Parser.Printer, Parser_Primitive.Parser.Bidirectional where FieldParsers: Parser_Primitive.Parser.Bidirectional {
     @inlinable
     public func print(
         _ output: FieldParsers.Output,
