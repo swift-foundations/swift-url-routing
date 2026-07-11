@@ -6,14 +6,13 @@
 //
 
 import Foundation
-import Parsing
 import RFC_3986
 
 #if canImport(FoundationNetworking)
     import FoundationNetworking
 #endif
 
-extension Parser where Input == RFC_3986.URI.Request.Data {
+extension Parser.`Protocol` where Input == RFC_3986.URI.Request.Data {
     /// Matches a Foundation URLRequest to a route.
     ///
     /// Example:
@@ -22,8 +21,8 @@ extension Parser where Input == RFC_3986.URI.Request.Data {
     /// let route = try router.match(request: request)
     /// ```
     @inlinable
-    public func match(request: URLRequest) throws -> Output {
-        guard let data = RFC_3986.URI.Request.Data(request: request)
+    public func match(request: URLRequest) throws(RFC_3986.URI.Routing.Error) -> Output {
+        guard var data = RFC_3986.URI.Request.Data(request: request)
         else {
             throw RFC_3986.URI.Routing.Error(
                 component: .request,
@@ -31,7 +30,15 @@ extension Parser where Input == RFC_3986.URI.Request.Data {
                 context: "URL: \(request.url?.absoluteString ?? "nil")"
             )
         }
-        return try self.parse(data)
+        do {
+            return try self.parse(&data)
+        } catch {
+            throw RFC_3986.URI.Routing.Error(
+                component: .request,
+                failure: .parseFailed("\(error)"),
+                context: "URL: \(request.url?.absoluteString ?? "nil")"
+            )
+        }
     }
 
     /// Matches a Foundation URL to a route.
@@ -42,8 +49,8 @@ extension Parser where Input == RFC_3986.URI.Request.Data {
     /// let route = try router.match(url: url)
     /// ```
     @inlinable
-    public func match(url: URL) throws -> Output {
-        guard let data = RFC_3986.URI.Request.Data(url: url)
+    public func match(url: URL) throws(RFC_3986.URI.Routing.Error) -> Output {
+        guard var data = RFC_3986.URI.Request.Data(url: url)
         else {
             throw RFC_3986.URI.Routing.Error(
                 component: .url,
@@ -51,7 +58,15 @@ extension Parser where Input == RFC_3986.URI.Request.Data {
                 context: "URL: \(url.absoluteString)"
             )
         }
-        return try self.parse(data)
+        do {
+            return try self.parse(&data)
+        } catch {
+            throw RFC_3986.URI.Routing.Error(
+                component: .url,
+                failure: .parseFailed("\(error)"),
+                context: "URL: \(url.absoluteString)"
+            )
+        }
     }
 
     /// Matches a URI string to a route.
@@ -61,8 +76,25 @@ extension Parser where Input == RFC_3986.URI.Request.Data {
     /// let route = try router.match(path: "/books/42")
     /// ```
     @inlinable
-    public func match(path: String) throws -> Output {
-        let data = try RFC_3986.URI.Request.Data(uriString: path)
-        return try self.parse(data)
+    public func match(path: String) throws(RFC_3986.URI.Routing.Error) -> Output {
+        var data: RFC_3986.URI.Request.Data
+        do {
+            data = try RFC_3986.URI.Request.Data(uriString: path)
+        } catch {
+            throw RFC_3986.URI.Routing.Error(
+                component: .url,
+                failure: .parseFailed("\(error)"),
+                context: "path: \(path)"
+            )
+        }
+        do {
+            return try self.parse(&data)
+        } catch {
+            throw RFC_3986.URI.Routing.Error(
+                component: .request,
+                failure: .parseFailed("\(error)"),
+                context: "path: \(path)"
+            )
+        }
     }
 }

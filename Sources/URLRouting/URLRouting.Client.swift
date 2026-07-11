@@ -1,7 +1,6 @@
 import Dependencies
 import Foundation
 import LoggingExtras
-import Parsing
 import RFC_3986
 
 #if canImport(FoundationNetworking)
@@ -80,7 +79,7 @@ extension URLRouting.Client {
     ///   - session: A URL session.
     /// - Returns: A live API client that makes requests through a URL session.
     @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
-    public static func live<R: ParserPrinter>(
+    public static func live<R: Parser.Bidirectional>(
         router: R,
         session: URLSession = .shared,
         decoder: JSONDecoder = .init()

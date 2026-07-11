@@ -9,14 +9,13 @@ import Dependencies
 import Foundation
 import LoggingExtras
 import OrderedCollections
-import Parsing
 import RFC_3986
 
 #if canImport(FoundationNetworking)
     import FoundationNetworking
 #endif
 
-extension ParserPrinter where Input == RFC_3986.URI.Request.Data {
+extension Parser.Printer where Input == RFC_3986.URI.Request.Data {
     /// Prints a route to a Foundation URLRequest.
     ///
     /// Example:
@@ -25,9 +24,16 @@ extension ParserPrinter where Input == RFC_3986.URI.Request.Data {
     /// // URLRequest with URL: /books/42
     /// ```
     @inlinable
-    public func request(for route: Output) throws -> URLRequest {
+    public func request(for route: Output) throws(RFC_3986.URI.Routing.Error) -> URLRequest {
         var data = RFC_3986.URI.Request.Data()
-        try self.print(route, into: &data)
+        do {
+            try self.print(route, into: &data)
+        } catch {
+            throw RFC_3986.URI.Routing.Error(
+                component: .request,
+                failure: .parseFailed("\(error)")
+            )
+        }
         guard let request = URLRequest(data: data)
         else {
             throw RFC_3986.URI.Routing.Error(
