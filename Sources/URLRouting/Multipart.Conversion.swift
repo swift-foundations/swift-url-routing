@@ -94,7 +94,7 @@ extension RFC_2046.Multipart {
             encoder: RFC_2046.Multipart.Encoder = RFC_2046.Multipart.Encoder(),
             boundary: RFC_2046.Boundary? = nil
         ) {
-            self.boundary = boundary ?? RFC_2046.Boundary()
+            self.boundary = boundary ?? RFC_2046.Boundary(__unchecked: (), rawValue: "----FormBoundary\(UUID().uuidString)")
             self.encoder = encoder
         }
 

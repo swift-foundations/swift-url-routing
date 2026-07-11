@@ -128,7 +128,7 @@ public struct FileUpload: Sendable {
             self.fileType = fileType
             self.maxSize = maxSize
             // Use RFC 2046's boundary generation for RFC compliance
-            self.boundary = RFC_2046.Boundary()
+            self.boundary = RFC_2046.Boundary(__unchecked: (), rawValue: "----FormBoundary\(UUID().uuidString)")
         }
 
         public func validate(_ data: Foundation.Data) throws {
@@ -163,7 +163,7 @@ extension FileUpload {
     public var contentType: RFC_2045.ContentType {
         RFC_2045.ContentType(__unchecked: (), type: "multipart",
             subtype: "form-data",
-            parameters: ["boundary": boundary.value]
+            parameters: [.boundary: boundary.rawValue]
         )
     }
 }

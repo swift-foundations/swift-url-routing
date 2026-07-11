@@ -157,22 +157,22 @@ extension RFC_3986.URI {
 
         @inlinable
         func parse(_ input: inout RFC_3986.URI.Request.Data) throws(RFC_3986.URI.Routing.Error) {
-            guard var first = input.path.first else { return }
-            do {
-                try Parser.End().parse(&first)
-            } catch {
+            // The institute L1 `Parser.End` constrains `Input: Collection.Slice.Protocol`,
+            // which `Substring` does not satisfy (parity GAP, per URLRouting.Rest). Checking
+            // the first remaining path component for emptiness is the equivalent end-of-path
+            // assertion at the consumer level.
+            guard let first = input.path.first else { return }
+            guard first.isEmpty else {
                 throw RFC_3986.URI.Routing.Error(
                     component: .path,
-                    failure: .invalid("Path component not fully consumed"),
-                    context: "\(error)"
+                    failure: .invalid("Path component not fully consumed")
                 )
             }
         }
 
         @inlinable
         func print(_ output: Void, into input: inout RFC_3986.URI.Request.Data) throws(RFC_3986.URI.Routing.Error) {
-            guard var first = input.path.first else { return }
-            Parser.End().print((), into: &first)
+            // Printing "end of path" emits nothing.
         }
     }
 }
