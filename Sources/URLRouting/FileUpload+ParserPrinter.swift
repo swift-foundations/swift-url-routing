@@ -70,9 +70,13 @@ extension FileUpload: Parser.Bidirectional {
     /// Parses the request, extracting and validating file upload data.
     ///
     /// This method:
-    /// 1. Parses the Content-Type header to verify it matches the file upload's content type
-    /// 2. Extracts the body data
-    /// 3. Validates the file data (size limits, content type verification)
+    /// 1. Extracts the body data via `RFC_7230.Body.Parser`
+    /// 2. Validates the file data through the body conversion (size limits,
+    ///    content sniffing / file-content verification)
+    ///
+    /// The Content-Type header is NOT re-validated on parse — the body conversion
+    /// self-validates the file content, so the header check is deliberately narrowed
+    /// out of the parse path. ``print(_:into:)`` still emits the header.
     ///
     /// - Parameter input: The URI request data
     /// - Returns: The validated file data
