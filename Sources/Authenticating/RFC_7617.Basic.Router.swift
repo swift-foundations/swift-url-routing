@@ -53,3 +53,11 @@ extension RFC_7617.Basic {
         }
     }
 }
+
+// MARK: - Sendable (W3 E4)
+
+/// Honest: the router is stateless (computed member only — documented above).
+/// Explicit because public types get no implicit Sendable; required for
+/// `Authenticating`'s conditional conformance to fire at the consumer
+/// specialization `Authenticating<BasicAuth, BasicAuth.Router, …>`.
+extension RFC_7617.Basic.Router: Sendable {}

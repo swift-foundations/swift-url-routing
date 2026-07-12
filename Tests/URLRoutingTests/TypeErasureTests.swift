@@ -123,15 +123,23 @@ struct TypeErasureTests {
             }
         }
 
-        // Map and erase to match production pattern
-        let apiRouter = APIRouter()
-        let mappedRouter = apiRouter.map(
-            .convert(
-                apply: AppRoute.api,
-                unapply: AppRoute.extractAPI
-            )
-        )
-        let erased = mappedRouter.eraseToAnyParserPrinter()
+        // The mapped chain is wrapped in a stateless declarative router struct: since
+        // W3 E4 the eraser requires a `Sendable` router (the erased value stores
+        // `@Sendable` closures), and a bare `.map(.convert(…))` chain holds
+        // non-Sendable conversion closures. The struct wrapper is the production
+        // pattern — stateless, so `Sendable` is implicit.
+        struct MappedRouter: ParserPrinter {
+            var body: some URLRouting.Router<AppRoute> {
+                APIRouter().map(
+                    .convert(
+                        apply: AppRoute.api,
+                        unapply: AppRoute.extractAPI
+                    )
+                )
+            }
+        }
+
+        let erased = MappedRouter().eraseToAnyParserPrinter()
 
         // Store as existential type
         let router: any ParserPrinter<RFC_3986.URI.Request.Data, AppRoute> = erased
@@ -139,5 +147,36 @@ struct TypeErasureTests {
         let createRequest = RFC_3986.URI.Request.Data(method: .post, path: "/create")
         #expect(try router.parse(createRequest) == .api(.create))
         #expect(try router.print(.api(.create)) == RFC_3986.URI.Request.Data(method: .post, path: "/create"))
+    }
+
+    // MARK: Sendable (W3 E4)
+
+    @Test("AnyParserPrinter stores in a Sendable context")
+    func anyParserPrinterSendable() throws {
+        typealias ItemRoute = TEItemRoute
+
+        struct ItemRouter: ParserPrinter {
+            var body: some URLRouting.Router<ItemRoute> {
+                Route(.case(ItemRoute.cases.item)) {
+                    Method.get
+                    Path { Int.parser() }
+                }
+            }
+        }
+
+        // Compile-time proof: a Sendable container can store the erased router,
+        // and the erased router itself witnesses Sendable generically.
+        struct Holder: Sendable {
+            let router: AnyParserPrinter<RFC_3986.URI.Request.Data, ItemRoute>
+        }
+
+        func requireSendable<T: Sendable>(_ value: T) -> T { value }
+
+        let holder = Holder(router: requireSendable(ItemRouter().eraseToAnyParserPrinter()))
+
+        // Behavioral: the stored erased router still round-trips.
+        let request = RFC_3986.URI.Request.Data(method: .get, path: "/7")
+        #expect(try holder.router.parse(request) == .item(7))
+        #expect(try holder.router.print(.item(7)) == RFC_3986.URI.Request.Data(method: .get, path: "/7"))
     }
 }

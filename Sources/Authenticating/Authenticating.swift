@@ -83,3 +83,13 @@ where
         self.client = buildClient(URLRouting.Client<API>.live(router: router))
     }
 }
+
+// MARK: - Sendable (W3 E4)
+
+/// Honest conditional Sendable over the four STORED generic parameters (`API` is
+/// not stored — no bound needed). Consumers store `Authenticating` as a
+/// `Dependency.Key` value (`Witness.Key` requires `Value: Sendable`), which
+/// hard-errors on 6.3.3 without this. Same-file per Swift's rule for
+/// non-`@unchecked` conformances touching stored members.
+extension Authenticating: Sendable
+where Auth: Sendable, AuthRouter: Sendable, APIRouter: Sendable, Client: Sendable {}

@@ -20,24 +20,31 @@ import RFC_3986
 /// `Failure` is fixed to `RFC_3986.URI.Routing.Error` to match ``ParserPrinter``'s
 /// pinned error domain.
 ///
+/// `AnyParserPrinter` is unconditionally `Sendable` — the stored closures are
+/// `@Sendable`, so erasure requires the wrapped router to be `Sendable` (W3 E4;
+/// consumers store erased routers inside `Sendable` types and `Dependency.Key`
+/// values). Erase a `Sendable` router struct (the production pattern); a composed
+/// non-`Sendable` value (e.g. a `.map(.convert(…))` chain over closure-holding
+/// conversions) must first be wrapped in a stateless declarative router struct.
+///
 /// ```swift
 /// let erased = router.eraseToAnyParserPrinter()
 /// let stored: any ParserPrinter<URLRequestData, Route> = erased
 /// ```
-public struct AnyParserPrinter<Input, Output>: ParserPrinter {
+public struct AnyParserPrinter<Input, Output>: ParserPrinter, Sendable {
     public typealias Failure = RFC_3986.URI.Routing.Error
     public typealias Body = Never
 
     @usableFromInline
-    let _parse: (inout Input) throws(Failure) -> Output
+    let _parse: @Sendable (inout Input) throws(Failure) -> Output
 
     @usableFromInline
-    let _print: (Output, inout Input) throws(Failure) -> Void
+    let _print: @Sendable (Output, inout Input) throws(Failure) -> Void
 
     @usableFromInline
     init(
-        parse: @escaping (inout Input) throws(Failure) -> Output,
-        print: @escaping (Output, inout Input) throws(Failure) -> Void
+        parse: @escaping @Sendable (inout Input) throws(Failure) -> Output,
+        print: @escaping @Sendable (Output, inout Input) throws(Failure) -> Void
     ) {
         self._parse = parse
         self._print = print
@@ -58,8 +65,11 @@ public struct AnyParserPrinter<Input, Output>: ParserPrinter {
 
 extension AnyParserPrinter {
     /// Erases a concrete bidirectional parser-printer over the routing error domain.
+    ///
+    /// The router must be `Sendable`: the eraser stores it inside `@Sendable`
+    /// closures so the erased value is honestly `Sendable` (W3 E4).
     @inlinable
-    public init<P: Parser.Bidirectional>(
+    public init<P: Parser.Bidirectional & Sendable>(
         _ parserPrinter: P
     ) where P.Input == Input, P.Output == Output, P.Failure == Failure {
         self.init(
@@ -76,8 +86,11 @@ extension AnyParserPrinter {
 // MARK: - Erasure convenience
 
 extension Parser.Bidirectional
-where Input: Copyable & Escapable, Failure == RFC_3986.URI.Routing.Error {
+where Self: Sendable, Input: Copyable & Escapable, Failure == RFC_3986.URI.Routing.Error {
     /// Erases this parser-printer to an ``AnyParserPrinter``.
+    ///
+    /// Available on `Sendable` routers only — the erased value stores the router
+    /// inside `@Sendable` closures (W3 E4).
     @inlinable
     public func eraseToAnyParserPrinter() -> AnyParserPrinter<Input, Output> {
         AnyParserPrinter(self)

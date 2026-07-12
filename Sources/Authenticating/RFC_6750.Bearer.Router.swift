@@ -52,3 +52,11 @@ extension RFC_6750.Bearer {
         }
     }
 }
+
+// MARK: - Sendable (W3 E4)
+
+/// Honest: the router is stateless (computed member only — documented above).
+/// Explicit because public types get no implicit Sendable; required for
+/// `Authenticating`'s conditional conformance to fire at the consumer
+/// specialization `Authenticating<BearerAuth, BearerAuth.Router, …>`.
+extension RFC_6750.Bearer.Router: Sendable {}

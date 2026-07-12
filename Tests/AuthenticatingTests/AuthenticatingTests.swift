@@ -135,6 +135,37 @@ struct AuthenticatingTests {
         #expect(request.value(forHTTPHeaderField: "Authorization") == "Bearer tok123")
     }
 
+    // MARK: Sendable (W3 E4)
+
+    @Test("Authenticating is Sendable at the Dependency.Key Value shape")
+    func sendableAtDependencyKeyShape() throws {
+        typealias Wrapper = Authenticating<
+            BearerAuth, BearerAuth.Router, EchoRouter.Route, EchoRouter, MakeRequest
+        >
+
+        // Compile-time proof of the consumer shape that hard-errored on 6.3.3:
+        // `Witness.Key` (= `Dependency.Key`) requires `Value: Sendable`, so this
+        // local key conforms ONLY if the Authenticating specialization is Sendable.
+        enum WrapperKey: Dependency.Key {
+            static var liveValue: Wrapper {
+                // swiftlint:disable:next force_try
+                try! Wrapper(
+                    baseURL: URL(string: "https://api.example.com/v1")!,
+                    token: "tok"
+                ) { makeRequest in makeRequest }
+            }
+        }
+
+        func requireSendable<T: Sendable>(_ value: T) -> T { value }
+
+        let wrapper = requireSendable(WrapperKey.liveValue)
+        #expect(wrapper.auth.token == "tok")
+
+        // Behavioral: the stored client still produces authenticated requests.
+        let request = try wrapper.client(EchoRouter.Route())
+        #expect(request.value(forHTTPHeaderField: "Authorization") == "Bearer tok")
+    }
+
     @Test("Bearer convenience throws the typed credential error on an invalid token")
     func bearerTokenValidation() {
         #expect(throws: RFC_6750.Bearer.Error.self) {
