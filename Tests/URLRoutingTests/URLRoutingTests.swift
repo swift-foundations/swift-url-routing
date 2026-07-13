@@ -261,4 +261,32 @@ struct URLRoutingTests {
             )?.url?.absoluteString == "http://localhost:8080/v1/episodes?token=deadbeef"
         )
     }
+
+    @Test("Transform base request data")
+    func transform() throws {
+        enum AppRoute { case home, episodes }
+
+        let router = OneOf {
+            Route(AppRoute.home)
+            Route(AppRoute.episodes) {
+                Path { "episodes" }
+            }
+        }
+
+        let printed = try router
+            .transform { data in
+                data.scheme = "https"
+                data.host = "api.example.com"
+                data.headers = RFC_3986.URI.Request.Data(
+                    headers: ["X-Session": ["deadbeef"]]
+                ).headers
+                return data
+            }
+            .print(.episodes)
+
+        #expect(printed.scheme == "https")
+        #expect(printed.host == "api.example.com")
+        #expect(printed.path.joined(separator: "/") == "episodes")
+        #expect(printed.headers["X-Session"]?.compactMap { $0 } == ["deadbeef"])
+    }
 }

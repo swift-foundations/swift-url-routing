@@ -1,5 +1,5 @@
 {
-  "originHash" : "1f95b6817f571f99347d55f0c4171cf6571d090fdf798b78b6faa3e2eda00a4c",
+  "originHash" : "e1f524257b12ff192226cf389cae0cd9e09938319cb18edaf62854e9fedd9f0b",
   "pins" : [
     {
       "identity" : "swift-affine-geometry-primitives",
@@ -232,7 +232,7 @@
       "location" : "https://github.com/swift-primitives/swift-cache-primitives.git",
       "state" : {
         "branch" : "main",
-        "revision" : "79ac43b4afc3ee88ee0d3989130adaffe7ae1cc6"
+        "revision" : "b775c853ccf44e58b71797a22ea4356c15e64ffc"
       }
     },
     {
@@ -376,7 +376,7 @@
       "location" : "https://github.com/swift-foundations/swift-dependencies.git",
       "state" : {
         "branch" : "main",
-        "revision" : "6d898fa441d02e99268268790f5ba86b1476b9c5"
+        "revision" : "8e88cd7f45d9ce810473d0a1877157da3a665ac9"
       }
     },
     {
@@ -475,7 +475,7 @@
       "location" : "https://github.com/swift-foundations/swift-environment.git",
       "state" : {
         "branch" : "main",
-        "revision" : "1d210b38eb2e0a9d2574cd6bf38f22ce6d2d857b"
+        "revision" : "0a2e99840d6f449c9e12af641f2469988b399ce4"
       }
     },
     {
@@ -736,7 +736,7 @@
       "location" : "https://github.com/swift-foundations/swift-logging-extras.git",
       "state" : {
         "branch" : "main",
-        "revision" : "e3cf02b2a0bb74a3021457f30afbc2223bdb008f"
+        "revision" : "e3a8e76b2172c2eefcfe2337c21ab864b9853aba"
       }
     },
     {
@@ -916,7 +916,7 @@
       "location" : "https://github.com/swift-primitives/swift-parser-primitives.git",
       "state" : {
         "branch" : "main",
-        "revision" : "0e81436e9a01c7cc323a6b6f70cbfe1ad8eb15f6"
+        "revision" : "c3d75cf113e5732547129b20ec74bacaac68df76"
       }
     },
     {
@@ -1163,15 +1163,6 @@
       }
     },
     {
-      "identity" : "swift-rfc-6750",
-      "kind" : "localSourceControl",
-      "location" : "https://github.com/swift-ietf/swift-rfc-6750.git",
-      "state" : {
-        "branch" : "main",
-        "revision" : "4263f2a5c85f74af91106720c8340a12504c7f9c"
-      }
-    },
-    {
       "identity" : "swift-rfc-7230",
       "kind" : "localSourceControl",
       "location" : "https://github.com/swift-ietf/swift-rfc-7230.git",
@@ -1196,15 +1187,6 @@
       "state" : {
         "branch" : "main",
         "revision" : "31495254a5520fbdb2c0fe5724f6f81f97188ef0"
-      }
-    },
-    {
-      "identity" : "swift-rfc-7617",
-      "kind" : "localSourceControl",
-      "location" : "https://github.com/swift-ietf/swift-rfc-7617.git",
-      "state" : {
-        "branch" : "main",
-        "revision" : "2ac9c6ed3b9477e29853ce16c2f565dac89201be"
       }
     },
     {
@@ -1336,7 +1318,7 @@
     {
       "identity" : "swift-syntax",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/swiftlang/swift-syntax",
+      "location" : "https://github.com/swiftlang/swift-syntax.git",
       "state" : {
         "revision" : "4799286537280063c85a32f09884cfbca301b1a1",
         "version" : "602.0.0"
@@ -1402,7 +1384,7 @@
       "location" : "https://github.com/swift-foundations/swift-url-form-coding.git",
       "state" : {
         "branch" : "main",
-        "revision" : "041a4a7b6aeb990fa3bd43058ba5b36518d60549"
+        "revision" : "632d254d44a5631b66809ac250eb670584426674"
       }
     },
     {
@@ -1465,7 +1447,7 @@
       "location" : "https://github.com/swift-foundations/swift-witnesses.git",
       "state" : {
         "branch" : "main",
-        "revision" : "95f7c23e48273e8f947facea5d6b0e3af00d24d7"
+        "revision" : "5ff3dcdcf29f0998451db5f838d4e2e7aed86b06"
       }
     },
     {
