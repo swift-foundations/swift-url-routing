@@ -23,8 +23,8 @@ import RFC_3986
 /// ## Fixed error domain
 ///
 /// `Failure` is pinned to `RFC_3986.URI.Routing.Error` — the single error domain of
-/// the routing surface (every combinator, `Method` matcher, and Authenticating router
-/// already fails into it). Pinning it is not merely a convenience: `Input` / `Output`
+/// the routing surface (every combinator and `Method` matcher already fails into
+/// it; so do the credential routers now vended by swift-url-routing-authentication). Pinning it is not merely a convenience: `Input` / `Output`
 /// are primary associated types with no default, so associated-type inference derives
 /// them from `body`; the `Failure` associated type, however, inherits a `Never` default
 /// from ``Parser/Protocol`` that would short-circuit inference to `Never` and leave a

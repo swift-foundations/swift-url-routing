@@ -15,16 +15,9 @@ let package = Package(
   ],
   products: [
     .library(name: "URLRouting", targets: ["URLRouting"]),
-    // Additive W2/S2 product: the HTTP-auth-over-routing `Authenticating`
-    // wrapper + `BearerAuth.Router` / `BasicAuth.Router`. Routing-coupled
-    // (composes `URLRouting` parser-printers over `URLRequestData`); the
-    // existing `URLRouting` product/target is untouched.
-    .library(name: "Authenticating", targets: ["Authenticating"]),
   ],
   dependencies: [
     .package(url: "https://github.com/apple/swift-collections", from: "1.0.3"),
-    .package(url: "https://github.com/swift-ietf/swift-rfc-6750.git", branch: "main"),
-    .package(url: "https://github.com/swift-ietf/swift-rfc-7617.git", branch: "main"),
     .package(url: "https://github.com/swift-primitives/swift-parser-primitives.git", branch: "main"),
     .package(url: "https://github.com/swift-foundations/swift-dual.git", branch: "main"),
     .package(url: "https://github.com/swift-foundations/swift-dependencies.git", branch: "main"),
@@ -82,34 +75,10 @@ let package = Package(
         .product(name: "MultipartFormCoding", package: "swift-multipart-form-coding"),
       ]
     ),
-    // Additive W2/S2 target: the `Authenticating` wrapper + Bearer/Basic
-    // Authorization-header routers. Depends on the existing `URLRouting`
-    // target plus the RFC credential value types (parsed/printed, never
-    // reimplemented). Additive only — `URLRouting` above is unchanged.
-    .target(
-      name: "Authenticating",
-      dependencies: [
-        "URLRouting",
-        // W3 E3: `@Dependency(APIRouter.self)` resolution in the consumer-evidenced
-        // Bearer convenience constructor. Package already in the graph (URLRouting
-        // depends on it); this is a target-edge addition only.
-        .product(name: "Dependencies", package: "swift-dependencies"),
-        .product(name: "RFC 6750", package: "swift-rfc-6750"),
-        .product(name: "RFC 7617", package: "swift-rfc-7617"),
-      ]
-    ),
     .testTarget(
       name: "URLRoutingTests",
       dependencies: [
         "URLRouting"
-      ]
-    ),
-    .testTarget(
-      name: "AuthenticatingTests",
-      dependencies: [
-        "Authenticating",
-        // W3 E3: `TestDependencyKey` conformance for the convenience-constructor tests.
-        .product(name: "Dependencies", package: "swift-dependencies"),
       ]
     ),
   ]
