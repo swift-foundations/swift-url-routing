@@ -7,7 +7,7 @@ import URLRouting
 #endif
 
 @Suite
-struct Test {
+struct `Parser Printer Request Tests` {
 
     // Multi-value cases carry NO argument labels: `@Cases` synthesizes an unlabeled
     // tuple `Case.Path` for them, matching the builder's `(A, B)` output.

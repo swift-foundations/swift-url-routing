@@ -4,7 +4,7 @@ import URLRouting
 import RFC_3986
 
 @Suite
-struct Test {
+struct `Path Security Tests` {
 
     @Test
     func `Path with .. segments is rejected by default`() throws {

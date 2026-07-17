@@ -19,7 +19,7 @@ private struct AddCollaborator: Codable, Equatable {
 }
 
 @Suite
-struct Test {
+struct `Optionally Tests` {
 
     // MARK: - Shape 1: optional query Field (carrier: Fields, via Query over Data)
 

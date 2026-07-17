@@ -7,7 +7,7 @@ import URLRouting
 #endif
 
 @Suite
-struct Test {
+struct `URL Routing Client Tests` {
     #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
         @Test
         @available(iOS 13, macOS 10.15, tvOS 13, watchOS 6, *)

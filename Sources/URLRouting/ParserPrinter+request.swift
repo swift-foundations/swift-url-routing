@@ -7,7 +7,8 @@
 
 import Dependencies
 import Foundation
-import LoggingExtras
+import Logger_Dependencies
+import Logging
 import OrderedCollections
 import RFC_3986
 

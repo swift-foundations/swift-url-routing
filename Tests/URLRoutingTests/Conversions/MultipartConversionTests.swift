@@ -21,7 +21,7 @@ private enum MPAPI: Equatable {
 }
 
 @Suite
-struct Test {
+struct `Multipart Conversion Tests` {
 
     struct TestRequest: Codable, Equatable {
         let name: String

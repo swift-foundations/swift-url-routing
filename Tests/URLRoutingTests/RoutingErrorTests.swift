@@ -142,7 +142,7 @@ private struct SiteRouter: ParserPrinter {
 }
 
 @Suite
-struct Test {
+struct `Routing Error Tests` {
     @Test
     func `Complex router rejects unmatched input`() throws {
         // "/123" matches none of the site routes; parsing must throw a routing error.

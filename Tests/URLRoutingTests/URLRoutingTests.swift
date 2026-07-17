@@ -15,7 +15,7 @@ private enum URTAppRoute: Equatable {
 }
 
 @Suite
-struct Test {
+struct `URL Routing Tests` {
 
     @Test
     func `Method parser`() throws {

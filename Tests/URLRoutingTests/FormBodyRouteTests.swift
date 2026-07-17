@@ -34,7 +34,7 @@ private struct FormRouter: ParserPrinter, Sendable {
 /// `RFC_3986.URI.Routing.Error` at the `Route` node, exactly as the `.json` Body
 /// path does — parse, print, and round-trip.
 @Suite
-struct Test {
+struct `Form Body Route Tests` {
 
     @Test
     func `Parse: explicit form-encoded request`() throws {

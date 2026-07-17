@@ -21,7 +21,8 @@ let package = Package(
     .package(url: "https://github.com/swift-primitives/swift-parser-primitives.git", branch: "main"),
     .package(url: "https://github.com/swift-foundations/swift-dual.git", branch: "main"),
     .package(url: "https://github.com/swift-foundations/swift-dependencies.git", branch: "main"),
-    .package(url: "https://github.com/swift-foundations/swift-logging-extras.git", branch: "main"),
+    .package(url: "https://github.com/swift-foundations/swift-logger-dependencies.git", branch: "main"),
+    .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0"),
     .package(url: "https://github.com/swift-ietf/swift-rfc-3986.git", branch: "main"),
     .package(url: "https://github.com/swift-ietf/swift-rfc-6570.git", branch: "main"),
     .package(url: "https://github.com/swift-ietf/swift-rfc-2045.git", branch: "main"),
@@ -40,7 +41,8 @@ let package = Package(
       name: "URLRouting",
       dependencies: [
         .product(name: "Dependencies", package: "swift-dependencies"),
-        .product(name: "LoggingExtras", package: "swift-logging-extras"),
+        .product(name: "Logger Dependencies", package: "swift-logger-dependencies"),
+        .product(name: "Logging", package: "swift-log"),
         .product(name: "OrderedCollections", package: "swift-collections"),
         // Institute L1 parser engine — narrow per-family products (routing W2 swap
         // off pointfree `Parsing`). Umbrella `Parser Primitives` avoided per R2.

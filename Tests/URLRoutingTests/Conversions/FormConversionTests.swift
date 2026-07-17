@@ -3,7 +3,7 @@ import Foundation
 import URLRouting
 
 @Suite
-struct Test {
+struct `Form Conversion Tests` {
 
     struct TestRequest: Codable, Equatable {
         let name: String

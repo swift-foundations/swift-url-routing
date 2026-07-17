@@ -4,7 +4,7 @@ import URLRouting
 import RFC_7230
 
 @Suite
-struct Test {
+struct `Header Security Tests` {
 
     @Test
     func `CRLF injection in header values is rejected`() throws {

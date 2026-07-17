@@ -26,7 +26,7 @@ private enum TEAPIRoute: Equatable {
 }
 
 @Suite
-struct Test {
+struct `Type Erasure Tests` {
 
     // Test basic AnyParserPrinter usage
     @Test

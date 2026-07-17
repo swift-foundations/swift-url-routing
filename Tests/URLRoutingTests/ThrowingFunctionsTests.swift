@@ -14,7 +14,7 @@ import WHATWG_HTML_Forms
 /// 2. Using throwing factory functions to create parsers
 /// 3. Loading parser configuration from external sources
 @Suite
-struct Test {
+struct `Throwing Functions Tests` {
 
     // MARK: - Domain Types
 

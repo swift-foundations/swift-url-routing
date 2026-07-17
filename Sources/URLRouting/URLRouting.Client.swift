@@ -1,6 +1,7 @@
 import Dependencies
 import Foundation
-import LoggingExtras
+import Logger_Dependencies
+import Logging
 import RFC_3986
 
 #if canImport(FoundationNetworking)

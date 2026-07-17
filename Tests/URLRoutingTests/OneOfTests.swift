@@ -37,7 +37,7 @@ private enum RESTRoute: Equatable {
 }
 
 @Suite
-struct Test {
+struct `OneOf Tests` {
 
     // Test OneOf with simple route alternatives
     @Test

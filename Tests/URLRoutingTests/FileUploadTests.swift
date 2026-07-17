@@ -3,7 +3,7 @@ import Foundation
 import URLRouting
 
 @Suite
-struct Test {
+struct `File Upload Tests` {
 
     // MARK: - Initialization Tests
 

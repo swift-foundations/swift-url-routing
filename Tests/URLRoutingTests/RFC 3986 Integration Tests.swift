@@ -7,7 +7,7 @@ import URLRouting
 #endif
 
 @Suite
-struct Test {
+struct `RFC 3986 Integration Tests` {
 
     @Test
     func `Parse RFC 3986 URI with all components`() throws {

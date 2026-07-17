@@ -7,7 +7,7 @@ import URLRouting
 #endif
 
 @Suite
-struct Test {
+struct `Foundation Bridge Tests` {
 
     // MARK: - URLRequest → RFC_3986.URI.Request.Data
 

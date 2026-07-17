@@ -7,7 +7,7 @@ import URLRouting
 #endif
 
 @Suite
-struct Test {
+struct `Parser Match Tests` {
 
     // Multi-value cases carry NO argument labels so the synthesized `Case.Path` tuple
     // matches the builder's unlabeled `(A, B)` output.

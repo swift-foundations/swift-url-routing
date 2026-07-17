@@ -5,7 +5,7 @@ import RFC_3986
 import RFC_7230
 
 @Suite
-struct Test {
+struct `Body Security Tests` {
 
     // MARK: - Size Validation Tests
 

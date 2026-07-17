@@ -34,7 +34,7 @@ private enum Level1: Equatable {
 }
 
 @Suite
-struct Test {
+struct `Map Conversion Tests` {
 
     // Test basic .map() with conversion on router
     @Test
