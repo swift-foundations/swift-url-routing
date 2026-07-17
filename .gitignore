@@ -4,3 +4,6 @@
 /Packages
 /*.xcodeproj
 xcuserdata/
+
+# SwiftPM resolution is reconstructed from main-pinned deps; do not track.
+Package.resolved
