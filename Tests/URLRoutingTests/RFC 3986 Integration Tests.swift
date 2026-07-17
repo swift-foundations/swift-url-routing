@@ -6,11 +6,11 @@ import URLRouting
     import FoundationNetworking
 #endif
 
-@Suite("RFC 3986 URI Integration")
-struct RFC3986IntegrationTests {
+@Suite
+struct Test {
 
-    @Test("Parse RFC 3986 URI with all components")
-    func parseCompleteURI() throws {
+    @Test
+    func `Parse RFC 3986 URI with all components`() throws {
         let uri = try RFC_3986.URI(
             "https://user:pass@api.example.com:8080/users/123?page=1&limit=10#section"
         )
@@ -26,8 +26,8 @@ struct RFC3986IntegrationTests {
         #expect(requestData.fragment == "section")
     }
 
-    @Test("Parse relative URI reference")
-    func parseRelativeReference() throws {
+    @Test
+    func `Parse relative URI reference`() throws {
         let uri = try RFC_3986.URI("/users/123?page=1")
         let requestData = try RFC_3986.URI.Request.Data(uri: uri)
 
@@ -37,8 +37,8 @@ struct RFC3986IntegrationTests {
         #expect(requestData.query["page"]?.first??.description == "1")
     }
 
-    @Test("Parse empty URI (same document reference)")
-    func parseEmptyURI() throws {
+    @Test
+    func `Parse empty URI (same document reference)`() throws {
         let uri = try RFC_3986.URI("")
         let requestData = try RFC_3986.URI.Request.Data(uri: uri)
 
@@ -47,8 +47,8 @@ struct RFC3986IntegrationTests {
         #expect(requestData.path.isEmpty)
     }
 
-    @Test("Print to RFC 3986 URI")
-    func printToURI() throws {
+    @Test
+    func `Print to RFC 3986 URI`() throws {
         let requestData = RFC_3986.URI.Request.Data(
             scheme: "https",
             host: "api.example.com",
@@ -65,8 +65,8 @@ struct RFC3986IntegrationTests {
         #expect(uri.value.contains("limit=10"))
     }
 
-    @Test("Round-trip URI → RFC_3986.URI.Request.Data → URI")
-    func roundTripURI() throws {
+    @Test
+    func `Round-trip URI → RFC 3986.URI.Request.Data → URI`() throws {
         let original = try RFC_3986.URI("https://api.example.com/users/123?page=1#section")
         let requestData = try RFC_3986.URI.Request.Data(uri: original)
         let reconstructed = try requestData.uri()
@@ -78,8 +78,8 @@ struct RFC3986IntegrationTests {
         #expect(reconstructed.value.contains("#section"))
     }
 
-    @Test("Parse URI with userinfo")
-    func parseUserinfo() throws {
+    @Test
+    func `Parse URI with userinfo`() throws {
         let uri = try RFC_3986.URI("https://user:password@example.com/resource")
         let requestData = try RFC_3986.URI.Request.Data(uri: uri)
 
@@ -87,8 +87,8 @@ struct RFC3986IntegrationTests {
         #expect(requestData.host == "example.com")
     }
 
-    @Test("Parse URI with userinfo (no password)")
-    func parseUserinfoNoPassword() throws {
+    @Test
+    func `Parse URI with userinfo (no password)`() throws {
         let uri = try RFC_3986.URI("https://user@example.com/resource")
         let requestData = try RFC_3986.URI.Request.Data(uri: uri)
 

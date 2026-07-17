@@ -4,13 +4,13 @@ import URLRouting
 import RFC_3986
 import RFC_7230
 
-@Suite("Body Security Tests")
-struct BodySecurityTests {
+@Suite
+struct Test {
 
     // MARK: - Size Validation Tests
 
-    @Test("Body within default size limit succeeds")
-    func testBodyWithinDefaultLimit() throws {
+    @Test
+    func `Body within default size limit succeeds`() throws {
         let parser = Body()
 
         // Create a 1 MiB body (well under 10 MiB default)
@@ -22,8 +22,8 @@ struct BodySecurityTests {
         }
     }
 
-    @Test("Body exceeding default size limit throws error")
-    func testBodyExceedingDefaultLimit() throws {
+    @Test
+    func `Body exceeding default size limit throws error`() throws {
         let parser = Body()
 
         // Create an 11 MiB body (exceeds 10 MiB default)
@@ -35,8 +35,8 @@ struct BodySecurityTests {
         }
     }
 
-    @Test("Body at exact default size limit succeeds")
-    func testBodyAtExactDefaultLimit() throws {
+    @Test
+    func `Body at exact default size limit succeeds`() throws {
         let parser = Body()
 
         // Create exactly 10 MiB body
@@ -48,8 +48,8 @@ struct BodySecurityTests {
         }
     }
 
-    @Test("Custom size limit is enforced")
-    func testCustomSizeLimit() throws {
+    @Test
+    func `Custom size limit is enforced`() throws {
         // Set a small 1 KiB limit
         let parser = Body(
             maxSize: Measurement(value: 1, unit: UnitInformationStorage.kibibytes)
@@ -64,8 +64,8 @@ struct BodySecurityTests {
         }
     }
 
-    @Test("Large custom limit allows large bodies")
-    func testLargeCustomLimit() throws {
+    @Test
+    func `Large custom limit allows large bodies`() throws {
         // Set a 50 MiB limit
         let parser = Body(
             maxSize: Measurement(value: 50, unit: UnitInformationStorage.mebibytes)
@@ -82,8 +82,8 @@ struct BodySecurityTests {
 
     // MARK: - Error Message Tests
 
-    @Test("Error message includes actual and max sizes")
-    func testErrorMessageFormat() throws {
+    @Test
+    func `Error message includes actual and max sizes`() throws {
         let parser = Body(
             maxSize: Measurement(value: 1, unit: UnitInformationStorage.kibibytes)
         )
@@ -103,8 +103,8 @@ struct BodySecurityTests {
 
     // MARK: - Integration with Conversions
 
-    @Test("JSON body parser respects size limit")
-    func testJSONBodySizeLimit() throws {
+    @Test
+    func `JSON body parser respects size limit`() throws {
         struct Comment: Codable {
             let message: String
         }
@@ -125,8 +125,8 @@ struct BodySecurityTests {
         }
     }
 
-    @Test("Small JSON body within limit succeeds")
-    func testSmallJSONBody() throws {
+    @Test
+    func `Small JSON body within limit succeeds`() throws {
         struct Comment: Codable {
             let message: String
         }
@@ -147,14 +147,14 @@ struct BodySecurityTests {
 
     // MARK: - Default vs Custom Limits
 
-    @Test("Default max size is 10 MiB")
-    func testDefaultMaxSize() {
+    @Test
+    func `Default max size is 10 Mi B`() {
         let expected = Measurement(value: 10, unit: UnitInformationStorage.mebibytes)
         #expect(RFC_7230.Body.Parser<Rest<Data>>.defaultMaxSize == expected)
     }
 
-    @Test("Empty body doesn't trigger size validation")
-    func testEmptyBodyDoesNotTriggerSizeValidation() throws {
+    @Test
+    func `Empty body doesn't trigger size validation`() throws {
         let parser = Body(
             maxSize: Measurement(value: 1, unit: UnitInformationStorage.bytes)
         )
@@ -177,8 +177,8 @@ struct BodySecurityTests {
 
     // MARK: - Real-World Scenarios
 
-    @Test("Realistic API endpoint with reasonable limit")
-    func testRealisticAPIEndpoint() throws {
+    @Test
+    func `Realistic API endpoint with reasonable limit`() throws {
         struct CreatePostRequest: Codable {
             let title: String
             let content: String
@@ -204,8 +204,8 @@ struct BodySecurityTests {
         #expect(result.title == "My Blog Post")
     }
 
-    @Test("Prevent DoS attack with massive body")
-    func testPreventDoSAttack() throws {
+    @Test
+    func `Prevent Do S attack with massive body`() throws {
         let parser = Body()
 
         // Simulate attacker trying to send 100 MiB body

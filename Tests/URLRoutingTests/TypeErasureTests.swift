@@ -25,12 +25,12 @@ private enum TEAPIRoute: Equatable {
     case list
 }
 
-@Suite("Type Erasure")
-struct TypeErasureTests {
+@Suite
+struct Test {
 
     // Test basic AnyParserPrinter usage
-    @Test("AnyParserPrinter erases concrete type")
-    func anyParserPrinterBasic() throws {
+    @Test
+    func `Any Parser Printer erases concrete type`() throws {
         let concreteParser = Method.get
         let erased = AnyParserPrinter(concreteParser)
 
@@ -40,8 +40,8 @@ struct TypeErasureTests {
     }
 
     // Test existential router type matching production pattern
-    @Test("Existential router with AnyParserPrinter")
-    func existentialRouter() throws {
+    @Test
+    func `Existential router with Any Parser Printer`() throws {
         typealias MyRoute = TEMyRoute
 
         struct MyRouter: ParserPrinter {
@@ -71,8 +71,8 @@ struct TypeErasureTests {
     }
 
     // Test .eraseToAnyParserPrinter() convenience method
-    @Test(".eraseToAnyParserPrinter() method")
-    func eraseToAnyParserPrinterMethod() throws {
+    @Test
+    func `.erase To Any Parser Printer() method`() throws {
         typealias ItemRoute = TEItemRoute
 
         struct ItemRouter: ParserPrinter {
@@ -93,8 +93,8 @@ struct TypeErasureTests {
     }
 
     // Test composition with erased routers matching production pattern
-    @Test("Composition with erased routers")
-    func compositionWithErasedRouters() throws {
+    @Test
+    func `Composition with erased routers`() throws {
         typealias APIRoute = TEAPIRoute
 
         struct APIRouter: ParserPrinter {
@@ -151,8 +151,8 @@ struct TypeErasureTests {
 
     // MARK: Sendable (W3 E4)
 
-    @Test("AnyParserPrinter stores in a Sendable context")
-    func anyParserPrinterSendable() throws {
+    @Test
+    func `Any Parser Printer stores in a Sendable context`() throws {
         typealias ItemRoute = TEItemRoute
 
         struct ItemRouter: ParserPrinter {

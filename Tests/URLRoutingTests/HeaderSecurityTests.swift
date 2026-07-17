@@ -3,11 +3,11 @@ import Testing
 import URLRouting
 import RFC_7230
 
-@Suite("Header Security Tests")
-struct HeaderSecurityTests {
+@Suite
+struct Test {
 
-    @Test("CRLF injection in header values is rejected")
-    func testCRLFInjectionRejected() throws {
+    @Test
+    func `CRLF injection in header values is rejected`() throws {
         let parser = Headers {
             RFC_7230.Header.Field.Parser("X-Custom-Header", .string)
         }
@@ -45,8 +45,8 @@ struct HeaderSecurityTests {
         }
     }
 
-    @Test("Valid header values are accepted")
-    func testValidHeaderValues() throws {
+    @Test
+    func `Valid header values are accepted`() throws {
         let parser = Headers {
             RFC_7230.Header.Field.Parser("X-Custom-Header", .string)
         }
@@ -73,8 +73,8 @@ struct HeaderSecurityTests {
         }
     }
 
-    @Test("Content-Type header with CRLF is rejected")
-    func testContentTypeCRLFRejected() throws {
+    @Test
+    func `Content-Type header with CRLF is rejected`() throws {
         // `Prefix { … }` (pointfree) was a printer; the institute `Parser.Prefix.While`
         // is parse-only, so the Content-Type value uses the bidirectional `Rest()` —
         // it echoes the whole value through header-field validation, which is what this
@@ -91,8 +91,8 @@ struct HeaderSecurityTests {
         }
     }
 
-    @Test("Multiple header values without CRLF")
-    func testMultipleHeaderValues() throws {
+    @Test
+    func `Multiple header values without CRLF`() throws {
         let parser = Headers {
             RFC_7230.Header.Field.Parser("X-Custom-Header", .string)
         }

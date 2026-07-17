@@ -2,16 +2,16 @@ import Testing
 import Foundation
 import URLRouting
 
-@Suite("Form.Conversion Integration Tests")
-struct FormConversionIntegrationTests {
+@Suite
+struct Test {
 
     struct TestRequest: Codable, Equatable {
         let name: String
         let age: Int
     }
 
-    @Test("Form.Conversion exists and is accessible")
-    func testConversionExists() throws {
+    @Test
+    func `Form.Conversion exists and is accessible`() throws {
         let conversion = Form.Conversion(TestRequest.self)
         let request = TestRequest(name: "Test", age: 25)
         // Just verify it can encode
@@ -19,8 +19,8 @@ struct FormConversionIntegrationTests {
         #expect(!data.isEmpty)
     }
 
-    @Test("URLRouting.Conversion.form() static method works")
-    func testStaticFormMethod() throws {
+    @Test
+    func `URLRouting.Conversion.form() static method works`() throws {
         // Use explicit type to initialize conversion
         let conversion = Form.Conversion(TestRequest.self)
         let request = TestRequest(name: "John", age: 30)
@@ -28,8 +28,8 @@ struct FormConversionIntegrationTests {
         #expect(!data.isEmpty)
     }
 
-    @Test("Round-trip encoding and decoding")
-    func testRoundTrip() throws {
+    @Test
+    func `Round-trip encoding and decoding`() throws {
         let conversion = Form.Conversion(TestRequest.self)
         let original = TestRequest(name: "Jane", age: 25)
 
@@ -39,8 +39,8 @@ struct FormConversionIntegrationTests {
         #expect(decoded == original)
     }
 
-    @Test("Form encoding with optional values")
-    func testOptionalValues() throws {
+    @Test
+    func `Form encoding with optional values`() throws {
         struct RequestWithOptionals: Codable, Equatable {
             let required: String
             let optional: String?
@@ -62,8 +62,8 @@ struct FormConversionIntegrationTests {
         #expect(decoded2 == withoutOptionals)
     }
 
-    @Test("Form encoding with different value types")
-    func testDifferentTypes() throws {
+    @Test
+    func `Form encoding with different value types`() throws {
         struct MixedRequest: Codable, Equatable {
             let string: String
             let int: Int
@@ -80,8 +80,8 @@ struct FormConversionIntegrationTests {
         #expect(decoded == original)
     }
 
-    @Test("Form encoding with arrays")
-    func testArrays() throws {
+    @Test
+    func `Form encoding with arrays`() throws {
         struct ArrayRequest: Codable, Equatable {
             let items: [String]
             let numbers: [Int]
@@ -96,8 +96,8 @@ struct FormConversionIntegrationTests {
         #expect(decoded == original)
     }
 
-    @Test("Form encoding with custom decoder configuration")
-    func testCustomDecoder() throws {
+    @Test
+    func `Form encoding with custom decoder configuration`() throws {
         struct DateRequest: Codable, Equatable {
             let createdAt: Date
         }
@@ -118,8 +118,8 @@ struct FormConversionIntegrationTests {
         #expect(abs(decoded.createdAt.timeIntervalSince1970 - original.createdAt.timeIntervalSince1970) < 1)
     }
 
-    @Test("Form encoding with nested objects as JSON")
-    func testNestedObjects() throws {
+    @Test
+    func `Form encoding with nested objects as JSON`() throws {
         struct Address: Codable, Equatable {
             let street: String
             let city: String
@@ -149,8 +149,8 @@ struct FormConversionIntegrationTests {
         // This is expected behavior for URL form encoding with complex nested structures
     }
 
-    @Test("Convenience form() static method")
-    func testConvenienceMethod() throws {
+    @Test
+    func `Convenience form() static method`() throws {
         let conversion: Form.Conversion<TestRequest> = .init(TestRequest.self)
         let original = TestRequest(name: "Test", age: 30)
 

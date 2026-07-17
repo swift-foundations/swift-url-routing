@@ -141,10 +141,10 @@ private struct SiteRouter: ParserPrinter {
     }
 }
 
-@Suite("Routing Error Formatting")
-struct RoutingErrorTests {
-    @Test("Complex router rejects unmatched input")
-    func complexRouterError() throws {
+@Suite
+struct Test {
+    @Test
+    func `Complex router rejects unmatched input`() throws {
         // "/123" matches none of the site routes; parsing must throw a routing error.
         #expect(throws: RFC_3986.URI.Routing.Error.self) {
             _ = try SiteRouter().parse(RFC_3986.URI.Request.Data(path: "/123"))

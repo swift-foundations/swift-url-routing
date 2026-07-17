@@ -6,8 +6,8 @@ import URLRouting
     import FoundationNetworking
 #endif
 
-@Suite("ParserPrinter request() Extensions Tests")
-struct ParserPrinterRequestTests {
+@Suite
+struct Test {
 
     // Multi-value cases carry NO argument labels: `@Cases` synthesizes an unlabeled
     // tuple `Case.Path` for them, matching the builder's `(A, B)` output.
@@ -58,24 +58,24 @@ struct ParserPrinterRequestTests {
 
     // MARK: - request(for:) Tests
 
-    @Test("Generate URLRequest for simple route")
-    func testRequestForSimpleRoute() throws {
+    @Test
+    func `Generate URLRequest for simple route`() throws {
         let router = TestRouter()
         let request = try router.request(for: .home)
 
         #expect(request.url?.path == "/home")
     }
 
-    @Test("Generate URLRequest with path parameter")
-    func testRequestForRouteWithParameter() throws {
+    @Test
+    func `Generate URLRequest with path parameter`() throws {
         let router = TestRouter()
         let request = try router.request(for: .user(id: 42))
 
         #expect(request.url?.path == "/users/42")
     }
 
-    @Test("Generate URLRequest with query parameter")
-    func testRequestForRouteWithQuery() throws {
+    @Test
+    func `Generate URLRequest with query parameter`() throws {
         let router = TestRouter()
         let request = try router.request(for: .search(query: "swift"))
 
@@ -83,16 +83,16 @@ struct ParserPrinterRequestTests {
         #expect(request.url?.query?.contains("q=swift") == true)
     }
 
-    @Test("Generate URLRequest with multiple path components")
-    func testRequestForRouteWithMultipleComponents() throws {
+    @Test
+    func `Generate URLRequest with multiple path components`() throws {
         let router = TestRouter()
         let request = try router.request(for: .api("v1", "users"))
 
         #expect(request.url?.path == "/api/v1/users")
     }
 
-    @Test("Generate URLRequest with path and query parameters")
-    func testRequestForRouteWithPathAndQuery() throws {
+    @Test
+    func `Generate URLRequest with path and query parameters`() throws {
         let router = TestRouter()
         let request = try router.request(for: .userWithQuery(123, "active"))
 
@@ -100,8 +100,8 @@ struct ParserPrinterRequestTests {
         #expect(request.url?.query?.contains("filter=active") == true)
     }
 
-    @Test("Generate URLRequest with special characters in query")
-    func testRequestForRouteWithSpecialCharacters() throws {
+    @Test
+    func `Generate URLRequest with special characters in query`() throws {
         let router = TestRouter()
         let request = try router.request(for: .search(query: "hello world"))
 
@@ -113,24 +113,24 @@ struct ParserPrinterRequestTests {
 
     // MARK: - url(for:) Tests
 
-    @Test("Generate URL for simple route")
-    func testURLForSimpleRoute() {
+    @Test
+    func `Generate URL for simple route`() {
         let router = TestRouter()
         let url = router.url(for: .home)
 
         #expect(url.path == "/home")
     }
 
-    @Test("Generate URL with path parameter")
-    func testURLForRouteWithParameter() {
+    @Test
+    func `Generate URL with path parameter`() {
         let router = TestRouter()
         let url = router.url(for: .user(id: 999))
 
         #expect(url.path == "/users/999")
     }
 
-    @Test("Generate URL with query parameter")
-    func testURLForRouteWithQuery() {
+    @Test
+    func `Generate URL with query parameter`() {
         let router = TestRouter()
         let url = router.url(for: .search(query: "testing"))
 
@@ -138,16 +138,16 @@ struct ParserPrinterRequestTests {
         #expect(url.query?.contains("q=testing") == true)
     }
 
-    @Test("Generate URL with multiple path components")
-    func testURLForRouteWithMultipleComponents() {
+    @Test
+    func `Generate URL with multiple path components`() {
         let router = TestRouter()
         let url = router.url(for: .api("v2", "posts"))
 
         #expect(url.path == "/api/v2/posts")
     }
 
-    @Test("Generate URL with path and query parameters")
-    func testURLForRouteWithPathAndQuery() {
+    @Test
+    func `Generate URL with path and query parameters`() {
         let router = TestRouter()
         let url = router.url(for: .userWithQuery(456, "inactive"))
 
@@ -155,8 +155,8 @@ struct ParserPrinterRequestTests {
         #expect(url.query?.contains("filter=inactive") == true)
     }
 
-    @Test("Generate URL handles special characters")
-    func testURLForRouteWithSpecialCharacters() {
+    @Test
+    func `Generate URL handles special characters`() {
         let router = TestRouter()
         let url = router.url(for: .search(query: "swift & ios"))
 
@@ -167,24 +167,24 @@ struct ParserPrinterRequestTests {
 
     // MARK: - urlPath(for:) Tests
 
-    @Test("Generate URL path for simple route")
-    func testURLPathForSimpleRoute() {
+    @Test
+    func `Generate URL path for simple route`() {
         let router = TestRouter()
         let path = router.urlPath(for: .home)
 
         #expect(path == "/home")
     }
 
-    @Test("Generate URL path with parameter")
-    func testURLPathForRouteWithParameter() {
+    @Test
+    func `Generate URL path with parameter`() {
         let router = TestRouter()
         let path = router.urlPath(for: .user(id: 42))
 
         #expect(path == "/users/42")
     }
 
-    @Test("Generate URL path with query parameter")
-    func testURLPathForRouteWithQuery() {
+    @Test
+    func `Generate URL path with query parameter`() {
         let router = TestRouter()
         let path = router.urlPath(for: .search(query: "swift"))
 
@@ -192,16 +192,16 @@ struct ParserPrinterRequestTests {
         #expect(path.contains("q=swift"))
     }
 
-    @Test("Generate URL path with multiple components")
-    func testURLPathForRouteWithMultipleComponents() {
+    @Test
+    func `Generate URL path with multiple components`() {
         let router = TestRouter()
         let path = router.urlPath(for: .api("v3", "comments"))
 
         #expect(path == "/api/v3/comments")
     }
 
-    @Test("Generate URL path with path and query")
-    func testURLPathForRouteWithPathAndQuery() {
+    @Test
+    func `Generate URL path with path and query`() {
         let router = TestRouter()
         let path = router.urlPath(for: .userWithQuery(789, "pending"))
 
@@ -209,8 +209,8 @@ struct ParserPrinterRequestTests {
         #expect(path.contains("filter=pending"))
     }
 
-    @Test("Generate URL path includes query string separator")
-    func testURLPathIncludesQuerySeparator() {
+    @Test
+    func `Generate URL path includes query string separator`() {
         let router = TestRouter()
         let path = router.urlPath(for: .search(query: "test"))
 
@@ -224,8 +224,8 @@ struct ParserPrinterRequestTests {
 
     // MARK: - Round-trip Tests
 
-    @Test("Round-trip: request -> match -> request")
-    func testRoundTripRequestMatchRequest() throws {
+    @Test
+    func `Round-trip: request -> match -> request`() throws {
         let router = TestRouter()
         let originalRoute = TestRoute.user(id: 42)
 
@@ -237,8 +237,8 @@ struct ParserPrinterRequestTests {
         #expect(request.url?.path == finalRequest.url?.path)
     }
 
-    @Test("Round-trip: url -> match -> url")
-    func testRoundTripURLMatchURL() throws {
+    @Test
+    func `Round-trip: url -> match -> url`() throws {
         let router = TestRouter()
         let originalRoute = TestRoute.search(query: "testing")
 
@@ -250,8 +250,8 @@ struct ParserPrinterRequestTests {
         #expect(url.path == finalURL.path)
     }
 
-    @Test("Round-trip: path -> match -> path")
-    func testRoundTripPathMatchPath() throws {
+    @Test
+    func `Round-trip: path -> match -> path`() throws {
         let router = TestRouter()
         let originalRoute = TestRoute.api("v1", "users")
 
@@ -265,8 +265,8 @@ struct ParserPrinterRequestTests {
 
     // MARK: - Consistency Tests
 
-    @Test("request(), url(), and urlPath() produce consistent paths")
-    func testConsistentPathGeneration() throws {
+    @Test
+    func `Request(), url(), and url Path() produce consistent paths`() throws {
         let router = TestRouter()
         let route = TestRoute.user(id: 123)
 
@@ -278,8 +278,8 @@ struct ParserPrinterRequestTests {
         #expect(url.path == urlPath)
     }
 
-    @Test("All generation methods work with query parameters")
-    func testConsistentQueryParameterGeneration() throws {
+    @Test
+    func `All generation methods work with query parameters`() throws {
         let router = TestRouter()
         let route = TestRoute.search(query: "swift")
 
@@ -300,8 +300,8 @@ struct ParserPrinterRequestTests {
 
     // MARK: - Edge Cases
 
-    @Test("Generate paths for routes with numeric IDs")
-    func testNumericIDsInPaths() throws {
+    @Test
+    func `Generate paths for routes with numeric IDs`() throws {
         let router = TestRouter()
 
         // Test various numeric values
@@ -312,8 +312,8 @@ struct ParserPrinterRequestTests {
         }
     }
 
-    @Test("Generate paths with empty strings handled appropriately")
-    func testEmptyStringHandling() {
+    @Test
+    func `Generate paths with empty strings handled appropriately`() {
         let router = TestRouter()
         let route = TestRoute.search(query: "")
 

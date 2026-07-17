@@ -13,8 +13,8 @@ import WHATWG_HTML_Forms
 /// 1. Building parsers conditionally based on configuration that might fail
 /// 2. Using throwing factory functions to create parsers
 /// 3. Loading parser configuration from external sources
-@Suite("Throwing Functions Support")
-struct ThrowingFunctionsTests {
+@Suite
+struct Test {
 
     // MARK: - Domain Types
 
@@ -36,8 +36,8 @@ struct ThrowingFunctionsTests {
 
     // MARK: - Tests Demonstrating Throwing Support
 
-    @Test("Parser builder CAN use throwing factory functions")
-    func parserBuilderCanUseThrowingFactory() throws {
+    @Test
+    func `Parser builder CAN use throwing factory functions`() throws {
         // ✅ Now we CAN use throwing functions during parser construction!
         let parser = try Query {
             try RFC_3986.URI.Query.Field("email") {
@@ -50,8 +50,8 @@ struct ThrowingFunctionsTests {
         #expect(result == "user@example.com")
     }
 
-    @Test("Conditional parser construction with throwing")
-    func conditionalParserConstruction() throws {
+    @Test
+    func `Conditional parser construction with throwing`() throws {
         // ✅ Throwing allows conditional parser construction
         let strictParser = try Query {
             try RFC_3986.URI.Query.Field("email") {
@@ -74,8 +74,8 @@ struct ThrowingFunctionsTests {
         #expect(result2 == "user@example.com")
     }
 
-    @Test("FormData parser builder with throwing factory")
-    func formDataWithThrowingFactory() throws {
+    @Test
+    func `Form Data parser builder with throwing factory`() throws {
         let parser = try Body {
             try FormData {
                 try Form.Data.Field("email") {
@@ -89,8 +89,8 @@ struct ThrowingFunctionsTests {
         #expect(result == "user@example.com")
     }
 
-    @Test("Path parser builder with throwing factory")
-    func pathWithThrowingFactory() throws {
+    @Test
+    func `Path parser builder with throwing factory`() throws {
         func makeUserParser() throws -> some Parser.Bidirectional<Substring, String, Either<Never, Never>> {
             // Could throw during configuration loading
             return Rest().map(.string)
@@ -106,8 +106,8 @@ struct ThrowingFunctionsTests {
         #expect(result == "john")
     }
 
-    @Test("Backward compatibility - non-throwing construction still works")
-    func backwardCompatibility() throws {
+    @Test
+    func `Backward compatibility - non-throwing construction still works`() throws {
         // ✅ Non-throwing closures still work (backward compatible)
         let parser = Query {
             RFC_3986.URI.Query.Field("name", .string)
@@ -120,8 +120,8 @@ struct ThrowingFunctionsTests {
         #expect(age == 42)
     }
 
-    @Test("Multiple fields with mixed throwing and non-throwing")
-    func mixedThrowingAndNonThrowing() throws {
+    @Test
+    func `Multiple fields with mixed throwing and non-throwing`() throws {
         func makeAgeParser() throws -> some Parser.Bidirectional<Substring, Int, RFC_3986.URI.Routing.Error> {
             Int.parser()
         }
@@ -148,8 +148,8 @@ struct ThrowingFunctionsTests {
 
     // MARK: - Regression Tests for Ambiguous Init
 
-    @Test("Path with Rest().map() without explicit try should not be ambiguous")
-    func pathWithMapNoExplicitTry() throws {
+    @Test
+    func `Path with Rest().map() without explicit try should not be ambiguous`() throws {
         // This reproduces the swift-mailgun-types pattern that caused ambiguous init errors
         let parser = Path {
             "api"
@@ -161,8 +161,8 @@ struct ThrowingFunctionsTests {
         #expect(result == "value")
     }
 
-    @Test("Query with Field without explicit try should not be ambiguous")
-    func queryWithFieldNoExplicitTry() throws {
+    @Test
+    func `Query with Field without explicit try should not be ambiguous`() throws {
         // Another pattern that could cause ambiguity
         let parser = Query {
             RFC_3986.URI.Query.Field("name") { Rest().map(.string) }  // No explicit try
@@ -173,8 +173,8 @@ struct ThrowingFunctionsTests {
         #expect(result == "test")
     }
 
-    @Test("Headers with Field without explicit try should not be ambiguous")
-    func headersWithFieldNoExplicitTry() throws {
+    @Test
+    func `Headers with Field without explicit try should not be ambiguous`() throws {
         // Test the Headers parser ambiguity
         let parser = Headers {
             RFC_7230.Header.Field.Parser("X-Custom") { Rest().map(.string) }  // No explicit try
@@ -186,8 +186,8 @@ struct ThrowingFunctionsTests {
         #expect(result == "value")
     }
 
-    @Test("Body with FormData Field without explicit try should not be ambiguous")
-    func bodyWithFormDataFieldNoExplicitTry() throws {
+    @Test
+    func `Body with Form Data Field without explicit try should not be ambiguous`() throws {
         // Test Body parser ambiguity
         let parser = Body {
             FormData {
@@ -202,8 +202,8 @@ struct ThrowingFunctionsTests {
 
     // MARK: - ContentType Convenience Parser Tests
 
-    @Test("ContentType with String literal")
-    func contentTypeWithString() throws {
+    @Test
+    func `Content Type with String literal`() throws {
         let parser = Headers {
             ContentType { "multipart/form-data" }
         }
@@ -214,8 +214,8 @@ struct ThrowingFunctionsTests {
         #expect(result == ())
     }
 
-    @Test("ContentType with RFC_2045.ContentType.headerValue")
-    func contentTypeWithRFC2045HeaderValue() throws {
+    @Test
+    func `Content Type with RFC 2045.Content Type.header Value`() throws {
         let contentType = try RFC_2045.ContentType("multipart/form-data; boundary=----boundary123")
 
         let parser = Headers {

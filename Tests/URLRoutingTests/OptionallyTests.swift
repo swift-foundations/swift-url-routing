@@ -18,13 +18,13 @@ private struct AddCollaborator: Codable, Equatable {
     var permission: String
 }
 
-@Suite("Optionally Combinator")
-struct OptionallyTests {
+@Suite
+struct Test {
 
     // MARK: - Shape 1: optional query Field (carrier: Fields, via Query over Data)
 
-    @Test("Optionally query Field: parse present + absent")
-    func optionalFieldParse() throws {
+    @Test
+    func `Optionally query Field: parse present + absent`() throws {
         let query = URLRouting.Query {
             Optionally { Field("page") { Int.parser() } }
         }
@@ -41,8 +41,8 @@ struct OptionallyTests {
         #expect(absent == emptyData)
     }
 
-    @Test("Optionally query Field: print some + none")
-    func optionalFieldPrint() throws {
+    @Test
+    func `Optionally query Field: print some + none`() throws {
         let query = URLRouting.Query {
             Optionally { Field("page") { Int.parser() } }
         }
@@ -59,8 +59,8 @@ struct OptionallyTests {
         #expect(none.query.isEmpty)
     }
 
-    @Test("Optionally query Field: round-trip")
-    func optionalFieldRoundTrip() throws {
+    @Test
+    func `Optionally query Field: round-trip`() throws {
         let query = URLRouting.Query {
             Optionally { Field("page") { Int.parser() } }
         }
@@ -81,8 +81,8 @@ struct OptionallyTests {
     // re-pins that to the routing domain, but standalone it cannot be named as a clean
     // `URLRouting.Router` opaque type. `Optionally` faithfully inherits that failure.
 
-    @Test("Optionally memberwise group: parse full group")
-    func optionalGroupParsePresent() throws {
+    @Test
+    func `Optionally memberwise group: parse full group`() throws {
         let group = Optionally {
             Parse(.memberwise(Paging.init, { ($0.limit, $0.cursor) })) {
                 URLRouting.Query {
@@ -97,8 +97,8 @@ struct OptionallyTests {
         #expect(data.query.isEmpty)
     }
 
-    @Test("Optionally memberwise group: backtracks cleanly on partial consumption")
-    func optionalGroupBacktrackNoLeak() throws {
+    @Test
+    func `Optionally memberwise group: backtracks cleanly on partial consumption`() throws {
         let group = Optionally {
             Parse(.memberwise(Paging.init, { ($0.limit, $0.cursor) })) {
                 URLRouting.Query {
@@ -117,8 +117,8 @@ struct OptionallyTests {
         #expect(data == original)  // "limit" was restored, not leaked
     }
 
-    @Test("Optionally memberwise group: print some + none, round-trip")
-    func optionalGroupPrint() throws {
+    @Test
+    func `Optionally memberwise group: print some + none, round-trip`() throws {
         let group = Optionally {
             Parse(.memberwise(Paging.init, { ($0.limit, $0.cursor) })) {
                 URLRouting.Query {
@@ -148,8 +148,8 @@ struct OptionallyTests {
         }
     }
 
-    @Test("Optionally Body: parse present + absent")
-    func optionalBodyParse() throws {
+    @Test
+    func `Optionally Body: parse present + absent`() throws {
         let router = bodyRouter()
         let payload = AddCollaborator(permission: "push")
 
@@ -166,8 +166,8 @@ struct OptionallyTests {
         #expect(absent == emptyData)
     }
 
-    @Test("Optionally Body: print none emits nothing")
-    func optionalBodyPrintNone() throws {
+    @Test
+    func `Optionally Body: print none emits nothing`() throws {
         let router = bodyRouter()
 
         var none = RFC_3986.URI.Request.Data()
@@ -175,8 +175,8 @@ struct OptionallyTests {
         #expect(none.body == nil)
     }
 
-    @Test("Optionally Body: round-trip")
-    func optionalBodyRoundTrip() throws {
+    @Test
+    func `Optionally Body: round-trip`() throws {
         let router = bodyRouter()
 
         for value in [AddCollaborator?.some(.init(permission: "admin")), AddCollaborator?.none] {

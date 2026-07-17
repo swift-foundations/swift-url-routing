@@ -14,37 +14,37 @@ private enum URTAppRoute: Equatable {
     case privacyPolicy(section: String)
 }
 
-@Suite("URL Routing")
-struct URLRoutingTests {
+@Suite
+struct Test {
 
-    @Test("Method parser")
-    func method() throws {
+    @Test
+    func `Method parser`() throws {
         var request = RFC_3986.URI.Request.Data(method: .post)
         #expect(throws: Never.self) { try Method.post.parse(&request) }
         #expect(try Method.post.print() == RFC_3986.URI.Request.Data(method: .post))
     }
 
-    @Test("Host parser")
-    func host() throws {
+    @Test
+    func `Host parser`() throws {
         var request = RFC_3986.URI.Request.Data(host: "foo")
         #expect(throws: Never.self) { try Host.custom("foo").parse(&request) }
         #expect(try Host.custom("foo").print() == RFC_3986.URI.Request.Data(host: "foo"))
     }
 
-    @Test("Scheme parser")
-    func scheme() throws {
+    @Test
+    func `Scheme parser`() throws {
         var request = RFC_3986.URI.Request.Data(scheme: "http")
         #expect(throws: Never.self) { try Scheme.http.parse(&request) }
         #expect(try Scheme.http.print() == RFC_3986.URI.Request.Data(scheme: "http"))
     }
 
-    @Test("Path parser with integer")
-    func pathWithInt() throws {
+    @Test
+    func `Path parser with integer`() throws {
         #expect(try Path { Int.parser() }.parse(RFC_3986.URI.Request.Data(path: "/123")) == 123)
     }
 
-    @Test("Path parser error formatting")
-    func pathError() throws {
+    @Test
+    func `Path parser error formatting`() throws {
         // The institute routing error formats differently from pointfree's parser
         // diagnostic; the load-bearing behavior is that trailing input is rejected.
         #expect(throws: RFC_3986.URI.Routing.Error.self) {
@@ -52,8 +52,8 @@ struct URLRoutingTests {
         }
     }
 
-    @Test("Form data parsing")
-    func formData() throws {
+    @Test
+    func `Form data parsing`() throws {
         let p = Body {
             FormData {
                 Form.Data.Field("name", .string)
@@ -68,8 +68,8 @@ struct URLRoutingTests {
         #expect(request.body.map { String(decoding: $0, as: UTF8.self) } == "debug=1")
     }
 
-    @Test("Headers parsing")
-    func headers() throws {
+    @Test
+    func `Headers parsing`() throws {
         let p = Headers {
             RFC_7230.Header.Field.Parser("X-Haha", .string)
         }
@@ -88,8 +88,8 @@ struct URLRoutingTests {
         #expect(remaining["x-haha"]?.first??.description == "Blob")
     }
 
-    @Test("Query parsing")
-    func query() throws {
+    @Test
+    func `Query parsing`() throws {
         let p = Query {
             RFC_3986.URI.Query.Field("name")
             RFC_3986.URI.Query.Field("age") { Int.parser() }
@@ -108,8 +108,8 @@ struct URLRoutingTests {
         )
     }
 
-    @Test("Query with default value")
-    func queryDefault() throws {
+    @Test
+    func `Query with default value`() throws {
         let p = Query {
             RFC_3986.URI.Query.Field("page", default: 1) {
                 Int.parser()
@@ -129,8 +129,8 @@ struct URLRoutingTests {
         )
     }
 
-    @Test("Fragment parsing")
-    func fragment() throws {
+    @Test
+    func `Fragment parsing`() throws {
         // test default initializer
         let q1 = URIFragment()
 
@@ -188,8 +188,8 @@ struct URLRoutingTests {
         )
     }
 
-    @Test("Cookies parsing")
-    func cookies() throws {
+    @Test
+    func `Cookies parsing`() throws {
         struct Session: Equatable {
             var userId: Int
             var isAdmin: Bool
@@ -214,8 +214,8 @@ struct URLRoutingTests {
         )
     }
 
-    @Test("JSON cookies parsing")
-    func jsonCookies() throws {
+    @Test
+    func `JSON cookies parsing`() throws {
         struct Session: Codable, Equatable {
             var userId: Int
         }
@@ -232,8 +232,8 @@ struct URLRoutingTests {
         )
     }
 
-    @Test("Base URL routing")
-    func baseURL() throws {
+    @Test
+    func `Base URL routing`() throws {
         enum AppRoute { case home, episodes }
 
         let router = OneOf {
@@ -262,8 +262,8 @@ struct URLRoutingTests {
         )
     }
 
-    @Test("Transform base request data")
-    func transform() throws {
+    @Test
+    func `Transform base request data`() throws {
         enum AppRoute { case home, episodes }
 
         let router = OneOf {

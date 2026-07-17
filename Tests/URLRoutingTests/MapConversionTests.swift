@@ -33,12 +33,12 @@ private enum Level1: Equatable {
     case value(Int)
 }
 
-@Suite("Map and Conversion")
-struct MapConversionTests {
+@Suite
+struct Test {
 
     // Test basic .map() with conversion on router
-    @Test(".map() with conversion for route transformation")
-    func mapWithConversion() throws {
+    @Test
+    func `.map() with conversion for route transformation`() throws {
         enum OuterRoute: Equatable {
             case inner(InnerRoute)
             case other
@@ -85,8 +85,8 @@ struct MapConversionTests {
     }
 
     // Test function-based conversion matching production pattern
-    @Test(".map() with function conversion")
-    func mapWithFunctionConversion() throws {
+    @Test
+    func `.map() with function conversion`() throws {
         enum AppRoute: Equatable {
             case items(MapItemRoute)
             case home
@@ -131,8 +131,8 @@ struct MapConversionTests {
     }
 
     // Test composition with .map() matching repotraffic pattern
-    @Test("Router composition with .map()")
-    func routerComposition() throws {
+    @Test
+    func `Router composition with .map()`() throws {
         struct APIRouter: ParserPrinter {
             var body: some URLRouting.Router<MapAPIRoute> {
                 OneOf {
@@ -183,8 +183,8 @@ struct MapConversionTests {
     }
 
     // Test chained .map() operations
-    @Test("Chained .map() transformations")
-    func chainedMaps() throws {
+    @Test
+    func `Chained .map() transformations`() throws {
         enum Level2: Equatable {
             case level1(Level1)
         }

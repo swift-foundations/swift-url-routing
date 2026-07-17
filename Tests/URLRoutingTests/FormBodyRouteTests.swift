@@ -33,11 +33,11 @@ private struct FormRouter: ParserPrinter, Sendable {
 /// unpinned. These tests pin it: the Skip-chain's `Either` failure collapses into
 /// `RFC_3986.URI.Routing.Error` at the `Route` node, exactly as the `.json` Body
 /// path does — parse, print, and round-trip.
-@Suite("Route-level .form Body")
-struct FormBodyRouteTests {
+@Suite
+struct Test {
 
-    @Test("parse: explicit form-encoded request")
-    func parseExplicit() throws {
+    @Test
+    func `Parse: explicit form-encoded request`() throws {
         let router = FormRouter()
         let request = RFC_3986.URI.Request.Data(
             method: .post,
@@ -47,8 +47,8 @@ struct FormBodyRouteTests {
         #expect(try router.parse(request) == .submit(ContactForm(name: "Jane", age: 30)))
     }
 
-    @Test("print: emits method, path, and form body")
-    func printEmits() throws {
+    @Test
+    func `Print: emits method, path, and form body`() throws {
         let router = FormRouter()
         var data = RFC_3986.URI.Request.Data()
         try router.print(.submit(ContactForm(name: "Jane", age: 30)), into: &data)
@@ -59,8 +59,8 @@ struct FormBodyRouteTests {
         #expect(!(data.body ?? Foundation.Data()).isEmpty)
     }
 
-    @Test("round-trip: print then parse")
-    func roundTrip() throws {
+    @Test
+    func `Round-trip: print then parse`() throws {
         let router = FormRouter()
 
         for form in [

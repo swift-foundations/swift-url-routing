@@ -36,12 +36,12 @@ private enum RESTRoute: Equatable {
     case delete(Int)
 }
 
-@Suite("OneOf Combinator")
-struct OneOfTests {
+@Suite
+struct Test {
 
     // Test OneOf with simple route alternatives
-    @Test("OneOf with method alternatives")
-    func methodAlternatives() throws {
+    @Test
+    func `One Of with method alternatives`() throws {
         let parser = OneOf {
             Method.get
             Method.post
@@ -58,8 +58,8 @@ struct OneOfTests {
     }
 
     // Test OneOf with path alternatives matching production pattern
-    @Test("OneOf with path alternatives")
-    func pathAlternatives() throws {
+    @Test
+    func `One Of with path alternatives`() throws {
         typealias TestRoute = OneOfTestRoute
 
         struct TestRouter: ParserPrinter {
@@ -90,8 +90,8 @@ struct OneOfTests {
     }
 
     // Test OneOf with nested routers matching production pattern
-    @Test("OneOf with nested routers")
-    func nestedRouters() throws {
+    @Test
+    func `One Of with nested routers`() throws {
         typealias APIRoute = OneOfAPIRoute
         typealias MainRoute = OneOfMainRoute
 
@@ -136,8 +136,8 @@ struct OneOfTests {
     }
 
     // Test OneOf with complex route combinations
-    @Test("OneOf with method and path combinations")
-    func methodAndPathCombinations() throws {
+    @Test
+    func `One Of with method and path combinations`() throws {
         struct RESTRouter: ParserPrinter {
             var body: some URLRouting.Router<RESTRoute> {
                 OneOf {

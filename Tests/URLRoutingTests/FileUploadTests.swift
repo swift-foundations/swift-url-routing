@@ -2,13 +2,13 @@ import Testing
 import Foundation
 import URLRouting
 
-@Suite("FileUpload Tests")
-struct FileUploadTests {
+@Suite
+struct Test {
 
     // MARK: - Initialization Tests
 
-    @Test("Create FileUpload with valid parameters")
-    func testValidInitialization() throws {
+    @Test
+    func `Create File Upload with valid parameters`() throws {
         let fileUpload = try FileUpload(
             fieldName: "document",
             filename: "report.pdf",
@@ -20,8 +20,8 @@ struct FileUploadTests {
         #expect(fileUpload.maxSize == FileUpload.maxFileSize)
     }
 
-    @Test("Create FileUpload with custom max size")
-    func testCustomMaxSize() throws {
+    @Test
+    func `Create File Upload with custom max size`() throws {
         let customSize = Measurement(value: 5, unit: UnitInformationStorage.mebibytes)
         let fileUpload = try FileUpload(
             fieldName: "photo",
@@ -33,8 +33,8 @@ struct FileUploadTests {
         #expect(fileUpload.maxSize == customSize)
     }
 
-    @Test("Empty field name throws error")
-    func testEmptyFieldNameThrows() throws {
+    @Test
+    func `Empty field name throws error`() throws {
         #expect(throws: FileUpload.Error.self) {
             try FileUpload(
                 fieldName: "",
@@ -44,8 +44,8 @@ struct FileUploadTests {
         }
     }
 
-    @Test("Empty filename throws error")
-    func testEmptyFilenameThrows() throws {
+    @Test
+    func `Empty filename throws error`() throws {
         #expect(throws: FileUpload.Error.self) {
             try FileUpload(
                 fieldName: "document",
@@ -55,8 +55,8 @@ struct FileUploadTests {
         }
     }
 
-    @Test("Filename with forward slash throws error")
-    func testFilenameWithForwardSlashThrows() throws {
+    @Test
+    func `Filename with forward slash throws error`() throws {
         #expect(throws: FileUpload.Error.self) {
             try FileUpload(
                 fieldName: "document",
@@ -66,8 +66,8 @@ struct FileUploadTests {
         }
     }
 
-    @Test("Filename with backslash throws error")
-    func testFilenameWithBackslashThrows() throws {
+    @Test
+    func `Filename with backslash throws error`() throws {
         #expect(throws: FileUpload.Error.self) {
             try FileUpload(
                 fieldName: "document",
@@ -77,8 +77,8 @@ struct FileUploadTests {
         }
     }
 
-    @Test("Zero max size throws error")
-    func testZeroMaxSizeThrows() throws {
+    @Test
+    func `Zero max size throws error`() throws {
         #expect(throws: FileUpload.Error.self) {
             try FileUpload(
                 fieldName: "document",
@@ -89,8 +89,8 @@ struct FileUploadTests {
         }
     }
 
-    @Test("Negative max size throws error")
-    func testNegativeMaxSizeThrows() throws {
+    @Test
+    func `Negative max size throws error`() throws {
         #expect(throws: FileUpload.Error.self) {
             try FileUpload(
                 fieldName: "document",
@@ -101,8 +101,8 @@ struct FileUploadTests {
         }
     }
 
-    @Test("Max size exceeding 1 GiB throws error")
-    func testMaxSizeExceedsLimitThrows() throws {
+    @Test
+    func `Max size exceeding 1 Gi B throws error`() throws {
         let overLimit = Measurement(value: 1.1, unit: UnitInformationStorage.gibibytes)
         #expect(throws: FileUpload.Error.self) {
             try FileUpload(
@@ -116,8 +116,8 @@ struct FileUploadTests {
 
     // MARK: - Validation Tests
 
-    @Test("Validate empty data throws error")
-    func testValidateEmptyDataThrows() throws {
+    @Test
+    func `Validate empty data throws error`() throws {
         let fileUpload = try FileUpload(
             fieldName: "document",
             filename: "file.pdf",
@@ -129,8 +129,8 @@ struct FileUploadTests {
         }
     }
 
-    @Test("Validate oversized file throws error")
-    func testValidateOversizedFileThrows() throws {
+    @Test
+    func `Validate oversized file throws error`() throws {
         let maxSize = Measurement(value: 1, unit: UnitInformationStorage.kibibytes)
         let fileUpload = try FileUpload(
             fieldName: "document",
@@ -145,8 +145,8 @@ struct FileUploadTests {
         }
     }
 
-    @Test("Validate PDF with correct magic number succeeds")
-    func testValidatePDFWithCorrectMagicNumber() throws {
+    @Test
+    func `Validate PDF with correct magic number succeeds`() throws {
         let fileUpload = try FileUpload(
             fieldName: "document",
             filename: "file.pdf",
@@ -159,8 +159,8 @@ struct FileUploadTests {
         }
     }
 
-    @Test("Validate PDF with incorrect magic number throws error")
-    func testValidatePDFWithIncorrectMagicNumberThrows() throws {
+    @Test
+    func `Validate PDF with incorrect magic number throws error`() throws {
         let fileUpload = try FileUpload(
             fieldName: "document",
             filename: "file.pdf",
@@ -173,8 +173,8 @@ struct FileUploadTests {
         }
     }
 
-    @Test("Validate CSV with valid UTF-8 succeeds")
-    func testValidateCSVWithValidUTF8() throws {
+    @Test
+    func `Validate CSV with valid UTF-8 succeeds`() throws {
         let fileUpload = try FileUpload(
             fieldName: "data",
             filename: "data.csv",
@@ -187,8 +187,8 @@ struct FileUploadTests {
         }
     }
 
-    @Test("Validate file within size limit succeeds")
-    func testValidateFileWithinSizeLimit() throws {
+    @Test
+    func `Validate file within size limit succeeds`() throws {
         let maxSize = Measurement(value: 1, unit: UnitInformationStorage.kibibytes)
         let fileUpload = try FileUpload(
             fieldName: "document",
@@ -205,8 +205,8 @@ struct FileUploadTests {
 
     // MARK: - Content-Type Tests
 
-    @Test("Content-Type includes multipart/form-data")
-    func testContentTypeMultipartFormData() throws {
+    @Test
+    func `Content-Type includes multipart/form-data`() throws {
         let fileUpload = try FileUpload(
             fieldName: "document",
             filename: "file.pdf",
@@ -218,8 +218,8 @@ struct FileUploadTests {
         #expect(contentType.subtype == "form-data")
     }
 
-    @Test("Content-Type includes boundary parameter")
-    func testContentTypeIncludesBoundary() throws {
+    @Test
+    func `Content-Type includes boundary parameter`() throws {
         let fileUpload = try FileUpload(
             fieldName: "document",
             filename: "file.pdf",
@@ -231,8 +231,8 @@ struct FileUploadTests {
         #expect(!contentType.parameters[.boundary]!.isEmpty)
     }
 
-    @Test("Each FileUpload has unique boundary")
-    func testUniqueBoundaries() throws {
+    @Test
+    func `Each File Upload has unique boundary`() throws {
         let fileUpload1 = try FileUpload(
             fieldName: "document",
             filename: "file1.pdf",
@@ -253,8 +253,8 @@ struct FileUploadTests {
 
     // MARK: - File Type Tests
 
-    @Test("Different file types have correct extensions")
-    func testFileTypeExtensions() throws {
+    @Test
+    func `Different file types have correct extensions`() throws {
         struct TestCase {
             let fileType: FileUpload.FileType
             let expectedExtension: String
@@ -284,8 +284,8 @@ struct FileUploadTests {
         }
     }
 
-    @Test("Image file types have correct extensions")
-    func testImageFileTypeExtensions() throws {
+    @Test
+    func `Image file types have correct extensions`() throws {
         struct TestCase {
             let imageType: FileUpload.FileType.ImageType
             let expectedExtension: String
@@ -306,8 +306,8 @@ struct FileUploadTests {
 
     // MARK: - Error Description Tests
 
-    @Test("Error descriptions are user-friendly")
-    func testErrorDescriptions() throws {
+    @Test
+    func `Error descriptions are user-friendly`() throws {
         let errors: [FileUpload.Error] = [
             .fileTooLarge(
                 size: Measurement(value: 2000, unit: .bytes),
@@ -333,8 +333,8 @@ struct FileUploadTests {
 
     // MARK: - Integration Tests
 
-    @Test("FileUpload works with different file types")
-    func testFileUploadWithDifferentTypes() throws {
+    @Test
+    func `File Upload works with different file types`() throws {
         struct TestCase {
             let fileType: FileUpload.FileType
             let filename: String
@@ -358,8 +358,8 @@ struct FileUploadTests {
         }
     }
 
-    @Test("FileUpload max size defaults correctly")
-    func testDefaultMaxSize() throws {
+    @Test
+    func `File Upload max size defaults correctly`() throws {
         let fileUpload = try FileUpload(
             fieldName: "document",
             filename: "file.pdf",
@@ -370,8 +370,8 @@ struct FileUploadTests {
         #expect(fileUpload.maxSize == expectedSize)
     }
 
-    @Test("FileUpload validates at exact max size")
-    func testValidateAtExactMaxSize() throws {
+    @Test
+    func `File Upload validates at exact max size`() throws {
         let maxSize = Measurement(value: 1, unit: UnitInformationStorage.kibibytes)
         let fileUpload = try FileUpload(
             fieldName: "document",
@@ -386,8 +386,8 @@ struct FileUploadTests {
         }
     }
 
-    @Test("FileUpload error equality works")
-    func testErrorEquality() throws {
+    @Test
+    func `File Upload error equality works`() throws {
         let error1 = FileUpload.Error.fileTooLarge(
             size: Measurement(value: 1000, unit: .bytes),
             maxSize: Measurement(value: 500, unit: .bytes)

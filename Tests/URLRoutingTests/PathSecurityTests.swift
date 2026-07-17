@@ -3,11 +3,11 @@ import Testing
 import URLRouting
 import RFC_3986
 
-@Suite("Path Security Tests")
-struct PathSecurityTests {
+@Suite
+struct Test {
 
-    @Test("Path with .. segments is rejected by default")
-    func testDotDotSegmentsRejected() throws {
+    @Test
+    func `Path with .. segments is rejected by default`() throws {
         let parser = Path {
             "files"
             Rest()
@@ -21,8 +21,8 @@ struct PathSecurityTests {
         }
     }
 
-    @Test("Path.unchecked allows .. segments")
-    func testUncheckedAllowsDotDot() throws {
+    @Test
+    func `Path.unchecked allows .. segments`() throws {
         let parser = Path.unchecked {
             "files"
             Rest()
@@ -35,8 +35,8 @@ struct PathSecurityTests {
         #expect(result == "..")
     }
 
-    @Test("Multiple .. segments rejected")
-    func testMultipleDotDotRejected() throws {
+    @Test
+    func `Multiple .. segments rejected`() throws {
         let parser = Path {
             "files"
             Rest()
@@ -49,8 +49,8 @@ struct PathSecurityTests {
         }
     }
 
-    @Test("Normal paths work fine")
-    func testNormalPathsAllowed() throws {
+    @Test
+    func `Normal paths work fine`() throws {
         let parser = Path {
             "users"
             Int.parser()
@@ -61,8 +61,8 @@ struct PathSecurityTests {
         #expect(userId == 42)
     }
 
-    @Test("Empty segments from // are allowed (not a security issue)")
-    func testDoubleSlashesAllowed() throws {
+    @Test
+    func `Empty segments from // are allowed (not a security issue)`() throws {
         // Note: // in paths create empty segments when split
         // But Foundation's path parsing with omittingEmptySubsequences: true removes them
         // So this isn't actually a security issue - just testing current behavior
@@ -77,8 +77,8 @@ struct PathSecurityTests {
         #expect(result == "admin")
     }
 
-    @Test("How Foundation parses URLs with ..")
-    func testFoundationURLParsing() throws {
+    @Test
+    func `How Foundation parses URLs with ..`() throws {
         let testCases = [
             "/users/../admin/secret",
             "/files/../../etc/passwd",
@@ -99,8 +99,8 @@ struct PathSecurityTests {
         }
     }
 
-    @Test("RFC 3986 removeDotSegments behavior")
-    func testRFC3986Normalization() throws {
+    @Test
+    func `RFC 3986 remove Dot Segments behavior`() throws {
         let testCases = [
             ("/a/b/c/./../../g", "/a/g"),
             ("/./a/b/", "/a/b/"),
@@ -120,8 +120,8 @@ struct PathSecurityTests {
         }
     }
 
-    @Test("Path segments from string parsing")
-    func testPathSegmentParsing() throws {
+    @Test
+    func `Path segments from string parsing`() throws {
         // When we create URI.Request.Data from a path string,
         // how are the segments stored?
 
@@ -140,8 +140,8 @@ struct PathSecurityTests {
         }
     }
 
-    @Test("Print validates against .. segments")
-    func testPrintValidation() throws {
+    @Test
+    func `Print validates against .. segments`() throws {
         let parser = Path {
             "files"
             Rest()
@@ -154,8 +154,8 @@ struct PathSecurityTests {
         // For now, we need to check if print validation catches issues after printing
     }
 
-    @Test("Real attack scenario prevented")
-    func testAttackScenarioPrevented() throws {
+    @Test
+    func `Real attack scenario prevented`() throws {
         // Scenario: API endpoint GET /files/{filename}
         // Attacker tries: GET /files/../../etc/passwd
 
@@ -172,8 +172,8 @@ struct PathSecurityTests {
         }
     }
 
-    @Test("Error message is descriptive")
-    func testErrorMessage() throws {
+    @Test
+    func `Error message is descriptive`() throws {
         let parser = Path {
             "files"
             Rest()

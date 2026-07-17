@@ -6,10 +6,10 @@ import URLRouting
     import FoundationNetworking
 #endif
 
-@Suite("URL Routing Client")
-struct URLRoutingClientTests {
+@Suite
+struct Test {
     #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
-        @Test("JSON decoder without custom decoder")
+        @Test
         @available(iOS 13, macOS 10.15, tvOS 13, watchOS 6, *)
         func jsonDecoderNoDecoder() async throws {
             struct Response: Equatable, Decodable {
@@ -25,7 +25,7 @@ struct URLRoutingClientTests {
             #expect(response.value == Response(decodableValue: "result"))
         }
 
-        @Test("JSON decoder with custom decoder")
+        @Test
         @available(iOS 13, macOS 10.15, tvOS 13, watchOS 6, *)
         func jsonDecoderCustomDecoder() async throws {
             struct Response: Equatable, Decodable {
@@ -46,7 +46,7 @@ struct URLRoutingClientTests {
             #expect(response.value == Response(decodableValue: "result"))
         }
 
-        @Test("JSON decoder with custom decoder for specific request")
+        @Test
         @available(iOS 13, macOS 10.15, tvOS 13, watchOS 6, *)
         func jsonDecoderCustomDecoderForRequest() async throws {
             struct Response: Equatable, Decodable {

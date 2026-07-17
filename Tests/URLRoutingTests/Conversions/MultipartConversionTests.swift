@@ -20,24 +20,24 @@ private enum MPAPI: Equatable {
     case update(String, MPUpdateRequest)
 }
 
-@Suite("RFC_2046.Multipart.Conversion Integration Tests")
-struct MultipartConversionIntegrationTests {
+@Suite
+struct Test {
 
     struct TestRequest: Codable, Equatable {
         let name: String
         let subscribed: Bool
     }
 
-    @Test("RFC_2046.Multipart.Conversion exists and is accessible")
-    func testConversionExists() {
+    @Test
+    func `RFC 2046.Multipart.Conversion exists and is accessible`() {
         let conversion = RFC_2046.Multipart.Conversion(TestRequest.self)
         #expect(!conversion.boundary.rawValue.isEmpty)
         #expect(conversion.contentType.type == "multipart")
         #expect(conversion.contentType.subtype == "form-data")
     }
 
-    @Test("Conversion.multipart() static method works")
-    func testStaticMultipartMethod() throws {
+    @Test
+    func `Conversion.multipart() static method works`() throws {
         // Use explicit type to initialize conversion
         let conversion = RFC_2046.Multipart.Conversion(TestRequest.self)
         let request = TestRequest(name: "John", subscribed: true)
@@ -45,8 +45,8 @@ struct MultipartConversionIntegrationTests {
         #expect(!data.isEmpty)
     }
 
-    @Test("Generates valid multipart data")
-    func testMultipartGeneration() throws {
+    @Test
+    func `Generates valid multipart data`() throws {
         let conversion = RFC_2046.Multipart.Conversion(TestRequest.self)
         let request = TestRequest(name: "Test User", subscribed: false)
 
@@ -59,8 +59,8 @@ struct MultipartConversionIntegrationTests {
         #expect(string.contains("Test User"))
     }
 
-    @Test("Array encoding with accumulate values strategy")
-    func testArrayEncodingAccumulateValues() throws {
+    @Test
+    func `Array encoding with accumulate values strategy`() throws {
         struct RequestWithArray: Codable {
             let tags: [String]
         }
@@ -78,8 +78,8 @@ struct MultipartConversionIntegrationTests {
         #expect(tagCount == 2)
     }
 
-    @Test("Array encoding with brackets strategy")
-    func testArrayEncodingBrackets() throws {
+    @Test
+    func `Array encoding with brackets strategy`() throws {
         struct RequestWithArray: Codable {
             let tags: [String]
         }
@@ -96,8 +96,8 @@ struct MultipartConversionIntegrationTests {
         #expect(string.contains("name=\"tags[]\""))
     }
 
-    @Test("URL generation with Multipart convenience function")
-    func testURLGenerationWithMultipart() throws {
+    @Test
+    func `URL generation with Multipart convenience function`() throws {
         // Test the new clean Multipart() syntax
         typealias UpdateRequest = MPUpdateRequest
         typealias API = MPAPI
@@ -124,8 +124,8 @@ struct MultipartConversionIntegrationTests {
         #expect(url.path == "/v3/routes/test-id", "Expected '/v3/routes/test-id', got '\(url.path)'")
     }
 
-    @Test("URL generation with RFC_2046.Multipart.Conversion WITHOUT Headers block")
-    func testURLGenerationWithoutHeaders() throws {
+    @Test
+    func `URL generation with RFC 2046.Multipart.Conversion WITHOUT Headers block`() throws {
         // Test if removing Headers fixes URL generation
         typealias UpdateRequest = MPUpdateRequest
         typealias API = MPAPI
@@ -156,8 +156,8 @@ struct MultipartConversionIntegrationTests {
         #expect(url.path == "/v3/routes/test-id", "Expected '/v3/routes/test-id', got '\(url.path)'")
     }
 
-    @Test("Empty request throws emptyRequest error")
-    func testEmptyRequestError() throws {
+    @Test
+    func `Empty request throws empty Request error`() throws {
         // Test that encoding a request with all nil fields throws the expected error
         struct EmptyableRequest: Codable, Equatable {
             let name: String?
@@ -187,8 +187,8 @@ struct MultipartConversionIntegrationTests {
 
     // MARK: - Bool Encoder Tests
 
-    @Test("Bool encoding with trueFalse strategy")
-    func testBoolEncodingTrueFalse() throws {
+    @Test
+    func `Bool encoding with true False strategy`() throws {
         struct BoolRequest: Codable {
             let active: Bool
             let verified: Bool
@@ -210,8 +210,8 @@ struct MultipartConversionIntegrationTests {
         #expect(string.contains("false"))
     }
 
-    @Test("Bool encoding with yesNo strategy")
-    func testBoolEncodingYesNo() throws {
+    @Test
+    func `Bool encoding with yes No strategy`() throws {
         struct BoolRequest: Codable {
             let consent: Bool
         }
@@ -235,8 +235,8 @@ struct MultipartConversionIntegrationTests {
         #expect(stringNo.contains("no"))
     }
 
-    @Test("Bool encoding with numeric strategy")
-    func testBoolEncodingNumeric() throws {
+    @Test
+    func `Bool encoding with numeric strategy`() throws {
         struct BoolRequest: Codable {
             let enabled: Bool
         }
@@ -260,8 +260,8 @@ struct MultipartConversionIntegrationTests {
         #expect(stringFalse.contains("0"))
     }
 
-    @Test("Bool encoding with custom strategy")
-    func testBoolEncodingCustom() throws {
+    @Test
+    func `Bool encoding with custom strategy`() throws {
         struct BoolRequest: Codable {
             let agreed: Bool
         }
@@ -283,8 +283,8 @@ struct MultipartConversionIntegrationTests {
 
     // MARK: - Date Encoder Tests
 
-    @Test("Date encoding with iso8601 strategy")
-    func testDateEncodingISO8601() throws {
+    @Test
+    func `Date encoding with iso8601 strategy`() throws {
         struct DateRequest: Codable {
             let createdAt: Date
         }
@@ -305,8 +305,8 @@ struct MultipartConversionIntegrationTests {
         #expect(string.contains("2021-01-01"))
     }
 
-    @Test("Date encoding with secondsSince1970 strategy")
-    func testDateEncodingSecondsSince1970() throws {
+    @Test
+    func `Date encoding with seconds Since1970 strategy`() throws {
         struct DateRequest: Codable {
             let timestamp: Date
         }
@@ -327,8 +327,8 @@ struct MultipartConversionIntegrationTests {
         #expect(string.contains("1234567890"))
     }
 
-    @Test("Date encoding with millisecondsSince1970 strategy")
-    func testDateEncodingMillisecondsSince1970() throws {
+    @Test
+    func `Date encoding with milliseconds Since1970 strategy`() throws {
         struct DateRequest: Codable {
             let timestamp: Date
         }
@@ -351,8 +351,8 @@ struct MultipartConversionIntegrationTests {
         #expect(string.contains("1234567000"))
     }
 
-    @Test("Date encoding with custom strategy")
-    func testDateEncodingCustom() throws {
+    @Test
+    func `Date encoding with custom strategy`() throws {
         struct DateRequest: Codable {
             let date: Date
         }
@@ -378,8 +378,8 @@ struct MultipartConversionIntegrationTests {
 
     // MARK: - Custom Value Encoder Tests
 
-    @Test("Custom value encoder for special types")
-    func testCustomValueEncoder() throws {
+    @Test
+    func `Custom value encoder for special types`() throws {
         // Create a custom type that will go through the generic encode<T> method
         struct CustomValue: Codable {
             let value: String
@@ -417,8 +417,8 @@ struct MultipartConversionIntegrationTests {
 
     // MARK: - Combined Configuration Tests
 
-    @Test("Multiple encoder configurations together")
-    func testCombinedEncoderConfiguration() throws {
+    @Test
+    func `Multiple encoder configurations together`() throws {
         struct ComplexRequest: Codable {
             let name: String
             let active: Bool
@@ -454,8 +454,8 @@ struct MultipartConversionIntegrationTests {
         #expect(string.contains("tags[]"))
     }
 
-    @Test("Custom encoder persists across multiple uses")
-    func testEncoderReuse() throws {
+    @Test
+    func `Custom encoder persists across multiple uses`() throws {
         struct SimpleRequest: Codable {
             let value: Bool
         }

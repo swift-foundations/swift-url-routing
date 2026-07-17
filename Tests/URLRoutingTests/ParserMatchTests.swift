@@ -6,8 +6,8 @@ import URLRouting
     import FoundationNetworking
 #endif
 
-@Suite("Parser match() Extensions Tests")
-struct ParserMatchTests {
+@Suite
+struct Test {
 
     // Multi-value cases carry NO argument labels so the synthesized `Case.Path` tuple
     // matches the builder's unlabeled `(A, B)` output.
@@ -49,8 +49,8 @@ struct ParserMatchTests {
 
     // MARK: - match(request:) Tests
 
-    @Test("Match URLRequest with path only")
-    func testMatchRequestWithPath() throws {
+    @Test
+    func `Match URLRequest with path only`() throws {
         let router = TestRouter()
         let request = URLRequest(url: URL(string: "https://example.com/home")!)
 
@@ -58,8 +58,8 @@ struct ParserMatchTests {
         #expect(route == .home)
     }
 
-    @Test("Match URLRequest with path parameter")
-    func testMatchRequestWithPathParameter() throws {
+    @Test
+    func `Match URLRequest with path parameter`() throws {
         let router = TestRouter()
         let request = URLRequest(url: URL(string: "https://example.com/users/42")!)
 
@@ -67,8 +67,8 @@ struct ParserMatchTests {
         #expect(route == .user(id: 42))
     }
 
-    @Test("Match URLRequest with query parameters")
-    func testMatchRequestWithQuery() throws {
+    @Test
+    func `Match URLRequest with query parameters`() throws {
         let router = TestRouter()
         let request = URLRequest(url: URL(string: "https://example.com/search?q=swift")!)
 
@@ -76,8 +76,8 @@ struct ParserMatchTests {
         #expect(route == .search(query: "swift"))
     }
 
-    @Test("Match URLRequest with multiple path components")
-    func testMatchRequestMultiplePathComponents() throws {
+    @Test
+    func `Match URLRequest with multiple path components`() throws {
         let router = TestRouter()
         let request = URLRequest(url: URL(string: "https://example.com/api/v1/users")!)
 
@@ -85,8 +85,8 @@ struct ParserMatchTests {
         #expect(route == .api("v1", "users"))
     }
 
-    @Test("Match URLRequest throws on invalid path")
-    func testMatchRequestThrowsOnInvalidPath() throws {
+    @Test
+    func `Match URLRequest throws on invalid path`() throws {
         let router = TestRouter()
         let request = URLRequest(url: URL(string: "https://example.com/invalid")!)
 
@@ -97,8 +97,8 @@ struct ParserMatchTests {
 
     // MARK: - match(url:) Tests
 
-    @Test("Match URL with path only")
-    func testMatchURLWithPath() throws {
+    @Test
+    func `Match URL with path only`() throws {
         let router = TestRouter()
         let url = URL(string: "https://example.com/home")!
 
@@ -106,8 +106,8 @@ struct ParserMatchTests {
         #expect(route == .home)
     }
 
-    @Test("Match URL with path parameter")
-    func testMatchURLWithPathParameter() throws {
+    @Test
+    func `Match URL with path parameter`() throws {
         let router = TestRouter()
         let url = URL(string: "https://example.com/users/123")!
 
@@ -115,8 +115,8 @@ struct ParserMatchTests {
         #expect(route == .user(id: 123))
     }
 
-    @Test("Match URL with query parameters")
-    func testMatchURLWithQuery() throws {
+    @Test
+    func `Match URL with query parameters`() throws {
         let router = TestRouter()
         let url = URL(string: "https://example.com/search?q=urlrouting")!
 
@@ -124,8 +124,8 @@ struct ParserMatchTests {
         #expect(route == .search(query: "urlrouting"))
     }
 
-    @Test("Match URL with special characters in query")
-    func testMatchURLWithSpecialCharacters() throws {
+    @Test
+    func `Match URL with special characters in query`() throws {
         let router = TestRouter()
         let url = URL(string: "https://example.com/search?q=hello%20world")!
 
@@ -133,8 +133,8 @@ struct ParserMatchTests {
         #expect(route == .search(query: "hello world"))
     }
 
-    @Test("Match URL throws on invalid path")
-    func testMatchURLThrowsOnInvalidPath() throws {
+    @Test
+    func `Match URL throws on invalid path`() throws {
         let router = TestRouter()
         let url = URL(string: "https://example.com/notfound")!
 
@@ -143,8 +143,8 @@ struct ParserMatchTests {
         }
     }
 
-    @Test("Match URL with different schemes")
-    func testMatchURLWithDifferentSchemes() throws {
+    @Test
+    func `Match URL with different schemes`() throws {
         let router = TestRouter()
 
         // HTTPS
@@ -160,56 +160,56 @@ struct ParserMatchTests {
 
     // MARK: - match(path:) Tests
 
-    @Test("Match path string with simple path")
-    func testMatchPathStringSimple() throws {
+    @Test
+    func `Match path string with simple path`() throws {
         let router = TestRouter()
 
         let route = try router.match(path: "/home")
         #expect(route == .home)
     }
 
-    @Test("Match path string with parameter")
-    func testMatchPathStringWithParameter() throws {
+    @Test
+    func `Match path string with parameter`() throws {
         let router = TestRouter()
 
         let route = try router.match(path: "/users/999")
         #expect(route == .user(id: 999))
     }
 
-    @Test("Match path string with query")
-    func testMatchPathStringWithQuery() throws {
+    @Test
+    func `Match path string with query`() throws {
         let router = TestRouter()
 
         let route = try router.match(path: "/search?q=test")
         #expect(route == .search(query: "test"))
     }
 
-    @Test("Match path string with multiple components")
-    func testMatchPathStringMultipleComponents() throws {
+    @Test
+    func `Match path string with multiple components`() throws {
         let router = TestRouter()
 
         let route = try router.match(path: "/api/v2/posts")
         #expect(route == .api("v2", "posts"))
     }
 
-    @Test("Match path string without leading slash")
-    func testMatchPathStringWithoutLeadingSlash() throws {
+    @Test
+    func `Match path string without leading slash`() throws {
         let router = TestRouter()
 
         let route = try router.match(path: "home")
         #expect(route == .home)
     }
 
-    @Test("Match path string with encoded characters")
-    func testMatchPathStringWithEncodedCharacters() throws {
+    @Test
+    func `Match path string with encoded characters`() throws {
         let router = TestRouter()
 
         let route = try router.match(path: "/search?q=hello%20world")
         #expect(route == .search(query: "hello world"))
     }
 
-    @Test("Match path string throws on invalid path")
-    func testMatchPathStringThrowsOnInvalidPath() throws {
+    @Test
+    func `Match path string throws on invalid path`() throws {
         let router = TestRouter()
 
         #expect(throws: Error.self) {
@@ -219,8 +219,8 @@ struct ParserMatchTests {
 
     // MARK: - Integration Tests
 
-    @Test("Match across different input types produces same result")
-    func testMatchConsistencyAcrossInputTypes() throws {
+    @Test
+    func `Match across different input types produces same result`() throws {
         let router = TestRouter()
 
         // All three methods should produce the same route
@@ -239,8 +239,8 @@ struct ParserMatchTests {
         #expect(routeFromURL == routeFromPath)
     }
 
-    @Test("Match preserves query parameter order")
-    func testMatchPreservesQueryParameterOrder() throws {
+    @Test
+    func `Match preserves query parameter order`() throws {
         struct QueryResult: Equatable {
             let query: String
             let category: String
