@@ -17,7 +17,7 @@ let package = Package(
     .library(name: "URLRouting", targets: ["URLRouting"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/apple/swift-collections", from: "1.0.3"),
+    .package(url: "https://github.com/apple/swift-collections.git", from: "1.0.3"),
     .package(url: "https://github.com/swift-primitives/swift-parser-primitives.git", branch: "main"),
     .package(url: "https://github.com/swift-foundations/swift-dual.git", branch: "main"),
     .package(url: "https://github.com/swift-foundations/swift-dependencies.git", branch: "main"),
