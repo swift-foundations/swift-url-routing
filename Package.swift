@@ -15,6 +15,7 @@ let package = Package(
   ],
   products: [
     .library(name: "URLRouting", targets: ["URLRouting"]),
+    .library(name: "URL Routing Test Support", targets: ["URL Routing Test Support"]),
   ],
   dependencies: [
     .package(url: "https://github.com/apple/swift-collections.git", from: "1.0.3"),
@@ -77,10 +78,18 @@ let package = Package(
         .product(name: "MultipartFormCoding", package: "swift-multipart-form-coding"),
       ]
     ),
+    .target(
+      name: "URL Routing Test Support",
+      dependencies: [
+        "URLRouting"
+      ],
+      path: "Tests/Support"
+    ),
     .testTarget(
       name: "URLRoutingTests",
       dependencies: [
-        "URLRouting"
+        "URLRouting",
+        "URL Routing Test Support",
       ]
     ),
   ]
