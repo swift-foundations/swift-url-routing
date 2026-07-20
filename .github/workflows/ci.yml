@@ -4,10 +4,16 @@ on:
   push:
     branches:
       - main
+    tags:
+      - '*'
   pull_request:
     branches:
       - '*'
   workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   macos_tests:
