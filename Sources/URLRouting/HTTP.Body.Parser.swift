@@ -107,11 +107,9 @@ extension RFC_7230.Body {
             let maxBytes = Int(maxSize.converted(to: .bytes).value)
             guard body.count <= maxBytes else {
                 let actualSize = Measurement(value: Double(body.count), unit: UnitInformationStorage.bytes)
-                let formatter = MeasurementFormatter()
-                formatter.unitStyle = .short
                 throw RFC_3986.URI.Routing.Error(
                     component: .body,
-                    failure: .invalid("Body size \(formatter.string(from: actualSize)) exceeds maximum allowed size of \(formatter.string(from: maxSize))")
+                    failure: .invalid("Body size \(actualSize.shortDescription) exceeds maximum allowed size of \(maxSize.shortDescription)")
                 )
             }
 

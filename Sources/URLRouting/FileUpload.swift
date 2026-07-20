@@ -262,12 +262,9 @@ extension FileUpload.Error {
     /// Each error case returns a descriptive message that can be displayed
     /// to users or logged for debugging purposes.
     public var errorDescription: String? {
-        let formatter = MeasurementFormatter()
-        formatter.unitStyle = .short
-
         switch self {
         case .fileTooLarge(let size, let maxSize):
-            return "File size \(formatter.string(from: size)) exceeds maximum allowed size of \(formatter.string(from: maxSize))"
+            return "File size \(size.shortDescription) exceeds maximum allowed size of \(maxSize.shortDescription)"
         case .invalidContentType(let type):
             return "Invalid content type: \(type)"
         case .contentMismatch(let expected, let detected):
@@ -286,9 +283,9 @@ extension FileUpload.Error {
         case .invalidFilename(let filename):
             return "Filename '\(filename)' contains invalid path separators"
         case .invalidMaxSize(let size):
-            return "Max size \(formatter.string(from: size)) must be positive"
+            return "Max size \(size.shortDescription) must be positive"
         case .maxSizeExceedsLimit(let size):
-            return "Max size \(formatter.string(from: size)) exceeds maximum limit of 1 GiB"
+            return "Max size \(size.shortDescription) exceeds maximum limit of 1 GiB"
         }
     }
 }
