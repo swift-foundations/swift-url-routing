@@ -55,10 +55,22 @@ extension URLRouting {
     }
 }
 
-extension URLRouting.Value: Parser.Printer, Parser.Bidirectional {
+extension URLRouting.Value: Parser.Bidirectional {
+    /// The emission buffer type — `Parser.Bidirectional` pins `Buffer == Input`.
+    public typealias Buffer = Substring
+
+    /// Explicit leaf body: both `Parser.Protocol` and `Serializer.Protocol`
+    /// supply a `Body == Never` default getter; the explicit override
+    /// disambiguates between the two inherited candidates (the Coder.Witness
+    /// precedent).
     @inlinable
-    public func print(_ output: Output, into input: inout Substring) throws(RFC_3986.URI.Routing.Error) {
-        input.insert(contentsOf: self._print(output), at: input.startIndex)
+    public var body: Never {
+        borrowing get { return fatalError("leaf router — serialize(_:into:) is implemented directly") }
+    }
+
+    @inlinable
+    public func serialize(_ output: Output, into input: inout Substring) throws(RFC_3986.URI.Routing.Error) {
+        input.append(contentsOf: self._print(output))
     }
 }
 

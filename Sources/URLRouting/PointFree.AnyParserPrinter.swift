@@ -55,8 +55,20 @@ public struct AnyParserPrinter<Input, Output>: ParserPrinter, Sendable {
         try self._parse(&input)
     }
 
+    /// The emission buffer type — `Parser.Bidirectional` pins `Buffer == Input`.
+    public typealias Buffer = Input
+
+    /// Explicit leaf body: both `Parser.Protocol` and `Serializer.Protocol`
+    /// supply a `Body == Never` default getter; the explicit override
+    /// disambiguates between the two inherited candidates (the Coder.Witness
+    /// precedent).
     @inlinable
-    public func print(_ output: Output, into input: inout Input) throws(Failure) {
+    public var body: Never {
+        borrowing get { return fatalError("leaf router — serialize(_:into:) is implemented directly") }
+    }
+
+    @inlinable
+    public func serialize(_ output: Output, into input: inout Input) throws(Failure) {
         try self._print(output, &input)
     }
 }

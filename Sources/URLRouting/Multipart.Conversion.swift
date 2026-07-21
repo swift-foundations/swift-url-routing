@@ -61,7 +61,7 @@ extension RFC_2046.Multipart {
     ///
     ///   swift
     ///   ```
-    public struct Conversion<Value: Codable>: @unchecked Sendable {
+    public struct Conversion<Value: Swift.Codable>: @unchecked Sendable {
         /// The validated boundary used to separate multipart fields.
         public let boundary: RFC_2046.Boundary
 

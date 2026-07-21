@@ -128,9 +128,21 @@ extension RFC_3986.URI {
     }
 }
 
-extension RFC_3986.URI.Route: Parser.Printer, Parser.Bidirectional where Parsers: Parser.Bidirectional {
+extension RFC_3986.URI.Route: Serializer.`Protocol`, Coder.`Protocol`, Parser.Bidirectional where Parsers: Parser.Bidirectional {
+    /// The emission buffer type — `Parser.Bidirectional` pins `Buffer == Input`.
+    public typealias Buffer = RFC_3986.URI.Request.Data
+
+    /// Explicit leaf body: both `Parser.Protocol` and `Serializer.Protocol`
+    /// supply a `Body == Never` default getter; the explicit override
+    /// disambiguates between the two inherited candidates (the Coder.Witness
+    /// precedent).
     @inlinable
-    public func print(
+    public var body: Never {
+        borrowing get { return fatalError("leaf router — serialize(_:into:) is implemented directly") }
+    }
+
+    @inlinable
+    public func serialize(
         _ output: Parsers.Output,
         into input: inout RFC_3986.URI.Request.Data
     ) throws(RFC_3986.URI.Routing.Error) {
@@ -151,6 +163,8 @@ extension RFC_3986.URI {
         typealias Output = Void
         @usableFromInline
         typealias Failure = RFC_3986.URI.Routing.Error
+        @usableFromInline
+        typealias Body = Never
 
         @inlinable
         init() {}
@@ -170,8 +184,21 @@ extension RFC_3986.URI {
             }
         }
 
+        /// The emission buffer type — `Parser.Bidirectional` pins `Buffer == Input`.
+        @usableFromInline
+        typealias Buffer = RFC_3986.URI.Request.Data
+
+        /// Explicit leaf body: both `Parser.Protocol` and `Serializer.Protocol`
+        /// supply a `Body == Never` default getter; the explicit override
+        /// disambiguates between the two inherited candidates (the Coder.Witness
+        /// precedent).
+        @usableFromInline
+        var body: Never {
+            borrowing get { return fatalError("leaf router — serialize(_:into:) is implemented directly") }
+        }
+
         @inlinable
-        func print(_ output: Void, into input: inout RFC_3986.URI.Request.Data) throws(RFC_3986.URI.Routing.Error) {
+        func serialize(_ output: Void, into input: inout RFC_3986.URI.Request.Data) throws(RFC_3986.URI.Routing.Error) {
             // Printing "end of path" emits nothing.
         }
     }

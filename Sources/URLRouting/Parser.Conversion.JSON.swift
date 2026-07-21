@@ -13,7 +13,7 @@ extension Parser.Conversion {
     ///
     /// `apply` decodes the value from JSON; `unapply` encodes it back. Both directions
     /// raise ``Parser/Conversion/Error/unrepresentable`` on a coding failure.
-    public struct JSON<Value: Codable> {
+    public struct JSON<Value: Swift.Codable> {
         @inlinable
         public init() {}
     }

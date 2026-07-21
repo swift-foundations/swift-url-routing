@@ -46,11 +46,11 @@ import RFC_3986
 /// ```
 ///
 /// The engine supplies the default `parse` (delegating to `body`); the declarative
-/// `print` default below completes the pair.
+/// `serialize` default below completes the pair.
 public protocol ParserPrinter<Input, Output>: Parser.Bidirectional
 where Failure == RFC_3986.URI.Routing.Error {}
 
-// MARK: - Declarative Printer Default
+// MARK: - Declarative Serializer Default
 
 extension ParserPrinter
 where
@@ -59,16 +59,18 @@ where
     Body.Output == Output,
     Body.Failure == Failure
 {
-    /// Default `print` implementation that delegates to ``Parser/Protocol/body-swift.property``.
+    /// Default `serialize` implementation that delegates to ``Parser/Protocol/body-swift.property``.
     ///
-    /// This is the printer-side counterpart to the engine's declarative `parse`
-    /// default: a router that declares a bidirectional `body` prints by delegating
-    /// to that body, so leaf routers need only declare their grammar once.
+    /// This is the emission-side counterpart to the engine's declarative `parse`
+    /// default: a router that declares a bidirectional `body` serializes by
+    /// delegating to that body, so leaf routers need only declare their grammar
+    /// once. Forward-order append emission per the coder-unification spike
+    /// (byte-equal to the retired prepend `print` algebra).
     @inlinable
-    public borrowing func print(
+    public borrowing func serialize(
         _ output: Output,
-        into input: inout Input
+        into buffer: inout Input
     ) throws(Failure) {
-        try body.print(output, into: &input)
+        try body.serialize(output, into: &buffer)
     }
 }

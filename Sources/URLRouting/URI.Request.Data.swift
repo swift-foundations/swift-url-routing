@@ -161,7 +161,7 @@ extension RFC_3986.URI.Request {
 
 // MARK: - Codable
 
-extension RFC_3986.URI.Request.Data: Codable {
+extension RFC_3986.URI.Request.Data: Swift.Codable {
     @inlinable
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)

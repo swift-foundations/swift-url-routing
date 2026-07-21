@@ -30,6 +30,8 @@ extension URLRouting {
         public typealias Output = Input
         /// Consuming the rest never fails.
         public typealias Failure = Never
+        /// Leaf: no declarative body.
+        public typealias Body = Never
 
         @inlinable
         public init() {}
@@ -41,9 +43,21 @@ extension URLRouting {
             return remaining
         }
 
+        /// The emission buffer type — `Parser.Bidirectional` pins `Buffer == Input`.
+        public typealias Buffer = Input
+
+        /// Explicit leaf body: both `Parser.Protocol` and `Serializer.Protocol`
+        /// supply a `Body == Never` default getter; the explicit override
+        /// disambiguates between the two inherited candidates (the Coder.Witness
+        /// precedent).
         @inlinable
-        public func print(_ output: Input, into input: inout Input) {
-            input.insert(contentsOf: output, at: input.startIndex)
+        public var body: Never {
+            borrowing get { return fatalError("leaf router — serialize(_:into:) is implemented directly") }
+        }
+
+        @inlinable
+        public func serialize(_ output: Input, into input: inout Input) {
+            input.append(contentsOf: output)
         }
     }
 }

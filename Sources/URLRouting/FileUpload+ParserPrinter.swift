@@ -96,7 +96,19 @@ extension FileUpload: Parser.Bidirectional {
     ///   - output: The file data to encode
     ///   - input: The URI request data to write into
     /// - Throws: Encoding errors
-    public func print(_ output: Foundation.Data, into input: inout RFC_3986.URI.Request.Data) throws(RFC_3986.URI.Routing.Error) {
+    /// The emission buffer type — `Parser.Bidirectional` pins `Buffer == Input`.
+    public typealias Buffer = RFC_3986.URI.Request.Data
+
+    /// Explicit leaf body: both `Parser.Protocol` and `Serializer.Protocol`
+    /// supply a `Body == Never` default getter; the explicit override
+    /// disambiguates between the two inherited candidates (the Coder.Witness
+    /// precedent).
+    @inlinable
+    public var body: Never {
+        borrowing get { return fatalError("leaf router — serialize(_:into:) is implemented directly") }
+    }
+
+    public func serialize(_ output: Foundation.Data, into input: inout RFC_3986.URI.Request.Data) throws(RFC_3986.URI.Routing.Error) {
         // Emit the multipart/form-data Content-Type header (carrying the boundary).
         input.headers["Content-Type"] = [Optional(Substring(self.contentType.headerValue))][...]
         // Print body

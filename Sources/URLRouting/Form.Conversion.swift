@@ -83,7 +83,7 @@ import URLFormCoding
 /// - Note: The encoder and decoder can be configured independently with different strategies.
 /// - Important: Ensure encoder and decoder strategies are compatible for round-trip operations.
 extension Form {
-    public struct Conversion<Value: Codable>: @unchecked Sendable {
+    public struct Conversion<Value: Swift.Codable>: @unchecked Sendable {
         /// The URL form decoder used for parsing form data.
         public let decoder: Form.Decoder
 

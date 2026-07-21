@@ -54,9 +54,21 @@ extension RFC_3986.URI.Query {
     }
 }
 
-extension RFC_3986.URI.Query.Parser: Parser_Primitive.Parser.Printer, Parser_Primitive.Parser.Bidirectional where FieldParsers: Parser_Primitive.Parser.Bidirectional {
+extension RFC_3986.URI.Query.Parser: Serializer.`Protocol`, Coder.`Protocol`, Parser_Primitive.Parser.Bidirectional where FieldParsers: Parser_Primitive.Parser.Bidirectional {
+    /// The emission buffer type — `Parser.Bidirectional` pins `Buffer == Input`.
+    public typealias Buffer = RFC_3986.URI.Request.Data
+
+    /// Explicit leaf body: both `Parser.Protocol` and `Serializer.Protocol`
+    /// supply a `Body == Never` default getter; the explicit override
+    /// disambiguates between the two inherited candidates (the Coder.Witness
+    /// precedent).
     @inlinable
-    public func print(
+    public var body: Never {
+        borrowing get { return fatalError("leaf router — serialize(_:into:) is implemented directly") }
+    }
+
+    @inlinable
+    public func serialize(
         _ output: FieldParsers.Output,
         into input: inout RFC_3986.URI.Request.Data
     ) throws(RFC_3986.URI.Routing.Error) {

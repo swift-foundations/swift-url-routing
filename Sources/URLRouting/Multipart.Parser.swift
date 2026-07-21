@@ -44,7 +44,7 @@ import RFC_7230
 /// // After (concise):
 /// Multipart(UpdateRequest.self, arrayEncodingStrategy: .brackets)
 /// ```
-public struct Multipart<Value: Codable>  {
+public struct Multipart<Value: Swift.Codable>  {
     public typealias Input = RFC_3986.URI.Request.Data
     public typealias Output = Value
     public typealias Failure = RFC_3986.URI.Routing.Error
@@ -74,7 +74,19 @@ extension Multipart: Parser.Bidirectional {
         return try RFC_7230.Body.Parser(conversion).parse(&input)
     }
 
-    public func print(_ output: Value, into input: inout RFC_3986.URI.Request.Data) throws(RFC_3986.URI.Routing.Error) {
+    /// The emission buffer type — `Parser.Bidirectional` pins `Buffer == Input`.
+    public typealias Buffer = RFC_3986.URI.Request.Data
+
+    /// Explicit leaf body: both `Parser.Protocol` and `Serializer.Protocol`
+    /// supply a `Body == Never` default getter; the explicit override
+    /// disambiguates between the two inherited candidates (the Coder.Witness
+    /// precedent).
+    @inlinable
+    public var body: Never {
+        borrowing get { return fatalError("leaf router — serialize(_:into:) is implemented directly") }
+    }
+
+    public func serialize(_ output: Value, into input: inout RFC_3986.URI.Request.Data) throws(RFC_3986.URI.Routing.Error) {
         let conversion = RFC_2046.Multipart.Conversion(type, arrayEncodingStrategy: arrayEncodingStrategy)
         // Emit the multipart/form-data Content-Type header (carrying the boundary).
         input.headers["Content-Type"] = [Optional(Substring(conversion.contentType.headerValue))][...]

@@ -19,6 +19,7 @@ extension RFC_7231.Method {
         public typealias Input = RFC_3986.URI.Request.Data
         public typealias Output = Void
         public typealias Failure = RFC_3986.URI.Routing.Error
+        public typealias Body = Never
 
         @usableFromInline
         let method: RFC_7231.Method
@@ -71,8 +72,20 @@ extension RFC_7231.Method {
             input.method = nil
         }
 
+        /// The emission buffer type — `Parser.Bidirectional` pins `Buffer == Input`.
+        public typealias Buffer = RFC_3986.URI.Request.Data
+
+        /// Explicit leaf body: both `Parser.Protocol` and `Serializer.Protocol`
+        /// supply a `Body == Never` default getter; the explicit override
+        /// disambiguates between the two inherited candidates (the Coder.Witness
+        /// precedent).
         @inlinable
-        public func print(_ output: Void, into input: inout RFC_3986.URI.Request.Data) {
+        public var body: Never {
+            borrowing get { return fatalError("leaf router — serialize(_:into:) is implemented directly") }
+        }
+
+        @inlinable
+        public func serialize(_ output: Void, into input: inout RFC_3986.URI.Request.Data) {
             input.method = self.method
         }
     }
@@ -92,6 +105,7 @@ extension RFC_7231.Method.Parser {
         public typealias Input = RFC_3986.URI.Request.Data
         public typealias Output = Void
         public typealias Failure = RFC_3986.URI.Routing.Error
+        public typealias Body = Never
 
         @inlinable
         public init() {}
@@ -109,8 +123,20 @@ extension RFC_7231.Method.Parser {
             )
         }
 
+        /// The emission buffer type — `Parser.Bidirectional` pins `Buffer == Input`.
+        public typealias Buffer = RFC_3986.URI.Request.Data
+
+        /// Explicit leaf body: both `Parser.Protocol` and `Serializer.Protocol`
+        /// supply a `Body == Never` default getter; the explicit override
+        /// disambiguates between the two inherited candidates (the Coder.Witness
+        /// precedent).
         @inlinable
-        public func print(_ output: Void, into input: inout RFC_3986.URI.Request.Data) {
+        public var body: Never {
+            borrowing get { return fatalError("leaf router — serialize(_:into:) is implemented directly") }
+        }
+
+        @inlinable
+        public func serialize(_ output: Void, into input: inout RFC_3986.URI.Request.Data) {
             // NB: Prefer printing "GET"
             input.method = .get
         }

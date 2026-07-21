@@ -74,12 +74,24 @@ where Wrapped.Input: Copyable & Escapable {
     }
 }
 
-extension Optionally: Parser.Printer, Parser.Bidirectional where Wrapped: Parser.Bidirectional {
+extension Optionally: Serializer.`Protocol`, Coder.`Protocol`, Parser.Bidirectional where Wrapped: Parser.Bidirectional {
     /// Prints the wrapped router for a present value and nothing for `nil`. On a printer
     /// failure the carrier is restored before the error propagates, so a failed print
     /// leaks no partial state.
+    /// The emission buffer type — `Parser.Bidirectional` pins `Buffer == Input`.
+    public typealias Buffer = Wrapped.Input
+
+    /// Explicit leaf body: both `Parser.Protocol` and `Serializer.Protocol`
+    /// supply a `Body == Never` default getter; the explicit override
+    /// disambiguates between the two inherited candidates (the Coder.Witness
+    /// precedent).
     @inlinable
-    public func print(_ output: Wrapped.Output?, into input: inout Wrapped.Input) throws(Wrapped.Failure) {
+    public var body: Never {
+        borrowing get { return fatalError("leaf router — serialize(_:into:) is implemented directly") }
+    }
+
+    @inlinable
+    public func serialize(_ output: Wrapped.Output?, into input: inout Wrapped.Input) throws(Wrapped.Failure) {
         guard let output else { return }
         let saved = input
         do throws(Wrapped.Failure) {

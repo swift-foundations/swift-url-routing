@@ -80,9 +80,21 @@ extension Parse {
 
 // MARK: - Printer / Bidirectional
 
-extension Parse: Parser.Printer, Parser.Bidirectional where Parsers: Parser.Bidirectional {
+extension Parse: Serializer.`Protocol`, Coder.`Protocol`, Parser.Bidirectional where Parsers: Parser.Bidirectional {
+    /// The emission buffer type — `Parser.Bidirectional` pins `Buffer == Input`.
+    public typealias Buffer = Parsers.Input
+
+    /// Explicit leaf body: both `Parser.Protocol` and `Serializer.Protocol`
+    /// supply a `Body == Never` default getter; the explicit override
+    /// disambiguates between the two inherited candidates (the Coder.Witness
+    /// precedent).
     @inlinable
-    public func print(
+    public var body: Never {
+        borrowing get { return fatalError("leaf router — serialize(_:into:) is implemented directly") }
+    }
+
+    @inlinable
+    public func serialize(
         _ output: Parsers.Output,
         into input: inout Parsers.Input
     ) throws(Parsers.Failure) {

@@ -16,7 +16,7 @@ import RFC_3986
     import FoundationNetworking
 #endif
 
-extension Parser.Printer where Input == RFC_3986.URI.Request.Data {
+extension Parser.Bidirectional where Input == RFC_3986.URI.Request.Data {
     /// Prints a route to a Foundation URLRequest.
     ///
     /// Example:

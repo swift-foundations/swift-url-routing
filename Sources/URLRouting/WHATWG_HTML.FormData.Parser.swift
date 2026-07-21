@@ -74,9 +74,21 @@ extension WHATWG_HTML_Forms.Form.Data {
     }
 }
 
-extension WHATWG_HTML_Forms.Form.Data.Parser: Parser_Primitive.Parser.Printer, Parser_Primitive.Parser.Bidirectional where FieldParsers: Parser_Primitive.Parser.Bidirectional {
+extension WHATWG_HTML_Forms.Form.Data.Parser: Serializer.`Protocol`, Coder.`Protocol`, Parser_Primitive.Parser.Bidirectional where FieldParsers: Parser_Primitive.Parser.Bidirectional {
+    /// The emission buffer type — `Parser.Bidirectional` pins `Buffer == Input`.
+    public typealias Buffer = Foundation.Data
+
+    /// Explicit leaf body: both `Parser.Protocol` and `Serializer.Protocol`
+    /// supply a `Body == Never` default getter; the explicit override
+    /// disambiguates between the two inherited candidates (the Coder.Witness
+    /// precedent).
     @inlinable
-    public func print(_ output: FieldParsers.Output, into input: inout Foundation.Data) throws(RFC_3986.URI.Routing.Error) {
+    public var body: Never {
+        borrowing get { return fatalError("leaf router — serialize(_:into:) is implemented directly") }
+    }
+
+    @inlinable
+    public func serialize(_ output: FieldParsers.Output, into input: inout Foundation.Data) throws(RFC_3986.URI.Routing.Error) {
         var fields = RFC_3986.URI.Request.Fields()
         do {
             try self.fieldParsers.print(output, into: &fields)

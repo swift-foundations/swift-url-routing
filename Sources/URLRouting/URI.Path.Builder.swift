@@ -99,14 +99,26 @@ extension RFC_3986.URI.Path {
     }
 }
 
-extension RFC_3986.URI.Path.Builder.Component: Parser_Primitive.Parser.Printer, Parser_Primitive.Parser.Bidirectional where ComponentParser: Parser_Primitive.Parser.Bidirectional {
+extension RFC_3986.URI.Path.Builder.Component: Serializer.`Protocol`, Coder.`Protocol`, Parser_Primitive.Parser.Bidirectional where ComponentParser: Parser_Primitive.Parser.Bidirectional {
+    /// The emission buffer type — `Parser.Bidirectional` pins `Buffer == Input`.
+    public typealias Buffer = RFC_3986.URI.Request.Data
+
+    /// Explicit leaf body: both `Parser.Protocol` and `Serializer.Protocol`
+    /// supply a `Body == Never` default getter; the explicit override
+    /// disambiguates between the two inherited candidates (the Coder.Witness
+    /// precedent).
     @inlinable
-    public func print(
+    public var body: Never {
+        borrowing get { return fatalError("leaf router — serialize(_:into:) is implemented directly") }
+    }
+
+    @inlinable
+    public func serialize(
         _ output: ComponentParser.Output,
         into input: inout RFC_3986.URI.Request.Data
     ) throws(RFC_3986.URI.Routing.Error) {
         do {
-            try input.path.prepend(self.componentParser.print(output))
+            try input.path.append(self.componentParser.print(output))
         } catch {
             throw RFC_3986.URI.Routing.Error(
                 component: .path,
@@ -191,42 +203,78 @@ extension RFC_3986.URI.Path.Builder {
     }
 }
 
-extension RFC_3986.URI.Path.Builder.SkipFirst: Parser_Primitive.Parser.Printer, Parser_Primitive.Parser.Bidirectional where P0: Parser_Primitive.Parser.Bidirectional, P1: Parser_Primitive.Parser.Bidirectional {
-    @inlinable public func print(
+extension RFC_3986.URI.Path.Builder.SkipFirst: Serializer.`Protocol`, Coder.`Protocol`, Parser_Primitive.Parser.Bidirectional where P0: Parser_Primitive.Parser.Bidirectional, P1: Parser_Primitive.Parser.Bidirectional {
+    /// The emission buffer type — `Parser.Bidirectional` pins `Buffer == Input`.
+    public typealias Buffer = RFC_3986.URI.Request.Data
+
+    /// Explicit leaf body: both `Parser.Protocol` and `Serializer.Protocol`
+    /// supply a `Body == Never` default getter; the explicit override
+    /// disambiguates between the two inherited candidates (the Coder.Witness
+    /// precedent).
+    @inlinable
+    public var body: Never {
+        borrowing get { return fatalError("leaf router — serialize(_:into:) is implemented directly") }
+    }
+
+    @inlinable public func serialize(
         _ output: P1.Output,
         into input: inout RFC_3986.URI.Request.Data
     ) throws(RFC_3986.URI.Routing.Error) {
         do {
-            try self.p1.print(output, into: &input)
-            try self.p0.print((), into: &input)
+            try self.p0.serialize((), into: &input)
+            try self.p1.serialize(output, into: &input)
         } catch {
             throw RFC_3986.URI.Routing.Error(component: .path, failure: .parseFailed("\(error)"))
         }
     }
 }
 
-extension RFC_3986.URI.Path.Builder.SkipSecond: Parser_Primitive.Parser.Printer, Parser_Primitive.Parser.Bidirectional where P0: Parser_Primitive.Parser.Bidirectional, P1: Parser_Primitive.Parser.Bidirectional {
-    @inlinable public func print(
+extension RFC_3986.URI.Path.Builder.SkipSecond: Serializer.`Protocol`, Coder.`Protocol`, Parser_Primitive.Parser.Bidirectional where P0: Parser_Primitive.Parser.Bidirectional, P1: Parser_Primitive.Parser.Bidirectional {
+    /// The emission buffer type — `Parser.Bidirectional` pins `Buffer == Input`.
+    public typealias Buffer = RFC_3986.URI.Request.Data
+
+    /// Explicit leaf body: both `Parser.Protocol` and `Serializer.Protocol`
+    /// supply a `Body == Never` default getter; the explicit override
+    /// disambiguates between the two inherited candidates (the Coder.Witness
+    /// precedent).
+    @inlinable
+    public var body: Never {
+        borrowing get { return fatalError("leaf router — serialize(_:into:) is implemented directly") }
+    }
+
+    @inlinable public func serialize(
         _ output: P0.Output,
         into input: inout RFC_3986.URI.Request.Data
     ) throws(RFC_3986.URI.Routing.Error) {
         do {
-            try self.p1.print((), into: &input)
-            try self.p0.print(output, into: &input)
+            try self.p0.serialize(output, into: &input)
+            try self.p1.serialize((), into: &input)
         } catch {
             throw RFC_3986.URI.Routing.Error(component: .path, failure: .parseFailed("\(error)"))
         }
     }
 }
 
-extension RFC_3986.URI.Path.Builder.Take2: Parser_Primitive.Parser.Printer, Parser_Primitive.Parser.Bidirectional where P0: Parser_Primitive.Parser.Bidirectional, P1: Parser_Primitive.Parser.Bidirectional {
-    @inlinable public func print(
+extension RFC_3986.URI.Path.Builder.Take2: Serializer.`Protocol`, Coder.`Protocol`, Parser_Primitive.Parser.Bidirectional where P0: Parser_Primitive.Parser.Bidirectional, P1: Parser_Primitive.Parser.Bidirectional {
+    /// The emission buffer type — `Parser.Bidirectional` pins `Buffer == Input`.
+    public typealias Buffer = RFC_3986.URI.Request.Data
+
+    /// Explicit leaf body: both `Parser.Protocol` and `Serializer.Protocol`
+    /// supply a `Body == Never` default getter; the explicit override
+    /// disambiguates between the two inherited candidates (the Coder.Witness
+    /// precedent).
+    @inlinable
+    public var body: Never {
+        borrowing get { return fatalError("leaf router — serialize(_:into:) is implemented directly") }
+    }
+
+    @inlinable public func serialize(
         _ output: (P0.Output, P1.Output),
         into input: inout RFC_3986.URI.Request.Data
     ) throws(RFC_3986.URI.Routing.Error) {
         do {
-            try self.p1.print(output.1, into: &input)
-            try self.p0.print(output.0, into: &input)
+            try self.p0.serialize(output.0, into: &input)
+            try self.p1.serialize(output.1, into: &input)
         } catch {
             throw RFC_3986.URI.Routing.Error(component: .path, failure: .parseFailed("\(error)"))
         }

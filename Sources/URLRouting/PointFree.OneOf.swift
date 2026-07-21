@@ -42,9 +42,21 @@ where Alternatives.Input == Input, Alternatives.Output == Output {
     }
 }
 
-extension OneOf: Parser.Printer, Parser.Bidirectional where Alternatives: Parser.Bidirectional {
+extension OneOf: Serializer.`Protocol`, Coder.`Protocol`, Parser.Bidirectional where Alternatives: Parser.Bidirectional {
+    /// The emission buffer type — `Parser.Bidirectional` pins `Buffer == Input`.
+    public typealias Buffer = Input
+
+    /// Explicit leaf body: both `Parser.Protocol` and `Serializer.Protocol`
+    /// supply a `Body == Never` default getter; the explicit override
+    /// disambiguates between the two inherited candidates (the Coder.Witness
+    /// precedent).
     @inlinable
-    public func print(_ output: Output, into input: inout Input) throws(Alternatives.Failure) {
+    public var body: Never {
+        borrowing get { return fatalError("leaf router — serialize(_:into:) is implemented directly") }
+    }
+
+    @inlinable
+    public func serialize(_ output: Output, into input: inout Input) throws(Alternatives.Failure) {
         try self.alternatives.print(output, into: &input)
     }
 }
@@ -95,10 +107,22 @@ extension URLRouting.OrderedChoice {
     }
 }
 
-extension URLRouting.OrderedChoice.Of: Parser.Printer, Parser.Bidirectional
+extension URLRouting.OrderedChoice.Of: Serializer.`Protocol`, Coder.`Protocol`, Parser.Bidirectional
 where P0: Parser.Bidirectional, P1: Parser.Bidirectional {
+    /// The emission buffer type — `Parser.Bidirectional` pins `Buffer == Input`.
+    public typealias Buffer = P0.Input
+
+    /// Explicit leaf body: both `Parser.Protocol` and `Serializer.Protocol`
+    /// supply a `Body == Never` default getter; the explicit override
+    /// disambiguates between the two inherited candidates (the Coder.Witness
+    /// precedent).
     @inlinable
-    public func print(_ output: P0.Output, into input: inout P0.Input) throws(P0.Failure) {
+    public var body: Never {
+        borrowing get { return fatalError("leaf router — serialize(_:into:) is implemented directly") }
+    }
+
+    @inlinable
+    public func serialize(_ output: P0.Output, into input: inout P0.Input) throws(P0.Failure) {
         let saved = input
         do {
             try self.p0.print(output, into: &input)
