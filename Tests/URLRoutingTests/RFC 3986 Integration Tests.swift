@@ -95,4 +95,56 @@ struct `RFC 3986 Integration Tests` {
         #expect(requestData.userinfo == "user")
         #expect(requestData.host == "example.com")
     }
+
+    // MARK: - Batch 3 ratified behavior classes (plan §Batch 3, fork F2)
+
+    @Test
+    func `Percent-encoded slash inside a segment does not split (ratified class 1)`() throws {
+        let uri = try RFC_3986.URI("/files/a%2Fb/details")
+        let requestData = try RFC_3986.URI.Request.Data(uri: uri)
+
+        #expect(requestData.path.map(String.init) == ["files", "a/b", "details"])
+    }
+
+    @Test
+    func `Percent-encoded slash round-trips through print (ratified class 1)`() throws {
+        let requestData = try RFC_3986.URI.Request.Data(uriString: "/files/a%2Fb/details")
+        let printed = try requestData.uriString
+
+        #expect(printed == "/files/a%2Fb/details")
+    }
+
+    @Test
+    func `Empty query value and absent query value stay distinct (ratified class 3)`() throws {
+        let uri = try RFC_3986.URI("/search?empty=&absent&filled=x")
+        let requestData = try RFC_3986.URI.Request.Data(uri: uri)
+
+        #expect(requestData.query["empty"]?.first == .some(.some("")))
+        #expect(requestData.query["absent"]?.first == .some(.none))
+        #expect(requestData.query["filled"]?.first == .some(.some("x")))
+
+        let printed = try requestData.uriString
+        #expect(printed == "/search?empty=&absent&filled=x")
+    }
+
+    @Test
+    func `Percent-normalization uses uppercase hex and decodes segments (ratified class 2)`() throws {
+        let uri = try RFC_3986.URI("/tags/caf%c3%a9?q=a%20b")
+        let requestData = try RFC_3986.URI.Request.Data(uri: uri)
+
+        #expect(requestData.path.map(String.init) == ["tags", "café"])
+        #expect(requestData.query["q"]?.first??.description == "a b")
+
+        // Re-print normalizes to UPPERCASE hex per RFC 3986 Section 6.2.2.2.
+        let printed = try requestData.uriString
+        #expect(printed == "/tags/caf%C3%A9?q=a%20b")
+    }
+
+    @Test
+    func `Query pair order is preserved through parse and print`() throws {
+        let requestData = try RFC_3986.URI.Request.Data(uriString: "/r?b=2&a=1&b=3")
+        #expect(try requestData.uriString == "/r?b=2&b=3&a=1")
+        #expect(requestData.query["b"]?.map { $0.map(String.init) } == ["2", "3"])
+        #expect(requestData.query["a"]?.map { $0.map(String.init) } == ["1"])
+    }
 }
