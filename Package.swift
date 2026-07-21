@@ -20,6 +20,7 @@ let package = Package(
   dependencies: [
     .package(url: "https://github.com/apple/swift-collections.git", from: "1.0.3"),
     .package(url: "https://github.com/swift-primitives/swift-parser-primitives.git", branch: "main"),
+    .package(url: "https://github.com/swift-primitives/swift-coder-primitives.git", branch: "main"),
     .package(url: "https://github.com/swift-foundations/swift-dual.git", branch: "main"),
     .package(url: "https://github.com/swift-foundations/swift-dependencies.git", branch: "main"),
     .package(url: "https://github.com/swift-foundations/swift-logger-dependencies.git", branch: "main"),
@@ -60,6 +61,9 @@ let package = Package(
         .product(name: "Parser OneOf Primitives", package: "swift-parser-primitives"),
         .product(name: "Parser Match Primitives", package: "swift-parser-primitives"),
         .product(name: "Parser Conformance Primitives", package: "swift-parser-primitives"),
+        // Coder-unification (B2): `Parser.Bidirectional` and the combinator
+        // emission rows now live in swift-coder-primitives.
+        .product(name: "Coder Parser Primitives", package: "swift-coder-primitives"),
         // Enum-case addressing for the `.case(\.case)` Route overloads (W1). The
         // `Dual` product re-exports `Case_Paths` (Case.Path + @Cases) transitively.
         .product(name: "Dual", package: "swift-dual"),

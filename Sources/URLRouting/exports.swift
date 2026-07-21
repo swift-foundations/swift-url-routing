@@ -14,6 +14,10 @@
 @_exported import Parser_OneOf_Primitives
 @_exported import Parser_Rest_Primitives
 
+// Coder-unification (B2): `Parser.Bidirectional` (Coder.Protocol where Buffer == Input)
+// and the combinator emission rows (retroactive Serializer.Protocol conformances).
+@_exported import Coder_Parser_Primitives
+
 // Substring / ArraySlice conformances to `Collection.Slice.Protocol` — required for
 // `Parser.End` (and other engine parsers) over the URI request carrier's Substring
 // path components. The narrow Parser products don't re-export this transitively.
