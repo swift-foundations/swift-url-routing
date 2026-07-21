@@ -84,7 +84,11 @@ extension RFC_3986.URI.Request {
             self.userinfo = userinfo
             self.host = host
             self.port = port
-            self.path = path.split(separator: "/", omittingEmptySubsequences: true)[...]
+            // RFC 3986 engine truth: split the RAW path on "/" BEFORE
+            // percent-decoding each segment, so "%2F" inside a segment does
+            // not split (plan §Batch 3, fork F2).
+            self.path = path.split(separator: "/", omittingEmptySubsequences: true)
+                .map { RFC_3986.percentDecode(String($0))[...] }[...]
             self.query = Fields(
                 query.mapValues { $0.map { $0?[...] }[...] },
                 isCaseSensitive: true

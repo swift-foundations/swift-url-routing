@@ -1,17 +1,14 @@
-import Foundation
+import OrderedCollections
 import RFC_3986
-
-#if canImport(FoundationNetworking)
-    import FoundationNetworking
-#endif
 
 extension RFC_3986.URI.Request.Data {
     /// Initializes parseable request data from an RFC 3986 URI.
     ///
-    /// Parses the URI using RFC 3986 compliant rules, properly handling:
+    /// Parses the URI using the RFC 3986 engine's typed components, properly handling:
     /// - Relative references (URIs without schemes)
     /// - Empty URIs (same document reference)
-    /// - Percent-encoded components
+    /// - Percent-encoded components (the raw path is split on `/` BEFORE each
+    ///   segment is percent-decoded, so `%2F` inside a segment does not split)
     ///
     /// Example:
     /// ```swift
@@ -22,33 +19,24 @@ extension RFC_3986.URI.Request.Data {
     /// - Parameter uri: An RFC 3986 URI reference
     /// - Throws: RFC_3986.Error if URI parsing fails
     public init(uri: RFC_3986.URI) throws {
-        // Use Foundation's URLComponents for initial parsing
-        // TODO: Replace with pure Swift RFC 3986 parser
-        guard let components = URLComponents(string: uri.value)
-        else {
-            throw RFC_3986.Error.invalidURI("Failed to parse URI: \(uri.value)")
-        }
-
         self.init(
             method: nil,
-            scheme: components.scheme,
-            userinfo: {
-                // Reconstruct userinfo from user and password
-                if let user = components.user {
-                    if let password = components.password {
-                        return "\(user):\(password)"
-                    }
-                    return user
+            scheme: uri.scheme?.value,
+            userinfo: uri.userinfo.map { RFC_3986.percentDecode($0.rawValue) },
+            host: uri.host.map { RFC_3986.percentDecode($0.rawValue) },
+            port: uri.port.map { Int($0.value) },
+            // The raw (still percent-encoded) path: the memberwise initializer
+            // splits it on "/" before decoding each segment.
+            path: uri.path?.description ?? "",
+            query: uri.query.map { query in
+                query.parameters.reduce(
+                    into: OrderedDictionary<String, [String?]>()
+                ) { fields, parameter in
+                    fields[RFC_3986.percentDecode(parameter.key), default: []]
+                        .append(parameter.value.map(RFC_3986.percentDecode))
                 }
-                return nil
-            }(),
-            host: components.host,
-            port: components.port,
-            path: components.path,
-            query: components.queryItems?.reduce(into: [:]) { query, item in
-                query[item.name, default: []].append(item.value)
             } ?? [:],
-            fragment: components.fragment
+            fragment: uri.fragment.map { RFC_3986.percentDecode($0.value) }
         )
     }
 
@@ -88,45 +76,66 @@ extension RFC_3986.URI.Request.Data {
     /// - Returns: An RFC 3986 URI reference
     /// - Throws: RFC_3986.Error if URI construction fails
     public func uri() throws -> RFC_3986.URI {
-        var components = URLComponents()
-        components.scheme = self.scheme
+        var uriString = ""
 
-        // Split userinfo into user and password
-        if let userinfo = self.userinfo {
-            let parts = userinfo.split(separator: ":", maxSplits: 1)
-            components.user = String(parts[0])
-            if parts.count > 1 {
-                components.password = String(parts[1])
+        if let scheme = self.scheme {
+            uriString += "\(scheme):"
+        }
+
+        let hasAuthority = self.userinfo != nil || self.host != nil || self.port != nil
+        if hasAuthority {
+            uriString += "//"
+
+            if let userinfo = self.userinfo {
+                // The userinfo grammar admits ":" directly, so the whole
+                // user:password value encodes as one component.
+                uriString += "\(RFC_3986.percentEncode(userinfo, allowing: .userinfo))@"
+            }
+
+            if let host = self.host {
+                // Valid hosts (including IP-literals like "[::1]") pass through
+                // verbatim; anything else is percent-encoded as a reg-name.
+                if (try? RFC_3986.URI.Host(host)) != nil {
+                    uriString += host
+                } else {
+                    uriString += RFC_3986.percentEncode(host, allowing: .host)
+                }
+            }
+
+            if let port = self.port {
+                uriString += ":\(port)"
             }
         }
 
-        components.host = self.host
-        components.port = self.port
-
-        // Reconstruct path
         if !self.path.isEmpty {
-            components.path = "/\(self.path.joined(separator: "/"))"
-        } else if self.scheme != nil || self.host != nil {
-            // Absolute URIs with authority should have at least empty path
-            components.path = ""
+            uriString += "/"
+            uriString += self.path
+                .map { RFC_3986.percentEncode(String($0), allowing: .pathSegment) }
+                .joined(separator: "/")
         }
 
-        // Reconstruct query
         if !self.query.isEmpty {
-            components.queryItems = self.query.fields
+            uriString += "?"
+            uriString += self.query.fields
                 .flatMap { name, values in
-                    values.map { URLQueryItem(name: name, value: $0.map(String.init)) }
+                    values.map { value -> String in
+                        let encodedName = RFC_3986.percentEncode(name, allowing: .queryComponent)
+                        guard let value else { return encodedName }
+                        let encodedValue = RFC_3986.percentEncode(
+                            String(value),
+                            allowing: .queryComponent
+                        )
+                        return "\(encodedName)=\(encodedValue)"
+                    }
                 }
+                .joined(separator: "&")
         }
 
-        components.fragment = self.fragment
-
-        guard let urlString = components.url?.absoluteString ?? components.string else {
-            throw RFC_3986.Error.invalidURI("Failed to construct URI from request data")
+        if let fragment = self.fragment {
+            uriString += "#\(RFC_3986.percentEncode(fragment, allowing: .fragment))"
         }
 
-        // Use unchecked initializer since URLComponents produces valid URIs
-        return RFC_3986.URI(unchecked: urlString)
+        return try RFC_3986.URI(uriString)
     }
 
     /// Converts the request data to an RFC 3986 URI string.
