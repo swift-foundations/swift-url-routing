@@ -25,7 +25,7 @@ let package = Package(
     .package(url: "https://github.com/swift-foundations/swift-logger-dependencies.git", branch: "main"),
     .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0"),
     .package(url: "https://github.com/swift-ietf/swift-rfc-3986.git", branch: "main"),
-    .package(url: "https://github.com/swift-ietf/swift-rfc-6570.git", branch: "main"),
+    .package(url: "https://github.com/swift-primitives/swift-collection-primitives.git", branch: "main"),
     .package(url: "https://github.com/swift-ietf/swift-rfc-2045.git", branch: "main"),
     .package(url: "https://github.com/swift-ietf/swift-rfc-2046.git", branch: "main"),
     .package(url: "https://github.com/swift-ietf/swift-rfc-6265.git", branch: "main"),
@@ -64,7 +64,7 @@ let package = Package(
         // `Dual` product re-exports `Case_Paths` (Case.Path + @Cases) transitively.
         .product(name: "Dual", package: "swift-dual"),
         .product(name: "RFC 3986", package: "swift-rfc-3986"),
-        .product(name: "RFC 6570", package: "swift-rfc-6570"),
+        .product(name: "Collection Slice Primitives", package: "swift-collection-primitives"),
         .product(name: "RFC 2045", package: "swift-rfc-2045"),
         .product(name: "RFC 2046", package: "swift-rfc-2046"),
         .product(name: "RFC 6265", package: "swift-rfc-6265"),
@@ -72,6 +72,7 @@ let package = Package(
         .product(name: "RFC 7231", package: "swift-rfc-7231"),
         .product(name: "RFC 7578", package: "swift-rfc-7578"),
         .product(name: "WHATWG HTML Forms", package: "swift-whatwg-html"),
+        .product(name: "WHATWG HTML Shared", package: "swift-whatwg-html"),
         .product(name: "WHATWG HTML FormData", package: "swift-whatwg-html"),
         .product(name: "WHATWG Form URL Encoded", package: "swift-whatwg-url"),
         .product(name: "URLFormCoding", package: "swift-url-form-coding"),
@@ -90,6 +91,9 @@ let package = Package(
       dependencies: [
         "URLRouting",
         "URL Routing Test Support",
+        .product(name: "WHATWG HTML Forms", package: "swift-whatwg-html"),
+        .product(name: "RFC 3986", package: "swift-rfc-3986"),
+        .product(name: "RFC 7230", package: "swift-rfc-7230"),
       ]
     ),
   ]

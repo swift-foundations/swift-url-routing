@@ -1,24 +1,24 @@
 # URL Routing
 
-[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fpointfreeco%2Fswift-url-routing%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/pointfreeco/swift-url-routing)
-[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fpointfreeco%2Fswift-url-routing%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/pointfreeco/swift-url-routing)
-
-A bidirectional URL router with more type safety and less fuss. This library is built with [Parsing][swift-parsing].
+A bidirectional URL router with more type safety and less fuss, built on the
+Swift Institute's L1 parser spine (`swift-parser-primitives`) and the L2
+standards packages (RFC 3986 and friends).
 
 ---
 
 * [Motivation](#Motivation)
 * [Getting started](#Getting-started)
 * [Documentation](#Documentation)
+* [Heritage](#Heritage)
 * [License](#License)
 
-## Learn More
+## Heritage
 
-This library was discussed in an [episode](http://pointfree.co/episodes/ep187-tour-of-parser-printers-url-routing) of [Point-Free](http://pointfree.co), a video series exploring functional programming and the Swift programming and the Swift language, hosted by [Brandon Williams](https://twitter.com/mbrandonw) and [Stephen Celis](https://twitter.com/stephencelis).
-
-<a href="http://pointfree.co/episodes/ep187-tour-of-parser-printers-url-routing">
-  <img alt="video poster image" src="https://d3rccdn33rt8ze.cloudfront.net/episodes/0187.jpeg" width="600">
-</a>
+This package is an institute-native rewrite of the pointfree.co
+[swift-url-routing](https://github.com/pointfreeco/swift-url-routing) design: it
+keeps a pointfree-compatible authoring DSL (`Route`, `Path`, `Query`, `OneOf`,
+…) while delegating parsing and printing to the institute's own L1 combinator
+engine. See `PointFree.Compatibility.swift` for the compatibility surface.
 
 ## Motivation
 
@@ -122,12 +122,13 @@ For [Vapor][vapor] bindings to URL Routing, see the [Vapor Routing][vapor-routin
 
 ## Documentation
 
-The documentation for releases and main are available [here](https://swiftpackageindex.com/pointfreeco/swift-url-routing/main/documentation/urlrouting).
+DocC documentation lives in `Sources/URLRouting/Documentation.docc`; build it
+locally with `swift package generate-documentation`.
 
 ## License
 
 This library is released under the MIT license. See [LICENSE](LICENSE) for details.
 
-[swift-parsing]: http://github.com/pointfreeco/swift-parsing
-[vapor-routing]: http://github.com/pointfreeco/vapor-routing
+[swift-parsing]: https://github.com/swift-primitives/swift-parser-primitives
+[vapor-routing]: https://github.com/swift-foundations/swift-url-routing-vapor
 [vapor]: http://vapor.codes

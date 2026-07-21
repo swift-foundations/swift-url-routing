@@ -35,12 +35,20 @@ extension Parity {
     public static func canonical(_ data: RFC_3986.URI.Request.Data) -> String {
         var lines: [String] = []
         lines.append("method: \(data.method.map { "\($0)" } ?? "<nil>")")
+        // Authority components print only when present, so host-less corpora
+        // recorded before this addition remain byte-identical; base-URL drift
+        // (scheme/host/port/userinfo) is now corpus-visible (B1 gap fix).
+        if let scheme = data.scheme { lines.append("scheme: \(scheme)") }
+        if let userinfo = data.userinfo { lines.append("userinfo: \(userinfo)") }
+        if let host = data.host { lines.append("host: \(host)") }
+        if let port = data.port { lines.append("port: \(port)") }
         lines.append("path: /" + data.path.map(String.init).joined(separator: "/"))
         for (key, values) in data.query.fields {
             for value in values {
                 lines.append("query: \(key)=\(value.map(String.init) ?? "<nil>")")
             }
         }
+        if let fragment = data.fragment { lines.append("fragment: \(fragment)") }
         for (key, values) in data.headers.fields {
             for value in values {
                 lines.append("header: \(key): \(value.map(String.init) ?? "<nil>")")
