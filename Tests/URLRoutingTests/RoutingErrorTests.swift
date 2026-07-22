@@ -1,6 +1,7 @@
 import Foundation
 import Testing
 import URLRouting
+import URL_Routing_Foundation_Integration
 
 // All routing types hoisted to file scope so `@Cases` can synthesize the `.cases`
 // witnesses (the macro does not apply to function-local types). Multi-value cases

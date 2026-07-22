@@ -3,6 +3,7 @@ import typealias HTML_Standard.HTML
 import RFC_2046
 import Testing
 import URLRouting
+import URL_Routing_Foundation_Integration
 
 @Suite
 struct `Body Coder Route Tests` {
@@ -45,9 +46,22 @@ struct `Body Coder Route Tests` {
         try coded.serialize(value, into: &codedRequest)
 
         #expect(codedRequest.body == legacyRequest.body)
+        #expect(codedRequest.body == Foundation.Data(#"{"message":"hello"}"#.utf8))
         #expect(codedRequest.headers["Content-Type"]?.first == "application/json")
         #expect(try coded.parse(&codedRequest) == value)
         #expect(codedRequest.headers["Content-Type"] == nil)
+    }
+
+    @Test
+    func `JSON bridge collapses owner coding errors`() throws {
+        let conversion = Parser.Conversion.JSON<Swift.Double>()
+
+        #expect(throws: Parser.Conversion.Error.unrepresentable) {
+            try conversion.apply(Foundation.Data("not json".utf8))
+        }
+        #expect(throws: Parser.Conversion.Error.unrepresentable) {
+            try conversion.unapply(.nan)
+        }
     }
 
     @Test

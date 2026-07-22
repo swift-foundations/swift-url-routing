@@ -3,11 +3,9 @@
 //  swift-url-routing
 //
 //  Pointfree-compatible conversion combinators over the institute L1
-//  `Parser.Conversion` engine: closure conversions (`.convert`), the byte/JSON
-//  chain (`.utf8` / `.data` / `.json`), and the raw-value chain (`.representing`).
+//  `Parser.Conversion` engine: closure conversions (`.convert`), UTF-8 bytes
+//  (`.utf8`), and the raw-value chain (`.representing`).
 //
-
-import Foundation
 
 // MARK: - .convert(apply:unapply:)
 
@@ -26,45 +24,12 @@ extension Parser.Conversion.`Protocol` {
     }
 }
 
-// MARK: - .utf8 / .data / .json chain
+// MARK: - .utf8
 
 extension Parser.Conversion.`Protocol` where Self == Parser.Conversion.UTF8 {
     /// A total `Substring` ⇆ `[UInt8]` UTF-8 conversion.
     @inlinable
     public static var utf8: Self { .init() }
-}
-
-extension Parser.Conversion.`Protocol` where Output == [Swift.UInt8] {
-    /// Chains a `[UInt8]` ⇆ `Foundation.Data` conversion onto this one.
-    @inlinable
-    public var data: Parser.Conversion.Map<Self, Parser.Conversion.Data> {
-        self.map(Parser.Conversion.Data())
-    }
-}
-
-extension Parser.Conversion.`Protocol` where Output == Foundation.Data {
-    /// Chains a `Foundation.Data` ⇆ `Value` JSON conversion onto this one.
-    @inlinable
-    public func json<Value: Swift.Codable>(
-        _ type: Value.Type
-    ) -> Parser.Conversion.Map<Self, Parser.Conversion.JSON<Value>> {
-        self.map(Parser.Conversion.JSON<Value>())
-    }
-}
-
-extension Parser.Conversion.`Protocol` {
-    /// A standalone `Foundation.Data` ⇆ `Value` JSON conversion.
-    @inlinable
-    @available(
-        *,
-        deprecated,
-        message: "Use URLRouting.Body(coding: .json(...)) so Content-Type is emitted."
-    )
-    public static func json<Value: Swift.Codable>(
-        _ type: Value.Type
-    ) -> Self where Self == Parser.Conversion.JSON<Value> {
-        .init()
-    }
 }
 
 // MARK: - .representing chain

@@ -1,6 +1,7 @@
 import Foundation
 import Testing
 import URLRouting
+import URL_Routing_Foundation_Integration
 import WHATWG_HTML_Forms
 
 #if canImport(FoundationNetworking)

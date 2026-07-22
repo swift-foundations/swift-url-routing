@@ -1,12 +1,9 @@
-import Foundation
+public import Foundation
 public import HTTP_Body
+public import URLRouting
 
 extension Parser.Conversion.JSON {
-    /// Transitional HTTP body coder over URLRouting's Foundation JSON bridge.
-    ///
-    /// B6 retirement condition (B2-18): replace this implementation with the
-    /// swift-json-backed bridge and remove `JSONEncoder`/`JSONDecoder` from the
-    /// routing core. The consumer-facing `.json(...)` spelling must remain.
+    /// An HTTP body coder coupling Foundation JSON coding to `application/json`.
     public struct Coder {
         @usableFromInline
         let conversion: Parser.Conversion.JSON<Value>
@@ -51,7 +48,7 @@ extension Parser.Conversion.JSON.Coder: RFC_9110.Body.Coder.`Protocol` {
 }
 
 extension RFC_9110.Body.Coder.`Protocol` {
-    /// Uses the existing JSON conversion while coupling it to `application/json`.
+    /// Codes a `Codable` value as JSON with the `application/json` media type.
     @inlinable
     public static func json<Value: Swift.Codable>(
         _ type: Value.Type

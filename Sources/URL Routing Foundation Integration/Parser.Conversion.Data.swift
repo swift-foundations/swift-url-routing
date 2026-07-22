@@ -6,7 +6,8 @@
 //  `.utf8.data.json(…)` conversion chain.
 //
 
-import Foundation
+public import Foundation
+public import URLRouting
 
 extension Parser.Conversion {
     /// A total conversion between a `[UInt8]` byte array and `Foundation.Data`.

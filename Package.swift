@@ -15,6 +15,10 @@ let package = Package(
   ],
   products: [
     .library(name: "URLRouting", targets: ["URLRouting"]),
+    .library(
+      name: "URL Routing Foundation Integration",
+      targets: ["URL Routing Foundation Integration"]
+    ),
     .library(name: "URL Routing Test Support", targets: ["URL Routing Test Support"]),
   ],
   dependencies: [
@@ -39,6 +43,7 @@ let package = Package(
     .package(url: "https://github.com/swift-foundations/swift-html-form-coder.git", branch: "main"),
     .package(url: "https://github.com/swift-standards/swift-html-standard.git", branch: "main"),
     .package(url: "https://github.com/swift-foundations/swift-http-body.git", branch: "main"),
+    .package(url: "https://github.com/swift-foundations/swift-json.git", branch: "main"),
     .package(url: "https://github.com/swift-standards/swift-media-type-standard.git", branch: "main"),
   ],
   targets: [
@@ -98,10 +103,19 @@ let package = Package(
       ],
       path: "Tests/Support"
     ),
+    .target(
+      name: "URL Routing Foundation Integration",
+      dependencies: [
+        "URLRouting",
+        .product(name: "HTTP Body", package: "swift-http-body"),
+        .product(name: "JSON Foundation Integration", package: "swift-json"),
+      ]
+    ),
     .testTarget(
       name: "URLRoutingTests",
       dependencies: [
         "URLRouting",
+        "URL Routing Foundation Integration",
         "URL Routing Test Support",
         .product(name: "HTML Standard", package: "swift-html-standard"),
         .product(name: "HTTP Body", package: "swift-http-body"),
