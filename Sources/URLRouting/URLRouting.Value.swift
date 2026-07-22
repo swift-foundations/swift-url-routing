@@ -30,8 +30,9 @@ extension URLRouting {
         @usableFromInline
         let _print: @Sendable (Output) -> Swift.String
 
+        /// Creates a whole-component parser-printer from parse and print operations.
         @inlinable
-        init(
+        public init(
             label: Swift.String,
             parse: @escaping @Sendable (Substring) -> Output?,
             print: @escaping @Sendable (Output) -> Swift.String

@@ -159,8 +159,9 @@ extension RFC_3986.URI.Request {
             }
         }
 
-        @usableFromInline
-        init(_ parameters: [(String, String?)], isCaseSensitive: Bool) {
+        /// Creates fields from ordered wire occurrences.
+        @inlinable
+        public init(_ parameters: [(String, String?)], isCaseSensitive: Bool) {
             self.storage = [:]
             self.order = []
             self.storage.reserveCapacity(parameters.count)
@@ -173,8 +174,9 @@ extension RFC_3986.URI.Request {
             }
         }
 
-        @usableFromInline
-        var parameters: [(name: String, value: Substring?)] {
+        /// The field occurrences in their original wire order.
+        @inlinable
+        public var parameters: [(name: String, value: Substring?)] {
             var positions: [String: Int] = [:]
             positions.reserveCapacity(self.storage.count)
             return self.order.map { name in

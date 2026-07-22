@@ -1,6 +1,7 @@
 import Testing
 import Foundation
 import URLRouting
+import URL_Routing_Foundation_Integration
 
 #if canImport(FoundationNetworking)
     import FoundationNetworking
@@ -220,6 +221,14 @@ struct `Parser Printer Request Tests` {
         #expect(components.count == 2)
         #expect(components[0] == "/search")
         #expect(components[1].contains("q=test"))
+    }
+
+    @Test
+    func `Generate URL path omits base scheme and authority`() {
+        let router = TestRouter().baseURL("https://api.example.com/v1?token=deadbeef")
+        let path = router.urlPath(for: .home)
+
+        #expect(path == "/v1/home?token=deadbeef")
     }
 
     // MARK: - Round-trip Tests

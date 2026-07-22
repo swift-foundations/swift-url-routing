@@ -1,11 +1,12 @@
 import Dependencies
-import Foundation
+public import Foundation
 import Logger_Dependencies
 import Logging
 import RFC_3986
+public import URLRouting
 
 #if canImport(FoundationNetworking)
-    import FoundationNetworking
+    public import FoundationNetworking
 #endif
 
 // MARK: - URLRouting Client

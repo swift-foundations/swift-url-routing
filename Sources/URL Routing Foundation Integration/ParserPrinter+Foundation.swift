@@ -6,14 +6,14 @@
 //
 
 import Dependencies
-import Foundation
+public import Foundation
 import Logger_Dependencies
 import Logging
-import OrderedCollections
-import RFC_3986
+public import RFC_3986
+public import URLRouting
 
 #if canImport(FoundationNetworking)
-    import FoundationNetworking
+    public import FoundationNetworking
 #endif
 
 extension Parser.Bidirectional where Input == RFC_3986.URI.Request.Data {
@@ -78,36 +78,4 @@ extension Parser.Bidirectional where Input == RFC_3986.URI.Request.Data {
         }
     }
 
-    @inlinable
-    public func urlPath(for route: Output) -> String {
-        do {
-            var data = RFC_3986.URI.Request.Data()
-            try self.print(route, into: &data)
-            var components = URLComponents()
-            components.path = "/\(data.path.joined(separator: "/"))"
-            if !data.query.isEmpty {
-                components.queryItems = data.query.parameters.map { name, value in
-                    URLQueryItem(name: name, value: value.map(String.init))
-                }
-            }
-            return components.string ?? "#route-not-found"
-        } catch {
-            @Dependency(\.logger) var logger
-            logger.error(
-                """
-                ---
-                Could not generate a URL for route:
-
-                  \(route)
-
-                The router has not been configured to parse this output and so it cannot print it back \
-                into a URL. A '#route-not-found' fragment has been printed instead.
-
-                \(error)
-                ---
-                """
-            )
-            return "#route-not-found"
-        }
-    }
 }

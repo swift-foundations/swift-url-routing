@@ -1,6 +1,7 @@
-import Foundation
+public import Foundation
 import HTTP_Standard
-import RFC_3986
+public import RFC_3986
+public import URLRouting
 
 #if canImport(FoundationNetworking)
     import FoundationNetworking

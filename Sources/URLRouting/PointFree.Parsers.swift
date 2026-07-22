@@ -6,8 +6,6 @@
 //  that read a whole component `Substring` into a typed value.
 //
 
-import Foundation
-
 extension Int {
     /// A parser-printer that reads a whole component as an `Int`.
     @inlinable
@@ -28,18 +26,6 @@ extension Bool {
             label: "Bool",
             parse: { Bool(Swift.String($0)) },
             print: { Swift.String($0) }
-        )
-    }
-}
-
-extension UUID {
-    /// A parser-printer that reads a whole component as a `UUID`.
-    @inlinable
-    public static func parser() -> URLRouting.Value<UUID> {
-        URLRouting.Value(
-            label: "UUID",
-            parse: { UUID(uuidString: Swift.String($0)) },
-            print: { $0.uuidString }
         )
     }
 }

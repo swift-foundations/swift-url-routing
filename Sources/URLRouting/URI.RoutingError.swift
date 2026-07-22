@@ -1,4 +1,3 @@
-import Foundation
 import RFC_3986
 
 // MARK: - RFC 3986 URI Routing Extension
@@ -22,8 +21,9 @@ extension RFC_3986.URI.Routing {
         /// Additional context about the failure
         public let context: String?
 
-        @usableFromInline
-        init(component: Component, failure: Failure, context: String? = nil) {
+        /// Creates a routing error for a specific request component and failure.
+        @inlinable
+        public init(component: Component, failure: Failure, context: String? = nil) {
             self.component = component
             self.failure = failure
             self.context = context
@@ -61,10 +61,10 @@ extension RFC_3986.URI.Routing {
 @usableFromInline
 typealias RoutingError = RFC_3986.URI.Routing.Error
 
-// MARK: - LocalizedError Conformance
+// MARK: - Description
 
-extension RFC_3986.URI.Routing.Error: LocalizedError {
-    public var errorDescription: String? {
+extension RFC_3986.URI.Routing.Error: CustomStringConvertible {
+    public var description: String {
         var message = "Routing failed for \(componentDescription): \(failureDescription)"
         if let context = context {
             message += " - \(context)"

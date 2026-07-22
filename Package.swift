@@ -107,8 +107,13 @@ let package = Package(
       name: "URL Routing Foundation Integration",
       dependencies: [
         "URLRouting",
+        .product(name: "Dependencies", package: "swift-dependencies"),
+        .product(name: "Logger Dependencies", package: "swift-logger-dependencies"),
+        .product(name: "Logging", package: "swift-log"),
         .product(name: "HTTP Body", package: "swift-http-body"),
+        .product(name: "HTTP Standard", package: "swift-http-standard"),
         .product(name: "JSON Foundation Integration", package: "swift-json"),
+        .product(name: "RFC 3986", package: "swift-rfc-3986"),
       ]
     ),
     .testTarget(
