@@ -215,6 +215,23 @@ struct `URL Routing Tests` {
     }
 
     @Test
+    func `Cookies use the RFC 6265 tolerant header grammar`() throws {
+        let parser = Cookies {
+            RFC_6265.Cookie.Field("token")
+        }
+
+        var request = RFC_3986.URI.Request.Data(
+            headers: ["cookie": ["junk; token=a=b=c"]]
+        )
+
+        #expect(try parser.parse(&request) == "a=b=c")
+        #expect(
+            try parser.print("a=b=c")
+                == RFC_3986.URI.Request.Data(headers: ["cookie": ["token=a=b=c"]])
+        )
+    }
+
+    @Test
     func `JSON cookies parsing`() throws {
         struct Session: Codable, Equatable {
             var userId: Int

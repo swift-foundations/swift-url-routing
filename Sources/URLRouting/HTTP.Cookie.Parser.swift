@@ -1,4 +1,3 @@
-import Foundation
 import OrderedCollections
 import RFC_3986
 import RFC_6265
@@ -50,17 +49,9 @@ extension RFC_6265.Cookie {
             var fields: FieldParsers.Input = cookie.reduce(
                 into: .init([:], isCaseSensitive: true)
             ) { fields, field in
-                guard let cookies = field?.components(separatedBy: "; ")
-                else { return }
-
-                for cookie in cookies {
-                    let pair = cookie.split(
-                        separator: "=",
-                        maxSplits: 1,
-                        omittingEmptySubsequences: false
-                    )
-                    guard pair.count == 2 else { continue }
-                    fields[String(pair[0]), default: []].append(pair[1])
+                guard let field else { return }
+                for pair in RFC_6265.Cookie.parse(skippingInvalidPairs: field).pairs {
+                    fields[pair.name, default: []].append(pair.value[...])
                 }
             }
 
@@ -104,11 +95,14 @@ extension RFC_6265.Cookie.Parser: Serializer.`Protocol`, Coder.`Protocol`, Parse
             )
         }
 
-        input.headers["cookie", default: []].append(
-            cookies
-                .flatMap { name, values in values.map { "\(name)=\($0 ?? "")" } }
-                .joined(separator: "; ")[...]
+        let cookie = RFC_6265.Cookie(
+            pairs: cookies.flatMap { name, values in
+                values.map {
+                    RFC_6265.Cookie.Pair(name: name, value: String($0 ?? ""))
+                }
+            }
         )
+        input.headers["cookie", default: []].append(cookie.headerValue[...])
     }
 }
 
