@@ -20,7 +20,7 @@ private struct FormRouter: ParserPrinter, Sendable {
         URLRouting.Route(.case(FormBodyRoute.cases.submit)) {
             Method.post
             Path { "contact" }
-            URLRouting.Body(.form(ContactForm.self))
+            URLRouting.Body(coding: .form(ContactForm.self))
         }
     }
 }
@@ -28,7 +28,7 @@ private struct FormRouter: ParserPrinter, Sendable {
 /// Route-level `.form` Body coverage.
 ///
 /// The suite previously exercised `Form.Conversion` only as a standalone conversion
-/// (`Conversions/FormConversionTests.swift`); the composed `URLRouting.Body(.form(…))`
+/// (`Conversions/FormConversionTests.swift`); the composed `URLRouting.Body(coding: .form(…))`
 /// inside a `Route { … }` was unexercised, leaving its Failure-collapse behavior
 /// unpinned. These tests pin it: the Skip-chain's `Either` failure collapses into
 /// `RFC_3986.URI.Routing.Error` at the `Route` node, exactly as the `.json` Body
@@ -42,6 +42,7 @@ struct `Form Body Route Tests` {
         let request = RFC_3986.URI.Request.Data(
             method: .post,
             path: "/contact",
+            headers: ["Content-Type": ["application/x-www-form-urlencoded"]],
             body: Foundation.Data("name=Jane&age=30".utf8)
         )
         #expect(try router.parse(request) == .submit(ContactForm(name: "Jane", age: 30)))

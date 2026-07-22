@@ -272,6 +272,11 @@ extension URLRouting.Conversion {
     ///     Body(.multipart(UpdateRequest.self))
     /// }
     /// ```
+    @available(
+        *,
+        deprecated,
+        message: "Use URLRouting.Body(coding: RFC_2046.Multipart.Conversion(...)) so Content-Type is emitted."
+    )
     public static func multipart<Value>(
         _ type: Value.Type,
         arrayEncodingStrategy: RFC_2046.Multipart.Array.EncodingStrategy = .accumulateValues

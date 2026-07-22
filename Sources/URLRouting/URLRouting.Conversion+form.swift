@@ -56,6 +56,11 @@ extension URLRouting.Conversion {
     ///     Body(.form(LoginRequest.self))
     /// }
     /// ```
+    @available(
+        *,
+        deprecated,
+        message: "Use URLRouting.Body(coding: .form(...)) so Content-Type is emitted."
+    )
     public static func form<Value>(
         _ type: Value.Type,
         decoder: Form.Decoder = .init(),

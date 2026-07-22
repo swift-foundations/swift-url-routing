@@ -27,6 +27,7 @@ let package = Package(
     .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0"),
     .package(url: "https://github.com/swift-ietf/swift-rfc-3986.git", branch: "main"),
     .package(url: "https://github.com/swift-primitives/swift-collection-primitives.git", branch: "main"),
+    .package(url: "https://github.com/swift-primitives/swift-byte-primitives.git", branch: "main"),
     .package(url: "https://github.com/swift-ietf/swift-rfc-2045.git", branch: "main"),
     .package(url: "https://github.com/swift-ietf/swift-rfc-2046.git", branch: "main"),
     .package(url: "https://github.com/swift-ietf/swift-rfc-6265.git", branch: "main"),
@@ -37,6 +38,8 @@ let package = Package(
     .package(url: "https://github.com/swift-whatwg/swift-whatwg-url.git", branch: "main"),
     .package(url: "https://github.com/swift-foundations/swift-url-form-coding.git", branch: "main"),
     .package(url: "https://github.com/swift-foundations/swift-multipart-form-coding.git", branch: "main"),
+    .package(url: "https://github.com/swift-foundations/swift-http-body.git", branch: "main"),
+    .package(url: "https://github.com/swift-standards/swift-media-type-standard.git", branch: "main"),
   ],
   targets: [
     .target(
@@ -69,6 +72,7 @@ let package = Package(
         .product(name: "Dual", package: "swift-dual"),
         .product(name: "RFC 3986", package: "swift-rfc-3986"),
         .product(name: "Collection Slice Primitives", package: "swift-collection-primitives"),
+        .product(name: "Byte Primitive", package: "swift-byte-primitives"),
         .product(name: "RFC 2045", package: "swift-rfc-2045"),
         .product(name: "RFC 2046", package: "swift-rfc-2046"),
         .product(name: "RFC 6265", package: "swift-rfc-6265"),
@@ -81,6 +85,8 @@ let package = Package(
         .product(name: "WHATWG Form URL Encoded", package: "swift-whatwg-url"),
         .product(name: "URLFormCoding", package: "swift-url-form-coding"),
         .product(name: "MultipartFormCoding", package: "swift-multipart-form-coding"),
+        .product(name: "HTTP Body", package: "swift-http-body"),
+        .product(name: "Media Type Standard", package: "swift-media-type-standard"),
       ]
     ),
     .target(

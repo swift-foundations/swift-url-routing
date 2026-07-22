@@ -144,7 +144,7 @@ struct `Optionally Tests` {
 
     private func bodyRouter() -> some URLRouting.Router<AddCollaborator?> {
         Optionally {
-            URLRouting.Body(.json(AddCollaborator.self))
+            URLRouting.Body(coding: .json(AddCollaborator.self))
         }
     }
 

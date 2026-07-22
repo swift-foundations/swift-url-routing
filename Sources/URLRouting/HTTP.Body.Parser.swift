@@ -167,13 +167,3 @@ extension RFC_7230.Body.Parser: Serializer.`Protocol`, Coder.`Protocol`, Parser_
 /// Body(.json(Comment.self))
 /// ```
 public typealias Body = RFC_7230.Body.Parser
-
-extension URLRouting {
-    /// Namespaced alias for the request-body parser (``Body``).
-    ///
-    /// Inside a router's `var body: some URLRouting.Router<…>`, the bare `Body`
-    /// spelling resolves to the conformer's `Body` associated type (from
-    /// ``Parser/Protocol``) rather than this combinator. Spell it `URLRouting.Body`
-    /// there to disambiguate: `URLRouting.Body(.json(Comment.self))`.
-    public typealias Body = RFC_7230.Body.Parser
-}

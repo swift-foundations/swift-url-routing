@@ -55,6 +55,11 @@ extension Parser.Conversion.`Protocol` where Output == Foundation.Data {
 extension Parser.Conversion.`Protocol` {
     /// A standalone `Foundation.Data` ⇆ `Value` JSON conversion.
     @inlinable
+    @available(
+        *,
+        deprecated,
+        message: "Use URLRouting.Body(coding: .json(...)) so Content-Type is emitted."
+    )
     public static func json<Value: Swift.Codable>(
         _ type: Value.Type
     ) -> Self where Self == Parser.Conversion.JSON<Value> {

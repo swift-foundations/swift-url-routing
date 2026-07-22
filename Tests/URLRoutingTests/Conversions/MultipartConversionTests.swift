@@ -138,8 +138,9 @@ struct `Multipart Conversion Tests` {
                     Path { "routes" }
                     Path { Parse(.string) }
                     // `Body` is qualified: unqualified, it resolves to this router's
-                    // `Body` associated type rather than the `RFC_7230.Body.Parser` alias.
-                    URLRouting.Body(RFC_2046.Multipart.Conversion(
+                    // This pins the legacy byte-only alias: B4 keeps it headerless until
+                    // callers opt into `URLRouting.Body(coding:)`.
+                    RFC_7230.Body.Parser(RFC_2046.Multipart.Conversion(
                         UpdateRequest.self,
                         arrayEncodingStrategy: .accumulateValues
                     ))
