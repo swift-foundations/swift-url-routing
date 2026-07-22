@@ -71,11 +71,7 @@ struct `RFC 3986 Integration Tests` {
         let requestData = try RFC_3986.URI.Request.Data(uri: original)
         let reconstructed = try requestData.uri()
 
-        // Components should match (order may vary for query)
-        #expect(reconstructed.value.contains("https://api.example.com"))
-        #expect(reconstructed.value.contains("/users/123"))
-        #expect(reconstructed.value.contains("page=1"))
-        #expect(reconstructed.value.contains("#section"))
+        #expect(reconstructed.value == original.value)
     }
 
     @Test
@@ -128,7 +124,8 @@ struct `RFC 3986 Integration Tests` {
     }
 
     @Test
-    func `Percent-normalization uses uppercase hex and decodes segments (ratified class 2)`() throws {
+    func `Percent-normalization uses uppercase hex and decodes segments (ratified class 2)`() throws
+    {
         let uri = try RFC_3986.URI("/tags/caf%c3%a9?q=a%20b")
         let requestData = try RFC_3986.URI.Request.Data(uri: uri)
 
@@ -143,8 +140,40 @@ struct `RFC 3986 Integration Tests` {
     @Test
     func `Query pair order is preserved through parse and print`() throws {
         let requestData = try RFC_3986.URI.Request.Data(uriString: "/r?b=2&a=1&b=3")
-        #expect(try requestData.uriString == "/r?b=2&b=3&a=1")
+
+        #expect(try requestData.uriString == "/r?b=2&a=1&b=3")
         #expect(requestData.query["b"]?.map { $0.map(String.init) } == ["2", "3"])
         #expect(requestData.query["a"]?.map { $0.map(String.init) } == ["1"])
+    }
+
+    @Test
+    func `Query pair order follows incremental field consumption and emission`() throws {
+        var requestData = try RFC_3986.URI.Request.Data(uriString: "/r?b=2&a=1&b=3")
+
+        requestData.query["b"]?.removeFirst()
+        #expect(try requestData.uriString == "/r?a=1&b=3")
+
+        requestData.query.fields.updateValue(
+            forKey: "b",
+            insertingDefault: [],
+            at: requestData.query.fields.count,
+            with: { $0.append("4") }
+        )
+        #expect(try requestData.uriString == "/r?a=1&b=3&b=4")
+    }
+
+    @Test
+    func `Base request data preserves ordered query pairs on both sides`() throws {
+        let base = try RFC_3986.URI.Request.Data(uriString: "/r?x=1&y=2&x=3")
+        let parser = URLRouting.Query {
+            RFC_3986.URI.Query.Field("b")
+            RFC_3986.URI.Query.Field("a")
+            RFC_3986.URI.Query.Field("b")
+        }
+        .baseRequestData(base)
+
+        let requestData = try parser.print((("4", "5"), "6"))
+
+        #expect(try requestData.uriString == "/r?x=1&y=2&x=3&b=4&a=5&b=6")
     }
 }

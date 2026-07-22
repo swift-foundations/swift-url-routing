@@ -87,7 +87,8 @@ extension RFC_3986.URI.Request {
             // RFC 3986 engine truth: split the RAW path on "/" BEFORE
             // percent-decoding each segment, so "%2F" inside a segment does
             // not split (plan §Batch 3, fork F2).
-            self.path = path.split(separator: "/", omittingEmptySubsequences: true)
+            self.path =
+                path.split(separator: "/", omittingEmptySubsequences: true)
                 .map { RFC_3986.percentDecode(String($0))[...] }[...]
             self.query = Fields(
                 query.mapValues { $0.map { $0?[...] }[...] },
@@ -110,7 +111,32 @@ extension RFC_3986.URI.Request {
     ///
     /// Used for query parameters (case-sensitive) and headers (case-insensitive).
     public struct Fields: Sendable, Equatable {
-        public var fields: OrderedDictionary<String, ArraySlice<Substring?>>
+        @usableFromInline
+        var storage: OrderedDictionary<String, ArraySlice<Substring?>>
+
+        @usableFromInline
+        var order: [String]
+
+        public var fields: OrderedDictionary<String, ArraySlice<Substring?>> {
+            @inlinable
+            _read {
+                yield self.storage
+            }
+            @inlinable
+            _modify {
+                guard self.isCaseSensitive else {
+                    yield &self.storage
+                    return
+                }
+                var fields = self.storage
+                let previous = self.storage
+                defer {
+                    self.storage = fields
+                    self.reconcile(from: previous)
+                }
+                yield &fields
+            }
+        }
 
         @usableFromInline
         var isCaseSensitive: Bool
@@ -120,17 +146,94 @@ extension RFC_3986.URI.Request {
             _ fields: OrderedDictionary<String, ArraySlice<Substring?>> = [:],
             isCaseSensitive: Bool
         ) {
-            self.fields = [:]
-            self.fields.reserveCapacity(fields.count)
+            self.storage = [:]
+            self.order = []
+            self.storage.reserveCapacity(fields.count)
             self.isCaseSensitive = isCaseSensitive
             for (key, value) in fields {
-                self[key] = value
+                let key = isCaseSensitive ? key : key.lowercased()
+                self.storage[key] = value
             }
+            for (key, value) in self.storage {
+                self.order.append(contentsOf: repeatElement(key, count: value.count))
+            }
+        }
+
+        @usableFromInline
+        init(_ parameters: [(String, String?)], isCaseSensitive: Bool) {
+            self.storage = [:]
+            self.order = []
+            self.storage.reserveCapacity(parameters.count)
+            self.order.reserveCapacity(parameters.count)
+            self.isCaseSensitive = isCaseSensitive
+            for (name, value) in parameters {
+                let name = isCaseSensitive ? name : name.lowercased()
+                self.storage[name, default: []].append(value?[...])
+                self.order.append(name)
+            }
+        }
+
+        @usableFromInline
+        var parameters: [(name: String, value: Substring?)] {
+            var positions: [String: Int] = [:]
+            positions.reserveCapacity(self.storage.count)
+            return self.order.map { name in
+                let position = positions[name, default: 0]
+                positions[name] = position + 1
+                guard let values = self.storage[name], position < values.count
+                else { preconditionFailure("Field order and storage are inconsistent") }
+                return (name, values[values.index(values.startIndex, offsetBy: position)])
+            }
+        }
+
+        @usableFromInline
+        mutating func reconcile(
+            from previous: OrderedDictionary<String, ArraySlice<Substring?>>
+        ) {
+            for (name, values) in previous {
+                let current = self.storage[name] ?? []
+                let removed = values.count - current.count
+                guard removed > 0 else { continue }
+
+                if current.elementsEqual(values.dropFirst(removed)) {
+                    for _ in 0..<removed {
+                        guard let index = self.order.firstIndex(of: name) else { break }
+                        self.order.remove(at: index)
+                    }
+                } else {
+                    for _ in 0..<removed {
+                        guard let index = self.order.lastIndex(of: name) else { break }
+                        self.order.remove(at: index)
+                    }
+                }
+            }
+
+            for (name, values) in self.storage {
+                let previousValues = previous[name] ?? []
+                let inserted = values.count - previousValues.count
+                guard inserted > 0 else { continue }
+
+                if previousValues.elementsEqual(values.suffix(previousValues.count)),
+                    let index = self.order.firstIndex(of: name)
+                {
+                    self.order.insert(contentsOf: repeatElement(name, count: inserted), at: index)
+                } else {
+                    self.order.append(contentsOf: repeatElement(name, count: inserted))
+                }
+            }
+        }
+
+        @usableFromInline
+        mutating func prepend(_ fields: Self) {
+            self.storage.merge(fields.storage) { current, incoming in
+                ArraySlice(incoming + current)
+            }
+            self.order.insert(contentsOf: fields.order, at: self.order.startIndex)
         }
 
         @inlinable
         public subscript(name: String) -> ArraySlice<Substring?>? {
-            _read { yield self.fields[self.isCaseSensitive ? name : name.lowercased()] }
+            _read { yield self.storage[self.isCaseSensitive ? name : name.lowercased()] }
             _modify { yield &self.fields[self.isCaseSensitive ? name : name.lowercased()] }
         }
 
@@ -139,7 +242,7 @@ extension RFC_3986.URI.Request {
             name: String, default defaultValue: @autoclosure () -> ArraySlice<Substring?>
         ) -> ArraySlice<Substring?> {
             _read {
-                yield self.fields[
+                yield self.storage[
                     self.isCaseSensitive ? name : name.lowercased(),
                     default: defaultValue()
                 ]
@@ -154,7 +257,7 @@ extension RFC_3986.URI.Request {
 
         @inlinable
         public var isEmpty: Bool {
-            self.fields.isEmpty
+            self.storage.isEmpty
         }
     }
 }
@@ -282,7 +385,16 @@ extension RFC_3986.URI.Request.Fields: ExpressibleByDictionaryLiteral {
 extension RFC_3986.URI.Request.Fields: Hashable {
     @inlinable
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(self.fields)
+        hasher.combine(self.storage)
+    }
+}
+
+extension RFC_3986.URI.Request.Fields {
+    // Occurrence order is an internal wire detail; the public grouped-fields
+    // equality contract remains based on field names and values.
+    @inlinable
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.storage == rhs.storage && lhs.isCaseSensitive == rhs.isCaseSensitive
     }
 }
 

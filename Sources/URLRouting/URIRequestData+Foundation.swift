@@ -43,9 +43,7 @@ extension RFC_3986.URI.Request.Data {
             host: components.host,
             port: components.port,
             path: components.path,
-            query: components.queryItems?.reduce(into: [:]) { query, item in
-                query[item.name, default: []].append(item.value)
-            } ?? [:],
+            query: [:],
             fragment: components.fragment,
             headers: .init(
                 request.allHTTPHeaderFields?.map { key, value in
@@ -59,6 +57,10 @@ extension RFC_3986.URI.Request.Data {
                 uniquingKeysWith: { $1 }
             ),
             body: request.httpBody
+        )
+        self.query = RFC_3986.URI.Request.Fields(
+            components.queryItems?.map { ($0.name, $0.value) } ?? [],
+            isCaseSensitive: true
         )
     }
 
@@ -136,10 +138,9 @@ extension URLComponents {
 
         // Reconstruct query
         if !data.query.isEmpty {
-            self.queryItems = data.query.fields
-                .flatMap { name, values in
-                    values.map { URLQueryItem(name: name, value: $0.map(String.init)) }
-                }
+            self.queryItems = data.query.parameters.map { name, value in
+                URLQueryItem(name: name, value: value.map(String.init))
+            }
         }
 
         self.fragment = data.fragment

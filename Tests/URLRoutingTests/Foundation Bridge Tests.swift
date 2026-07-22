@@ -101,6 +101,13 @@ struct `Foundation Bridge Tests` {
         #expect(request?.url?.query?.contains("page=1") == true)
     }
 
+    @Test
+    func `Foundation bridge preserves interleaved query pairs`() throws {
+        let requestData = try RFC_3986.URI.Request.Data(uriString: "/r?b=2&a=1&b=3")
+
+        #expect(URLComponents(data: requestData).percentEncodedQuery == "b=2&a=1&b=3")
+    }
+
     // MARK: - URLComponents Bridge
 
     @Test

@@ -33,7 +33,9 @@ extension Parser.Bidirectional where Input == RFC_3986.URI.Request.Data {
     /// - Parameter requestData: Default request data to print into.
     /// - Returns: A parser-printer that prints into some default request data.
     @inlinable
-    public func baseRequestData(_ requestData: RFC_3986.URI.Request.Data) -> RFC_3986.URI.BaseURLPrinter<Self> {
+    public func baseRequestData(
+        _ requestData: RFC_3986.URI.Request.Data
+    ) -> RFC_3986.URI.BaseURLPrinter<Self> {
         RFC_3986.URI.BaseURLPrinter(defaultRequestData: requestData, upstream: self)
     }
 }
@@ -73,7 +75,10 @@ extension RFC_3986.URI {
             do {
                 return try self.upstream.parse(&input)
             } catch {
-                throw RFC_3986.URI.Routing.Error(component: .request, failure: .parseFailed("\(error)"))
+                throw RFC_3986.URI.Routing.Error(
+                    component: .request,
+                    failure: .parseFailed("\(error)")
+                )
             }
         }
     }
@@ -89,7 +94,9 @@ extension RFC_3986.URI.BaseURLPrinter: Parser.Bidirectional {
     /// precedent).
     @inlinable
     public var body: Never {
-        borrowing get { return fatalError("leaf router — serialize(_:into:) is implemented directly") }
+        borrowing get {
+            return fatalError("leaf router — serialize(_:into:) is implemented directly")
+        }
     }
 
     @inlinable
@@ -107,7 +114,7 @@ extension RFC_3986.URI.BaseURLPrinter: Parser.Bidirectional {
         if let host = self.defaultRequestData.host { input.host = host }
         if let port = self.defaultRequestData.port { input.port = port }
         input.path.prepend(contentsOf: self.defaultRequestData.path)
-        input.query.fields.merge(self.defaultRequestData.query.fields) { $1 + $0 }
+        input.query.prepend(self.defaultRequestData.query)
         if let fragment = self.defaultRequestData.fragment { input.fragment = fragment }
         input.headers.fields.merge(self.defaultRequestData.headers.fields) { $1 + $0 }
     }

@@ -86,10 +86,9 @@ extension Parser.Bidirectional where Input == RFC_3986.URI.Request.Data {
             var components = URLComponents()
             components.path = "/\(data.path.joined(separator: "/"))"
             if !data.query.isEmpty {
-                components.queryItems = data.query.fields
-                    .flatMap { name, values in
-                        values.map { URLQueryItem(name: name, value: $0.map(String.init)) }
-                    }
+                components.queryItems = data.query.parameters.map { name, value in
+                    URLQueryItem(name: name, value: value.map(String.init))
+                }
             }
             return components.string ?? "#route-not-found"
         } catch {

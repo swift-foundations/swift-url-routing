@@ -1,7 +1,7 @@
 import Foundation
+import RFC_7230
 import Testing
 import URLRouting
-import RFC_7230
 
 @Suite
 struct `Header Security Tests` {
@@ -69,7 +69,10 @@ struct `Header Security Tests` {
         do {
             var request = RFC_3986.URI.Request.Data()
             try parser.print("text/html; charset=utf-8", into: &request)
-            #expect(request.headers["x-custom-header"]?.first??.description == "text/html; charset=utf-8")
+            #expect(
+                request.headers["x-custom-header"]?.first??.description
+                    == "text/html; charset=utf-8"
+            )
         }
     }
 
@@ -103,7 +106,7 @@ struct `Header Security Tests` {
 
         let values = request.headers["x-custom-header"]
         #expect(values?.count == 2)
-        #expect(values?.first??.description == "value2")  // Last printed is first
-        #expect(values?.last??.description == "value1")
+        #expect(values?.first??.description == "value1")
+        #expect(values?.last??.description == "value2")
     }
 }

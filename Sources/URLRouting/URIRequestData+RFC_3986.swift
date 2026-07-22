@@ -1,4 +1,3 @@
-import OrderedCollections
 import RFC_3986
 
 extension RFC_3986.URI.Request.Data {
@@ -28,15 +27,17 @@ extension RFC_3986.URI.Request.Data {
             // The raw (still percent-encoded) path: the memberwise initializer
             // splits it on "/" before decoding each segment.
             path: uri.path?.description ?? "",
-            query: uri.query.map { query in
-                query.parameters.reduce(
-                    into: OrderedDictionary<String, [String?]>()
-                ) { fields, parameter in
-                    fields[RFC_3986.percentDecode(parameter.key), default: []]
-                        .append(parameter.value.map(RFC_3986.percentDecode))
-                }
-            } ?? [:],
+            query: [:],
             fragment: uri.fragment.map { RFC_3986.percentDecode($0.value) }
+        )
+        self.query = RFC_3986.URI.Request.Fields(
+            uri.query?.parameters.map { parameter in
+                (
+                    RFC_3986.percentDecode(parameter.key),
+                    parameter.value.map(RFC_3986.percentDecode)
+                )
+            } ?? [],
+            isCaseSensitive: true
         )
     }
 
@@ -116,17 +117,15 @@ extension RFC_3986.URI.Request.Data {
 
         if !self.query.isEmpty {
             uriString += "?"
-            uriString += self.query.fields
-                .flatMap { name, values in
-                    values.map { value -> String in
-                        let encodedName = RFC_3986.percentEncode(name, allowing: .queryComponent)
-                        guard let value else { return encodedName }
-                        let encodedValue = RFC_3986.percentEncode(
-                            String(value),
-                            allowing: .queryComponent
-                        )
-                        return "\(encodedName)=\(encodedValue)"
-                    }
+            uriString += self.query.parameters
+                .map { name, value in
+                    let encodedName = RFC_3986.percentEncode(name, allowing: .queryComponent)
+                    guard let value else { return encodedName }
+                    let encodedValue = RFC_3986.percentEncode(
+                        String(value),
+                        allowing: .queryComponent
+                    )
+                    return "\(encodedName)=\(encodedValue)"
                 }
                 .joined(separator: "&")
         }
