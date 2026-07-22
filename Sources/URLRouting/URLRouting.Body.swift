@@ -157,20 +157,6 @@ extension URLRouting {
             }
         }
 
-        /// Transitional multipart lift. The existing conversion remains the
-        /// byte implementation; this facade supplies the request-level media
-        /// coupling until B5 replaces it with `HTML.Form.Coder.Multipart`.
-        public init(
-            coding conversion: RFC_2046.Multipart.Conversion<Output>,
-            maxSize: Measurement<UnitInformationStorage> = RFC_7230.Body.Parser<
-                URLRouting.Rest<Foundation.Data>
-            >.defaultMaxSize
-        ) where Output: Swift.Codable {
-            self.init(
-                coding: RFC_2046.Multipart.Conversion<Output>.Coder(conversion),
-                maxSize: maxSize
-            )
-        }
     }
 }
 
