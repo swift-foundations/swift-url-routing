@@ -1,6 +1,6 @@
 import Foundation
+import HTTP_Standard
 import RFC_3986
-import RFC_7231
 
 #if canImport(FoundationNetworking)
     import FoundationNetworking
@@ -28,7 +28,7 @@ extension RFC_3986.URI.Request.Data {
         else { return nil }
 
         self.init(
-            method: request.httpMethod.map { RFC_7231.Method(rawValue: $0) },
+            method: request.httpMethod.map { HTTP.Method(rawValue: $0) },
             scheme: components.scheme,
             userinfo: {
                 // Reconstruct userinfo from user and password

@@ -2,7 +2,7 @@ import Testing
 import Foundation
 import URLRouting
 import RFC_3986
-import RFC_7230
+import HTTP_Body
 
 @Suite
 struct `Body Security Tests` {
@@ -150,7 +150,7 @@ struct `Body Security Tests` {
     @Test
     func `Default max size is 10 Mi B`() {
         let expected = Measurement(value: 10, unit: UnitInformationStorage.mebibytes)
-        #expect(RFC_7230.Body.Parser<Rest<Data>>.defaultMaxSize == expected)
+        #expect(HTTP.Body.Parser<Rest<Data>>.defaultMaxSize == expected)
     }
 
     @Test

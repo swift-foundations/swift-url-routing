@@ -1,6 +1,5 @@
 import Foundation
 import RFC_3986
-import RFC_7231
 
 // MARK: - RFC 3986 URI Routing Extension
 

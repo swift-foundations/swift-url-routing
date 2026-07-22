@@ -1,11 +1,11 @@
 import Foundation
+import HTTP_Body
 import RFC_3986
-import RFC_7230
 
-// MARK: - RFC 7230 Body Extension
+// MARK: - RFC 9110 Body Extension
 
-extension RFC_7230.Body {
-    /// Parser for HTTP message body (RFC 7230 section 3.3)
+extension HTTP.Body {
+    /// Parser for an HTTP message body.
     ///
     /// Parses a request's body using a byte parser with optional size validation.
     ///
@@ -22,10 +22,10 @@ extension RFC_7230.Body {
     /// }
     ///
     /// // Default 10 MiB limit
-    /// RFC_7230.Body.Parser(.json(Comment.self))
+    /// HTTP.Body.Parser(.json(Comment.self))
     ///
     /// // Custom limit for large file uploads
-    /// RFC_7230.Body.Parser(
+    /// HTTP.Body.Parser(
     ///     .json(LargePayload.self),
     ///     maxSize: Measurement(value: 50, unit: .mebibytes)
     /// )
@@ -129,7 +129,7 @@ extension RFC_7230.Body {
     }
 }
 
-extension RFC_7230.Body.Parser: Serializer.`Protocol`, Coder.`Protocol`, Parser_Primitive.Parser.Bidirectional where Bytes: Parser_Primitive.Parser.Bidirectional {
+extension HTTP.Body.Parser: Serializer.`Protocol`, Coder.`Protocol`, Parser_Primitive.Parser.Bidirectional where Bytes: Parser_Primitive.Parser.Bidirectional {
     /// The emission buffer type — `Parser.Bidirectional` pins `Buffer == Input`.
     public typealias Buffer = RFC_3986.URI.Request.Data
 
@@ -160,10 +160,10 @@ extension RFC_7230.Body.Parser: Serializer.`Protocol`, Coder.`Protocol`, Parser_
 
 // MARK: - Convenience Type Alias
 
-/// Convenience type alias for `RFC_7230.Body.Parser`
+/// Convenience type alias for `HTTP.Body.Parser`
 ///
 /// For cleaner code, you can use `Body` instead of the fully qualified name:
 /// ```swift
 /// Body(.json(Comment.self))
 /// ```
-public typealias Body = RFC_7230.Body.Parser
+public typealias Body = HTTP.Body.Parser

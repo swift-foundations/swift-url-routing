@@ -6,16 +6,16 @@
 //
 
 import Foundation
+import HTTP_Body
 import RFC_2046
 import RFC_2183
 import RFC_3986
-import RFC_7230
 import RFC_7578
 
 // MARK: - FileUpload URLRouting Integration
 
 extension FileUpload {
-    /// Internal conversion wrapper for RFC_7230.Body.Parser() parser
+    /// Internal conversion wrapper for HTTP.Body.Parser() parser
     internal struct BodyConversion: Parser.Conversion.`Protocol` {
         typealias Input = Foundation.Data
         typealias Output = Foundation.Data
@@ -71,7 +71,7 @@ extension FileUpload: Parser.Bidirectional {
     /// Parses the request, extracting and validating file upload data.
     ///
     /// This method:
-    /// 1. Extracts the body data via `RFC_7230.Body.Parser`
+    /// 1. Extracts the body data via `HTTP.Body.Parser`
     /// 2. Validates the file data through the body conversion (size limits,
     ///    content sniffing / file-content verification)
     ///
@@ -84,7 +84,7 @@ extension FileUpload: Parser.Bidirectional {
     /// - Throws: Validation or parsing errors
     public func parse(_ input: inout RFC_3986.URI.Request.Data) throws(RFC_3986.URI.Routing.Error) -> Foundation.Data {
         // The body conversion validates the file itself; parse it directly.
-        return try RFC_7230.Body.Parser(BodyConversion(fileUpload: self)).parse(&input)
+        return try HTTP.Body.Parser(BodyConversion(fileUpload: self)).parse(&input)
     }
 
     /// Prints the file data back into request format.
@@ -113,6 +113,6 @@ extension FileUpload: Parser.Bidirectional {
         // Emit the multipart/form-data Content-Type header (carrying the boundary).
         input.headers["Content-Type"] = [Optional(Substring(self.contentType.headerValue))][...]
         // Print body
-        try RFC_7230.Body.Parser(BodyConversion(fileUpload: self)).print(output, into: &input)
+        try HTTP.Body.Parser(BodyConversion(fileUpload: self)).print(output, into: &input)
     }
 }

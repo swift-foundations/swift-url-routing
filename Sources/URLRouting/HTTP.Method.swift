@@ -1,17 +1,18 @@
+import HTTP_Standard
 import RFC_3986
-import RFC_7231
 
-// MARK: - RFC 7231 Method Extension
+// MARK: - RFC 9110 Method Extension
 
-extension RFC_7231.Method {
-    /// Parser for HTTP request methods (RFC 7231 section 4)
+extension HTTP.Method {
+    /// Parser for HTTP request methods (RFC 9110 section 9)
     ///
     /// Used to require a particular HTTP method at a particular endpoint.
     ///
-    /// Example:
+    /// ## Example
+    ///
     /// ```swift
     /// Route(.case(\.login)) {
-    ///   RFC_7231.Method.Parser.post  // Only route POST requests
+    ///   HTTP.Method.Parser.post  // Only route POST requests
     ///   ...
     /// }
     /// ```
@@ -22,7 +23,7 @@ extension RFC_7231.Method {
         public typealias Body = Never
 
         @usableFromInline
-        let method: RFC_7231.Method
+        let method: HTTP.Method
 
         /// A parser of GET requests.
         ///
@@ -48,7 +49,7 @@ extension RFC_7231.Method {
         ///
         /// - Parameter method: An HTTP method (e.g., .get, .post, .put, .patch, .delete)
         @inlinable
-        public init(_ method: RFC_7231.Method) {
+        public init(_ method: HTTP.Method) {
             self.method = method
         }
 
@@ -93,7 +94,7 @@ extension RFC_7231.Method {
 
 // MARK: - GET (HEAD-or-GET alternative)
 
-extension RFC_7231.Method.Parser {
+extension HTTP.Method.Parser {
     /// A parser-printer that recognizes HEAD or GET and prints GET.
     ///
     /// `Parser.OneOf` requires an `Input.Protocol` linear cursor (parity friction
@@ -112,8 +113,8 @@ extension RFC_7231.Method.Parser {
 
         @inlinable
         public func parse(_ input: inout RFC_3986.URI.Request.Data) throws(RFC_3986.URI.Routing.Error) {
-            if (try? RFC_7231.Method.Parser(.head).parse(&input)) != nil { return }
-            if (try? RFC_7231.Method.Parser(.get).parse(&input)) != nil { return }
+            if (try? HTTP.Method.Parser(.head).parse(&input)) != nil { return }
+            if (try? HTTP.Method.Parser(.get).parse(&input)) != nil { return }
             throw RFC_3986.URI.Routing.Error(
                 component: .method,
                 failure: .mismatch(
@@ -145,10 +146,10 @@ extension RFC_7231.Method.Parser {
 
 // MARK: - Convenience Type Alias
 
-/// Convenience type alias for `RFC_7231.Method.Parser`
+/// Convenience type alias for `HTTP.Method.Parser`
 ///
 /// For cleaner code, you can use `Method` instead of the fully qualified name:
 /// ```swift
-/// Method.post  // equivalent to RFC_7231.Method.Parser.post
+/// Method.post  // equivalent to HTTP.Method.Parser.post
 /// ```
-public typealias Method = RFC_7231.Method.Parser
+public typealias Method = HTTP.Method.Parser

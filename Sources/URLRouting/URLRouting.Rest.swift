@@ -7,7 +7,7 @@
 //  The institute L1 `Parser.Rest` is parse-only (no `Parser.Printer`
 //  conformance) and constrains `Input: Collection.Slice.Protocol`, so
 //  `Parser.Rest<Data>` (the HTTP body carrier) does not type-check — parity
-//  GAP-4. It is also missing the printer that `URI.Query.Field` / `RFC_7230.Body`
+//  GAP-4. It is also missing the printer that `URI.Query.Field` / `HTTP.Body`
 //  need to round-trip. Rather than widen the L1 slice contract or add L1
 //  conformances (out of this lane's scope), this leaf sidesteps both at the
 //  consumer level: it is `Parser.Bidirectional` over any

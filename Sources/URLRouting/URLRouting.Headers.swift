@@ -1,21 +1,22 @@
+import HTTP_Standard
 import RFC_3986
-import RFC_7230
 
-// MARK: - RFC 7230 Header Extension
+// MARK: - Request Header Routing
 
-extension RFC_7230.Header {
-    /// Parser for HTTP header fields (RFC 7230 section 3.2)
+extension URLRouting {
+    /// Composes HTTP field parsers over a routed request.
     ///
     /// Incrementally parses header fields from an HTTP request.
     ///
-    /// Example:
+    /// ## Example
+    ///
     /// ```swift
-    /// RFC_7230.Header.Parser {
-    ///   Field("Content-Type", .string)
-    ///   Field("Authorization", .string)
+    /// Headers {
+    ///   HTTP.Header.Field.Parser("Content-Type", .string)
+    ///   HTTP.Header.Field.Parser("Authorization", .string)
     /// }
     /// ```
-    public struct Parser<FieldParsers: Parser_Primitive.Parser.`Protocol`>: Parser_Primitive.Parser.`Protocol`
+    public struct Headers<FieldParsers: Parser_Primitive.Parser.`Protocol`>: Parser_Primitive.Parser.`Protocol`
     where FieldParsers.Input == RFC_3986.URI.Request.Fields {
         public typealias Failure = RFC_3986.URI.Routing.Error
 
@@ -46,7 +47,7 @@ extension RFC_7230.Header {
     }
 }
 
-extension RFC_7230.Header.Parser: Serializer.`Protocol`, Coder.`Protocol`, Parser_Primitive.Parser.Bidirectional where FieldParsers: Parser_Primitive.Parser.Bidirectional {
+extension URLRouting.Headers: Serializer.`Protocol`, Coder.`Protocol`, Parser_Primitive.Parser.Bidirectional where FieldParsers: Parser_Primitive.Parser.Bidirectional {
     /// The emission buffer type — `Parser.Bidirectional` pins `Buffer == Input`.
     public typealias Buffer = RFC_3986.URI.Request.Data
 
@@ -74,12 +75,15 @@ extension RFC_7230.Header.Parser: Serializer.`Protocol`, Coder.`Protocol`, Parse
 
 // MARK: - Convenience Type Alias
 
-/// Convenience type alias for `RFC_7230.Header.Parser`
+/// The routing-owned aggregate HTTP header combinator.
 ///
-/// For cleaner code, you can use `Headers` instead of the fully qualified name:
+/// Use `Headers` instead of the fully qualified ``URLRouting/URLRouting/Headers``:
 /// ```swift
 /// Headers {
-///   Field("Content-Type", .string)
+///   HTTP.Header.Field.Parser("Content-Type", .string)
 /// }
 /// ```
-public typealias Headers = RFC_7230.Header.Parser
+public typealias Headers<FieldParsers> = URLRouting.Headers<FieldParsers>
+where
+    FieldParsers: Parser_Primitive.Parser.`Protocol`,
+    FieldParsers.Input == RFC_3986.URI.Request.Fields

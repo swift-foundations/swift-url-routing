@@ -4,7 +4,6 @@ import Media_Type_Standard
 import RFC_2045
 public import RFC_2046
 public import RFC_3986
-import RFC_7230
 
 extension URLRouting {
     /// A request-level body router.
@@ -30,11 +29,11 @@ extension URLRouting {
         )
         public init<C: Parser.Conversion.`Protocol`>(
             _ conversion: C,
-            maxSize: Measurement<UnitInformationStorage> = RFC_7230.Body.Parser<
+            maxSize: Measurement<UnitInformationStorage> = HTTP.Body.Parser<
                 URLRouting.Rest<Foundation.Data>
             >.defaultMaxSize
         ) where C.Input == Foundation.Data, C.Output == Output {
-            let parser = RFC_7230.Body.Parser(conversion, maxSize: maxSize)
+            let parser = HTTP.Body.Parser(conversion, maxSize: maxSize)
             self._parse = { input throws(RFC_3986.URI.Routing.Error) in
                 try parser.parse(&input)
             }
@@ -46,7 +45,7 @@ extension URLRouting {
         /// Couples body bytes and their realized media type in both directions.
         public init<C: RFC_9110.Body.Coder.`Protocol` & Copyable>(
             coding coder: C,
-            maxSize: Measurement<UnitInformationStorage> = RFC_7230.Body.Parser<
+            maxSize: Measurement<UnitInformationStorage> = HTTP.Body.Parser<
                 URLRouting.Rest<Foundation.Data>
             >.defaultMaxSize
         ) where C.Output == Output {

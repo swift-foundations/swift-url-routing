@@ -111,7 +111,7 @@ private struct UsersRouter: ParserPrinter {
         OneOf {
             Route(.case(UsersRoute.cases.create)) {
                 Method.post
-                RFC_7230.Body.Parser(.json(CreateUser.self))
+                HTTP.Body.Parser(.json(CreateUser.self))
             }
 
             Route(.case(UsersRoute.cases.user)) {

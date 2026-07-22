@@ -177,7 +177,7 @@ struct `Throwing Functions Tests` {
     func `Headers with Field without explicit try should not be ambiguous`() throws {
         // Test the Headers parser ambiguity
         let parser = Headers {
-            RFC_7230.Header.Field.Parser("X-Custom") { Rest().map(.string) }  // No explicit try
+            HTTP.Header.Field.Parser("X-Custom") { Rest().map(.string) }  // No explicit try
         }
 
         var request = RFC_3986.URI.Request.Data()

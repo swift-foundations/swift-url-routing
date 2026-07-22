@@ -1,5 +1,5 @@
 import Foundation
-import RFC_7230
+import HTTP_Standard
 import Testing
 import URLRouting
 
@@ -7,9 +7,18 @@ import URLRouting
 struct `Header Security Tests` {
 
     @Test
+    func `Headers spelling resolves to the routing-owned aggregate`() {
+        let parser = Headers {
+            HTTP.Header.Field.Parser("X-Owner-Evidence", .string)
+        }
+
+        requireRoutingOwnedAggregate(parser)
+    }
+
+    @Test
     func `CRLF injection in header values is rejected`() throws {
         let parser = Headers {
-            RFC_7230.Header.Field.Parser("X-Custom-Header", .string)
+            HTTP.Header.Field.Parser("X-Custom-Header", .string)
         }
 
         // Test CR injection
@@ -48,7 +57,7 @@ struct `Header Security Tests` {
     @Test
     func `Valid header values are accepted`() throws {
         let parser = Headers {
-            RFC_7230.Header.Field.Parser("X-Custom-Header", .string)
+            HTTP.Header.Field.Parser("X-Custom-Header", .string)
         }
 
         // Standard header value
@@ -97,7 +106,7 @@ struct `Header Security Tests` {
     @Test
     func `Multiple header values without CRLF`() throws {
         let parser = Headers {
-            RFC_7230.Header.Field.Parser("X-Custom-Header", .string)
+            HTTP.Header.Field.Parser("X-Custom-Header", .string)
         }
 
         var request = RFC_3986.URI.Request.Data()
@@ -110,3 +119,10 @@ struct `Header Security Tests` {
         #expect(values?.last??.description == "value2")
     }
 }
+
+private func requireRoutingOwnedAggregate<FieldParsers>(
+    _: URLRouting.Headers<FieldParsers>
+) where
+    FieldParsers: Parser_Primitive.Parser.`Protocol`,
+    FieldParsers.Input == RFC_3986.URI.Request.Fields
+{}

@@ -1,15 +1,16 @@
 import OrderedCollections
+import HTTP_Standard
 import RFC_3986
-import RFC_7230
 
-// MARK: - RFC 7230 HTTP Header Field Parser
+// MARK: - RFC 9110 HTTP Header Field Parser
 
-extension RFC_7230.Header.Field {
+extension HTTP.Header.Field {
     /// Parses a named field's value for HTTP headers.
     ///
-    /// Example:
+    /// ## Example
+    ///
     /// ```swift
-    /// HTTP.Header.Parser {
+    /// Headers {
     ///   Field.Parser("Content-Type", .string)
     ///   Field.Parser("Content-Length") { Int.parser() }
     /// }
@@ -111,7 +112,7 @@ extension RFC_7230.Header.Field {
     }
 }
 
-extension RFC_7230.Header.Field.Parser: Serializer.`Protocol`, Coder.`Protocol`, Parser_Primitive.Parser.Bidirectional where Value: Parser_Primitive.Parser.Bidirectional {
+extension HTTP.Header.Field.Parser: Serializer.`Protocol`, Coder.`Protocol`, Parser_Primitive.Parser.Bidirectional where Value: Parser_Primitive.Parser.Bidirectional {
     /// The emission buffer type — `Parser.Bidirectional` pins `Buffer == Input`.
     public typealias Buffer = RFC_3986.URI.Request.Fields
 
@@ -142,9 +143,9 @@ extension RFC_7230.Header.Field.Parser: Serializer.`Protocol`, Coder.`Protocol`,
             )
         }
 
-        // Validate against CRLF injection per RFC 7230 §3.2 (prevents header injection).
+        // Validate against CRLF injection per RFC 9110 §5.5 (prevents header injection).
         do {
-            _ = try RFC_7230.Header.Field.Value(String(printedValue))
+            _ = try HTTP.Header.Field.Value(String(printedValue))
         } catch {
             throw RFC_3986.URI.Routing.Error(
                 component: .header(name: self.name),
@@ -163,7 +164,7 @@ extension RFC_7230.Header.Field.Parser: Serializer.`Protocol`, Coder.`Protocol`,
 
 // MARK: - ContentType Convenience Parser
 
-extension RFC_7230.Header {
+extension HTTP.Header {
     /// Convenience parser for Content-Type header field.
     ///
     /// Use this within a `Headers` block to parse the Content-Type header.
@@ -181,19 +182,19 @@ extension RFC_7230.Header {
         public typealias Failure = RFC_3986.URI.Routing.Error
 
         @usableFromInline
-        let valueParser: RFC_7230.Header.Field.Parser<Value>
+        let valueParser: HTTP.Header.Field.Parser<Value>
 
         /// Initializes a Content-Type header parser.
         @inlinable
         public init(@Parser_Primitive.Parser.Builder<Substring> _ value: () -> Value) {
-            self.valueParser = RFC_7230.Header.Field.Parser("Content-Type", value)
+            self.valueParser = HTTP.Header.Field.Parser("Content-Type", value)
         }
 
         /// Initializes a Content-Type header parser with a throwing closure.
         @_disfavoredOverload
         @inlinable
         public init(@Parser_Primitive.Parser.Builder<Substring> _ value: () throws -> Value) rethrows {
-            self.valueParser = try RFC_7230.Header.Field.Parser("Content-Type", value)
+            self.valueParser = try HTTP.Header.Field.Parser("Content-Type", value)
         }
 
         @inlinable
@@ -205,7 +206,7 @@ extension RFC_7230.Header {
     }
 }
 
-extension RFC_7230.Header.ContentType: Serializer.`Protocol`, Coder.`Protocol`, Parser_Primitive.Parser.Bidirectional where Value: Parser_Primitive.Parser.Bidirectional {
+extension HTTP.Header.ContentType: Serializer.`Protocol`, Coder.`Protocol`, Parser_Primitive.Parser.Bidirectional where Value: Parser_Primitive.Parser.Bidirectional {
     /// The emission buffer type — `Parser.Bidirectional` pins `Buffer == Input`.
     public typealias Buffer = RFC_3986.URI.Request.Fields
 
@@ -227,7 +228,7 @@ extension RFC_7230.Header.ContentType: Serializer.`Protocol`, Coder.`Protocol`, 
     }
 }
 
-/// Convenience typealias for `RFC_7230.Header.ContentType`
+/// Convenience typealias for `HTTP.Header.ContentType`
 ///
 /// For cleaner code within Headers blocks:
 /// ```swift
@@ -235,4 +236,4 @@ extension RFC_7230.Header.ContentType: Serializer.`Protocol`, Coder.`Protocol`, 
 ///     ContentType { "multipart/form-data" }
 /// }
 /// ```
-public typealias ContentType = RFC_7230.Header.ContentType
+public typealias ContentType = HTTP.Header.ContentType

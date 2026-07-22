@@ -33,7 +33,7 @@ struct `Body Coder Route Tests` {
     func `JSON coding adds only its content type`() throws {
         let value = ["message": "hello"]
         let conversion = Parser.Conversion.JSON<[String: String]>()
-        let legacy = RFC_7230.Body.Parser(conversion)
+        let legacy = HTTP.Body.Parser(conversion)
         let coded = URLRouting.Body<[String: String]>(
             coding: .json([String: String].self)
         )

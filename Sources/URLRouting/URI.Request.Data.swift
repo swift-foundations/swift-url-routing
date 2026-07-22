@@ -1,7 +1,7 @@
 import Foundation
+import HTTP_Standard
 import OrderedCollections
 import RFC_3986
-import RFC_7231
 
 // MARK: - RFC 3986 URI Request Extension
 
@@ -30,7 +30,7 @@ extension RFC_3986.URI.Request {
     /// ```
     public struct Data: Sendable, Equatable {
         /// The HTTP method (e.g., .GET, .POST)
-        public var method: RFC_7231.Method?
+        public var method: HTTP.Method?
 
         /// The URI scheme (e.g., "https", "http")
         public var scheme: String?
@@ -68,7 +68,7 @@ extension RFC_3986.URI.Request {
 
         /// Creates a URI request with the specified components
         public init(
-            method: RFC_7231.Method? = nil,
+            method: HTTP.Method? = nil,
             scheme: String? = nil,
             userinfo: String? = nil,
             host: String? = nil,
@@ -269,7 +269,7 @@ extension RFC_3986.URI.Request.Data: Swift.Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.init(
-            method: try container.decodeIfPresent(RFC_7231.Method.self, forKey: .method),
+            method: try container.decodeIfPresent(HTTP.Method.self, forKey: .method),
             scheme: try container.decodeIfPresent(String.self, forKey: .scheme),
             userinfo: try container.decodeIfPresent(String.self, forKey: .userinfo),
             host: try container.decodeIfPresent(String.self, forKey: .host),
