@@ -33,6 +33,8 @@
 @_exported import RFC_2046
 @_exported import RFC_3986
 @_exported import RFC_6265
+@_exported import RFC_6750
+@_exported import RFC_7617
 @_exported import HTTP_Standard
 @_exported import RFC_7578
 
