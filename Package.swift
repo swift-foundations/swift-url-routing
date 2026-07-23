@@ -45,6 +45,7 @@ let package = Package(
     .package(url: "https://github.com/swift-foundations/swift-http-body.git", branch: "main"),
     .package(url: "https://github.com/swift-foundations/swift-json.git", branch: "main"),
     .package(url: "https://github.com/swift-standards/swift-media-type-standard.git", branch: "main"),
+    .package(url: "https://github.com/swift-primitives/swift-tagged-primitives.git", branch: "main"),
   ],
   targets: [
     .target(
@@ -94,6 +95,7 @@ let package = Package(
         .product(name: "HTML Standard", package: "swift-html-standard"),
         .product(name: "HTTP Body", package: "swift-http-body"),
         .product(name: "Media Type Standard", package: "swift-media-type-standard"),
+        .product(name: "Tagged Primitives", package: "swift-tagged-primitives"),
       ]
     ),
     .target(
@@ -114,6 +116,7 @@ let package = Package(
         .product(name: "HTTP Standard", package: "swift-http-standard"),
         .product(name: "JSON Foundation Integration", package: "swift-json"),
         .product(name: "RFC 3986", package: "swift-rfc-3986"),
+        .product(name: "Tagged Primitives", package: "swift-tagged-primitives"),
       ]
     ),
     .testTarget(
@@ -127,6 +130,7 @@ let package = Package(
         .product(name: "WHATWG HTML Forms", package: "swift-whatwg-html"),
         .product(name: "RFC 3986", package: "swift-rfc-3986"),
         .product(name: "HTTP Standard", package: "swift-http-standard"),
+        .product(name: "Tagged Primitives", package: "swift-tagged-primitives"),
       ]
     ),
   ]
